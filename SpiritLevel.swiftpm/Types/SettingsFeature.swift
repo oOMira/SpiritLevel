@@ -8,19 +8,19 @@ enum SettingsFeature: String, SearchableItem {
     
     var label: String {
         switch self {
-        case .plan: return "Plan"
-        case .support: return "Support"
-        case .data: return "Data"
-        case .deleteData: return "Delete Data"
+        case .plan:         "Plan"
+        case .support:      "Support"
+        case .data:         "Data"
+        case .deleteData:   "Delete Data"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .plan: "calendar"
-        case .support: "questionmark.circle"
-        case .data: "externaldrive"
-        case .deleteData: "trash"
+        case .plan:         "calendar"
+        case .support:      "questionmark.circle"
+        case .data:         "externaldrive"
+        case .deleteData:   "trash"
         }
     }
 }

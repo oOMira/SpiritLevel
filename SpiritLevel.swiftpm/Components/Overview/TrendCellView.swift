@@ -22,17 +22,17 @@ enum Trend: String, CaseIterable, Identifiable {
     
     var image: Image {
         switch self {
-        case .down: Image(systemName: .downArrow)
-        case .up: Image(systemName: .upArrow)
-        case .stable: Image(systemName: .stableArrow)
+        case .down:     .init(systemName: .downArrow)
+        case .up:       .init(systemName: .upArrow)
+        case .stable:   .init(systemName: .stableArrow)
         }
     }
 }
 
 private extension String {
-    static let upArrow = "arrow.up.right.circle.fill"
-    static let downArrow = "arrow.down.right.circle.fill"
-    static let stableArrow = "arrow.right.circle.fill"
+    static let upArrow =        "arrow.up.right.circle.fill"
+    static let downArrow =      "arrow.down.right.circle.fill"
+    static let stableArrow =    "arrow.right.circle.fill"
 }
 
 

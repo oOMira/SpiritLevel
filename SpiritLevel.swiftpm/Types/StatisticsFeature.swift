@@ -7,17 +7,17 @@ enum StatisticsFeature: String, SearchableItem {
     
     var label: String {
         switch self {
-        case .graph: return "Graph"
-        case .injections: return "Injections"
-        case .labResults: return "Lab Results"
+        case .graph:        "Graph"
+        case .injections:   "Injections"
+        case .labResults:   "Lab Results"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .graph: "chart.xyaxis.line"
-        case .injections: "cross.vial"
-        case .labResults: "flask"
+        case .graph:        "chart.xyaxis.line"
+        case .injections:   "cross.vial"
+        case .labResults:   "flask"
         }
     }
 }

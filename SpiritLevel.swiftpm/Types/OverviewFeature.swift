@@ -9,21 +9,21 @@ enum OverviewFeature: String, SearchableItem {
 
     var label: String {
         switch self {
-        case .mood: return "Mood"
-        case .currentLevel: return "Current Level"
-        case .nextInjection: return "Next Injection"
-        case .trend: return "Trend"
-        case .achivements: return "Achivements"
+        case .mood:             "Mood"
+        case .currentLevel:     "Current Level"
+        case .nextInjection:    "Next Injection"
+        case .trend:            "Trend"
+        case .achivements:      "Achivements"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .mood: "face.smiling"
-        case .currentLevel: "gauge.with.needle"
-        case .nextInjection: "syringe"
-        case .trend: "arrow.up.right"
-        case .achivements: "star"
+        case .mood:             "face.smiling"
+        case .currentLevel:     "gauge.with.needle"
+        case .nextInjection:    "syringe"
+        case .trend:            "arrow.up.right"
+        case .achivements:      "star"
         }
         
     }

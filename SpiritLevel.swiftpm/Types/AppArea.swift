@@ -7,17 +7,25 @@ enum AppArea: String, SearchableItem {
 
     var label: String {
         switch self {
-        case .overview: return "Overview"
-        case .statisitcs: return "Statistics"
-        case .settings: return "Settings"
+        case .overview:     "Overview"
+        case .statisitcs:   "Statistics"
+        case .settings:     "Settings"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .overview: "house"
-        case .statisitcs: "chart.line.uptrend.xyaxis"
-        case .settings: "gearshape"
+        case .overview:     "house"
+        case .statisitcs:   "chart.line.uptrend.xyaxis"
+        case .settings:     "gearshape"
+        }
+    }
+    
+    var accentColor: Color {
+        switch self {
+        case .overview:     .red
+        case .statisitcs:   .green
+        case .settings:     .blue
         }
     }
 }

@@ -1,11 +1,25 @@
 import SwiftUI
 
 struct Overview: View {
+    @State private var isMoodExpanded: Bool = true
+
     var body: some  View {
         NavigationView {
             List {
-                Section("Mood") {
-                    MoodCellView()
+                Section {
+                    if isMoodExpanded {
+                        MoodCellView()
+                    }
+                } header: {
+                    Button(action: toggleMoodExpanded) {
+                        HStack {
+                            Text("Mood")
+                            Spacer()
+                            Image(systemName: isMoodExpanded ? "chevron.down" : "chevron.right")
+                                .font(.caption.weight(.semibold))
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
                 Section("Current Level") {
                     CurrentLevelCellView()
@@ -17,8 +31,22 @@ struct Overview: View {
                     TrendCellView(name: "Consistency", trend: .up)
                     TrendCellView(name: "HormoneLevel", trend: .down)
                 }
-                Section("Achivements") {
-                    Text("Drei")
+                
+                Section {
+                    AchivementsCellView()
+                        .listRowBackground(Color.clear)
+                } header: {
+                    Button {
+                        print("action")
+                    } label: {
+                        HStack {
+                            Text("Achivements")
+                            Spacer()
+                            Text("More")
+                                .font(.caption.weight(.semibold))
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .navigationTitle(.navigationTitle)
@@ -40,6 +68,12 @@ struct Overview: View {
 // MARK: - Helper
 
 extension Overview {
+    private func toggleMoodExpanded() {
+        withAnimation(.easeInOut) {
+            isMoodExpanded.toggle()
+        }
+    }
+
     private func onTap() {
         print("Tapped")
     }

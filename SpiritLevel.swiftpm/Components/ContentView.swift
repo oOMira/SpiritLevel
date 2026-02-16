@@ -43,3 +43,4 @@ extension LocalizedStringKey {
 extension String {
     static let magnifyingglass: Self = "magnifyingglass"
 }
+
