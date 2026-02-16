@@ -1,0 +1,46 @@
+import SwiftUI
+
+struct SearchSuggestionCellView: View {
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
+    let configuration: Configuration
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                configuration.image
+                    .font(.title2)
+                Spacer()
+                Text(configuration.label)
+                    .font(.title3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
+                .fill(configuration.color.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))
+        )
+    }
+}
+
+// MARK: - SearchSuggestionCellView+Configuration
+
+extension SearchSuggestionCellView {
+    struct Configuration {
+        let label: String
+        let image: Image
+        let color: Color
+    }
+}
+
+// MARK: - Constants
+
+private extension CGFloat {
+    static let cornerRadius: Self = 20
+}
+
+private extension Double {
+    static func backgroundOpacity(increasedContrast: Bool) -> Self {
+        increasedContrast ? 0.3 : 0.75
+    }
+}
