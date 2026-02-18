@@ -9,15 +9,19 @@ struct SearchView: View {
             List {
                 if isSearching {
                     if searchText.isEmpty {
-                        EmptySearchResultsView(emptyType: .query)
+                        NoSearchHistoryCell()
                             .listRowSeparator(.hidden)
                     } else {
                         if filteredItems.isEmpty {
-                            EmptySearchResultsView(emptyType: .results)
+                            EmptySearchResultsView()
                                 .listRowSeparator(.hidden)
                         } else {
-                            ForEach(filteredItems, id: \.id) {
-                                SearchResultCellView(label: $0.label, image: $0.image)
+                            ForEach(filteredItems, id: \.id) { item in
+                                NavigationLink(destination: {
+                                    Text("new")
+                                }, label: {
+                                    SearchResultCellView(label: item.label, image: item.image)
+                                })
                             }
                         }
                     }
@@ -27,6 +31,7 @@ struct SearchView: View {
                                        allItems: Content.allItems)
                 }
             }
+            .animation(.snappy, value: searchText)
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(

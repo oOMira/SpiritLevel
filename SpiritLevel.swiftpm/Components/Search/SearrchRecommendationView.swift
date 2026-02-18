@@ -9,32 +9,51 @@ struct SearchInactiveView: View {
     
     var body: some View {
         Group {
-            Section() {
+            Section("Navigation") {
                 ForEach(navigationItems, id: \.id) { item in
                     SearchSuggestionCellView(configuration: .init(label: item.label,
                                                                   image: item.image,
                                                                   color: item.accentColor))
-                    .listRowInsets(.bottom, .zero)
+                    .listRowInsets(.bottom, 0)
                 }
                 .listRowSeparator(.hidden)
             }
             
             Section("Actions") {
-                ScrollView {
-                    HStack {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
                         ForEach(actionItems, id: \.id) { item in
                             SearchActionCellView(configuration: .init(label: item.label,
                                                                       image: item.image))
                         }
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .scrollTargetLayout()
                 .listRowSeparator(.hidden)
+                .listRowInsets(.vertical, 0)
             }
             
-            Section("All Features", isExpanded: $showingSection) {
+            Section(isExpanded: $showingSection) {
                 ForEach(allItems, id: \.id) { item in
-                    SearchResultCellView(label: item.label, image: item.image)
+                    NavigationLink(destination: {
+                        Text("Search Result")
+                    }, label: {
+                        SearchResultCellView(label: item.label, image: item.image)
+                    })
                 }
+            } header: {
+                Button {
+                    withAnimation { showingSection.toggle() }
+                } label: {
+                    HStack {
+                        Text("All Features")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: showingSection ? "chevron.down" : "chevron.right")
+                            .font(.caption.weight(.semibold))
+                    }
+                }
+                .buttonStyle(.plain)
             }
         }
     }

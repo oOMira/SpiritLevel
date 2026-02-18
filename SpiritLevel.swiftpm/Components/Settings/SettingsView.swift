@@ -7,12 +7,11 @@ struct SettingsView: View {
         NavigationView {
             List {
                 Section {
-                    Button {
-                        print("new")
+                    NavigationLink {
+                        Text("new")
                     } label: {
-                        TreatmentPlanCellView()
+                        Text("Treatment Plan")
                     }
-                    .buttonStyle(.plain)
                 }
                 Section("Support") {
                     SupportSection()

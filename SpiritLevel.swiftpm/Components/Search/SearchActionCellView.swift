@@ -7,11 +7,14 @@ struct SearchActionCellView: View {
         VStack {
             configuration.image
                 .font(.title)
-                .padding(.vertical)
+                .padding(.top)
             Text(configuration.label)
                 .font(.default)
+                .padding()
         }
-        .padding()
+        .containerRelativeFrame(.horizontal,
+                                count: 2,
+                                spacing: 16)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(.gray.opacity(0.75))
