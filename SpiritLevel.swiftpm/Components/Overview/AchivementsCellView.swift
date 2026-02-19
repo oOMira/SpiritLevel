@@ -19,7 +19,7 @@ struct AchivementsCellView: View {
                                                 spacing: .contentSpacing)
                         .scrollTransition(.interactive,
                                           axis: .horizontal) { effect, phase in
-                            let scale = 1.0 - min(0.1, abs(phase.value) * 0.1)
+                            let scale = 1.0 - min(0.15, abs(phase.value))
                             return effect.scaleEffect(CGFloat(scale))
                         }
                         .grayscale(1.0)
@@ -29,10 +29,10 @@ struct AchivementsCellView: View {
         }
         .scrollClipDisabled(true)
         .scrollTargetBehavior(.viewAligned)
-        .contentMargins(.horizontal, 40, for: .scrollContent)
+        .contentMargins(.horizontal, 55, for: .scrollContent)
     }
 }
 
 private extension CGFloat {
-    static let contentSpacing: Self = 16.0
+    static let contentSpacing: Self = 4.0
 }

@@ -3,15 +3,11 @@ import UIKit
 
 struct MoodCellView: View {
     var body: some View {
-        VStack {
-            Image("smileCat")
-                .resizable()
-                .scaledToFit()
-                .padding(35)
-                .shadow(color: Color.primary.opacity(0.25), radius: 10, x: 0, y: 6)
-                .frame(maxWidth: .infinity)
+        VStack(alignment: .center) {
+            MoodView(mood: .happy)
+                .frame(width: 200, height: 200)
         }
-        .background(Color.clear)
+        .frame(maxWidth: .infinity)
     }
 }
 
