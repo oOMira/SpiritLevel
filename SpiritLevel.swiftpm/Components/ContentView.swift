@@ -2,8 +2,6 @@ import SwiftUI
 import Charts
 
 struct ContentView: View {
-    @Binding var deepLinkTarget: (any SearchableItem)?
-
     var body: some View {
         TabView {
             ForEach(AppArea.allCases) { area in

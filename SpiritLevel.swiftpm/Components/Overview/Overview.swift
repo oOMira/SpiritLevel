@@ -36,15 +36,15 @@ struct Overview: View {
                     AchivementsCellView()
                         .listRowBackground(Color.clear)
                 } header: {
-                    Button {
-                        print("action")
-                    } label: {
+                    NavigationLink(destination: {
+                        AchievementsView()
+                    }, label: {
                         HStack {
                             Text("Achivements")
                             Image(systemName: "chevron.forward")
                                 .font(.caption.weight(.semibold))
                         }
-                    }
+                    })
                     .buttonStyle(.plain)
                 }
             }

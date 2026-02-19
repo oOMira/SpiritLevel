@@ -69,7 +69,13 @@ private struct CustomTreatmentPlanView: View {
                         Text(ester.name).tag(ester)
                     }
                 }
-                Stepper("Doseage: \(dose)mg", value: $dose, in: 0.0...50.0)
+                Stepper(label: {
+                    Text("Doseage: \(dose, specifier: "%.1f") mg")
+                }, onIncrement: {
+                    dose += 0.1
+                }, onDecrement: {
+                    dose -= 0.1
+                })
                 Stepper("Repeat every \(rythm) days", value: $rythm, in: 0...31)
             }
             

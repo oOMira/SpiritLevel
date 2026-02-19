@@ -9,17 +9,17 @@ struct StatisticsView: View {
                 }
                 
                 Section("Injections") {
+                    Text("5 mg EE on 21.01.2025")
                     Button("Show more") {
                         print("show more injections")
                     }
-                    .font(.footnote)
                 }
                 
                 Section("Lab Results") {
+                    Text("200 pg on 21.01.2025")
                     Button("Show more") {
                         print("show more lab results")
                     }
-                    .font(.footnote)
                 }
             }
             .navigationTitle("Statistics")
