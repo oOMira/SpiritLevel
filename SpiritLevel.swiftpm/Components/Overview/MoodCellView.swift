@@ -1,17 +1,10 @@
 import SwiftUI
-import UIKit
+import Lottie
 
 struct MoodCellView: View {
     var body: some View {
-        VStack {
-            Image("smileCat")
-                .resizable()
-                .scaledToFit()
-                .padding(35)
-                .shadow(color: Color.primary.opacity(0.25), radius: 10, x: 0, y: 6)
-                .frame(maxWidth: .infinity)
-        }
-        .background(Color.clear)
+        LottieView(animation: .named("lottie"))
+            .frame(width: 200, height: 200)
     }
 }
 
