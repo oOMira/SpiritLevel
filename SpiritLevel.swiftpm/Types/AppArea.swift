@@ -16,7 +16,7 @@ enum AppArea: String, SearchableItem {
     var systemImageName: String {
         switch self {
         case .overview:     "house"
-        case .statisitcs:   "chart.line.uptrend.xyaxis"
+        case .statisitcs:   "chart.bar.xaxis"
         case .settings:     "gearshape"
         }
     }

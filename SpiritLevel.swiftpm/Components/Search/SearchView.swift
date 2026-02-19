@@ -63,6 +63,6 @@ private extension SearchView {
 @MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Search"
-    static let searchPrompt: Self = "Artists, albums, playlists"
+    static let searchPrompt: Self = "Search for feature"
 }
 

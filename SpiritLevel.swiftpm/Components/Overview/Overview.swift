@@ -14,7 +14,7 @@ struct Overview: View {
                     Button(action: toggleMoodExpanded) {
                         HStack {
                             Text("Mood")
-                            Spacer()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Image(systemName: isMoodExpanded ? "chevron.down" : "chevron.right")
                                 .font(.caption.weight(.semibold))
                         }
@@ -41,8 +41,7 @@ struct Overview: View {
                     } label: {
                         HStack {
                             Text("Achivements")
-                            Spacer()
-                            Text("More")
+                            Image(systemName: "chevron.forward")
                                 .font(.caption.weight(.semibold))
                         }
                     }

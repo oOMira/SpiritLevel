@@ -6,15 +6,20 @@ struct StatisticsView: View {
             List {
                 Section {
                     StatisticsCellView()
-                    Text("Expand")
                 }
                 
                 Section("Injections") {
-                    Text("Show more injections")
+                    Button("Show more") {
+                        print("show more injections")
+                    }
+                    .font(.footnote)
                 }
                 
                 Section("Lab Results") {
-                    Text("Show more results")
+                    Button("Show more") {
+                        print("show more lab results")
+                    }
+                    .font(.footnote)
                 }
             }
             .navigationTitle("Statistics")

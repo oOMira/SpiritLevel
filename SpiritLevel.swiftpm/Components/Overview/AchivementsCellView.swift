@@ -22,6 +22,7 @@ struct AchivementsCellView: View {
                             let scale = 1.0 - min(0.1, abs(phase.value) * 0.1)
                             return effect.scaleEffect(CGFloat(scale))
                         }
+                        .grayscale(1.0)
                 }
             }
             .scrollTargetLayout()
