@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct Overview: View {
-    @AppStorage("moodExpanded") private var isMoodExpanded: Bool = true
+    @ObservedObject private var appState = AppStateManager.shared
 
     var body: some  View {
         NavigationView {
             List {
                 Section {
-                    if isMoodExpanded {
+                    if appState.isMoodExpanded {
                         MoodCellView()
                     }
                 } header: {
@@ -15,8 +15,9 @@ struct Overview: View {
                         HStack {
                             Text("Mood")
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            Image(systemName: isMoodExpanded ? "chevron.down" : "chevron.right")
+                            Image(systemName: "chevron.down")
                                 .font(.caption.weight(.semibold))
+                                .rotationEffect(.degrees(appState.isMoodExpanded ? 0 : -90))
                         }
                     }
                     .buttonStyle(.plain)
@@ -69,7 +70,7 @@ struct Overview: View {
 extension Overview {
     private func toggleMoodExpanded() {
         withAnimation(.easeInOut) {
-            isMoodExpanded.toggle()
+            appState.isMoodExpanded.toggle()
         }
     }
 

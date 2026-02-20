@@ -2,10 +2,10 @@ import SwiftUI
 import Charts
 
 struct ContentView: View {
-    @AppStorage("selectedTab") private var selectedTab: Int = 0
+    @ObservedObject private var appState = AppStateManager.shared
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $appState.selectedTab) {
             ForEach(Array(AppArea.allCases.enumerated()), id: \.offset) { index, area in
                 Tab(area.label,
                     systemImage: area.systemImageName,

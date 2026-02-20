@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AchivementsCellView: View {
-    @AppStorage("selectedAchievement") private var selectedAchievement: String = ""
+    @ObservedObject private var appState = AppStateManager.shared
     @State private var scrolledID: Achievement.ID?
     
     var body: some View {
@@ -35,11 +35,11 @@ struct AchivementsCellView: View {
         .scrollTargetBehavior(.viewAligned)
         .contentMargins(.horizontal, 50, for: .scrollContent)
         .onAppear {
-            scrolledID = selectedAchievement.isEmpty ? Achievement.allCases.first?.id : selectedAchievement
+            scrolledID = appState.selectedAchievement.isEmpty ? Achievement.allCases.first?.id : appState.selectedAchievement
         }
         .onChange(of: scrolledID) { _, newID in
             guard let newID else { return }
-            selectedAchievement = newID
+            appState.selectedAchievement = newID
         }
     }
 }

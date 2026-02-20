@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SearchInactiveView: View {
-    @AppStorage("allFeaturesExpanded") var showingSection = true
+    @ObservedObject private var appState = AppStateManager.shared
     
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]
@@ -34,7 +34,7 @@ struct SearchInactiveView: View {
                 .listRowInsets(.vertical, 0)
             }
             
-            Section(isExpanded: $showingSection) {
+            Section(isExpanded: $appState.allFeaturesExpanded) {
                 ForEach(allItems, id: \.id) { item in
                     NavigationLink(destination: {
                         Text("Search Result")
@@ -44,12 +44,12 @@ struct SearchInactiveView: View {
                 }
             } header: {
                 Button {
-                    withAnimation { showingSection.toggle() }
+                    withAnimation { appState.allFeaturesExpanded.toggle() }
                 } label: {
                     HStack {
                         Text("All Features")
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Image(systemName: showingSection ? "chevron.down" : "chevron.right")
+                        Image(systemName: appState.allFeaturesExpanded ? "chevron.down" : "chevron.right")
                             .font(.caption.weight(.semibold))
                     }
                 }

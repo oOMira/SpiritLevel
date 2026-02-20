@@ -1,24 +1,28 @@
 import SwiftUI
 
 struct SearchView: View {
+    @ObservedObject private var appState = AppStateManager.shared
     @State private var searchText: String = ""
     @State private var isSearching: Bool = false
-    @AppStorage("searchHistory") private var searchHistoryData: String = "[]"
 
     private var searchHistory: [String] {
-        (try? JSONDecoder().decode([String].self, from: Data(searchHistoryData.utf8))) ?? []
+        (try? JSONDecoder().decode([String].self, from: Data(appState.searchHistoryData.utf8))) ?? []
     }
 
     private func addToHistory(_ query: String) {
         let trimmed = query.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
         var history = searchHistory
-        history.removeAll { $0 == trimmed }   // remove duplicate
-        history.insert(trimmed, at: 0)        // most recent first
-        history = Array(history.prefix(10))   // limit to 10
+        history.removeAll { $0 == trimmed }
+        history.insert(trimmed, at: 0)
+        history = Array(history.prefix(10))
         if let data = try? JSONEncoder().encode(history) {
-            searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
+            appState.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
         }
+    }
+
+    private func clearHistory() {
+        appState.searchHistoryData = "[]"
     }
 
     var body: some View {
@@ -35,7 +39,9 @@ struct SearchView: View {
                                     .font(.headline)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Button(action: {
-                                    print("Clear history")
+                                    withAnimation {
+                                        clearHistory()
+                                    }
                                 }, label: {
                                     Text("Clear history")
                                         .font(.footnote.bold())
@@ -45,7 +51,9 @@ struct SearchView: View {
                             .listRowSeparator(.hidden)
                             ForEach(searchHistory.enumerated(), id: \.offset) { _, query in
                                 Text(query)
+                                    .listRowBackground(Color.clear)
                             }
+                            .onTapGesture { }
                         }
                     } else {
                         if filteredItems.isEmpty {
@@ -68,6 +76,7 @@ struct SearchView: View {
                 }
             }
             .animation(.snappy, value: searchText)
+            .animation(.snappy, value: searchHistory.isEmpty)
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(
