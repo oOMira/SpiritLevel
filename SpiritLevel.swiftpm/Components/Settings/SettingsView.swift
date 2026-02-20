@@ -3,11 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State var isSyncing: Bool = false
-    @State var isShowingSheet: Bool = false
-    
-    @State var isShowingDeleteConfiguration: Bool = false
-    @State var isShowingDeleteData: Bool = false
+    @State private var isSyncing: Bool = false
+    @State private var isShowingSheet: Bool = false
     
     var body: some View {
         NavigationView {

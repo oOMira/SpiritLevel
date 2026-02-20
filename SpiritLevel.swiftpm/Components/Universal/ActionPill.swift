@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ActionPill: View {
-    @State var expanded: Bool = false
+    @State private var expanded: Bool = false
     let onTap: () -> Void
     let onLongPress: () -> Void
 

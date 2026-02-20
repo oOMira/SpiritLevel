@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct AchivementsCellView: View {
+struct AchievementsCellView: View {
     @ObservedObject private var appState = AppStateManager.shared
     @State private var scrolledID: Achievement.ID?
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .contentSpacing) {
-                ForEach(Achievement.allCases) { achivement in
-                    achivement.image
+                ForEach(Achievement.allCases) { achievement in
+                    achievement.image
                         .resizable()
                         .scaledToFit()
                         .clipShape(RoundedRectangle(cornerRadius: 20,

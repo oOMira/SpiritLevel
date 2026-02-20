@@ -38,10 +38,6 @@ struct TreatmentPlanView: View {
         }
         .navigationTitle("Treatment Plan")
     }
-    
-    func addButtonPressed() {
-        print("Add Button Pressed")
-    }
 }
 
 

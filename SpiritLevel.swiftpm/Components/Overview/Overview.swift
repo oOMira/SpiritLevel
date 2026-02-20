@@ -34,14 +34,14 @@ struct Overview: View {
                 }
                 
                 Section {
-                    AchivementsCellView()
+                    AchievementsCellView()
                         .listRowBackground(Color.clear)
                 } header: {
                     NavigationLink(destination: {
                         AchievementsView()
                     }, label: {
                         HStack {
-                            Text("Achivements")
+                            Text("Achievements")
                             Image(systemName: "chevron.forward")
                                 .font(.caption.weight(.semibold))
                         }
