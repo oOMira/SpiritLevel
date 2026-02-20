@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SearchInactiveView: View {
-    @State var showingSection = true
+    @AppStorage("allFeaturesExpanded") var showingSection = true
     
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]

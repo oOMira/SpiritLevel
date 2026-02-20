@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct AchivementsCellView: View {
+    @AppStorage("selectedAchievement") private var selectedAchievement: String = ""
+    @State private var scrolledID: Achievement.ID?
+    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .contentSpacing) {
@@ -27,9 +30,17 @@ struct AchivementsCellView: View {
             }
             .scrollTargetLayout()
         }
+        .scrollPosition(id: $scrolledID)
         .scrollClipDisabled(true)
         .scrollTargetBehavior(.viewAligned)
-        .contentMargins(.horizontal, 55, for: .scrollContent)
+        .contentMargins(.horizontal, 50, for: .scrollContent)
+        .onAppear {
+            scrolledID = selectedAchievement.isEmpty ? Achievement.allCases.first?.id : selectedAchievement
+        }
+        .onChange(of: scrolledID) { _, newID in
+            guard let newID else { return }
+            selectedAchievement = newID
+        }
     }
 }
 

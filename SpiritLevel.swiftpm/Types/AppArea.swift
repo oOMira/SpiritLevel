@@ -5,6 +5,15 @@ enum AppArea: String, SearchableItem {
     case statisitcs
     case settings
 
+    var localizedLabel: LocalizedStringKey {
+        switch self {
+        case .overview:     "Overview"
+        case .statisitcs:   "Statistics"
+        case .settings:     "Settings"
+        }
+    }
+    
+    // TODO: Remove
     var label: String {
         switch self {
         case .overview:     "Overview"

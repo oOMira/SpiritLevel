@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct Overview: View {
-    @State private var isMoodExpanded: Bool = true
+    @AppStorage("moodExpanded") private var isMoodExpanded: Bool = true
 
     var body: some  View {
         NavigationView {

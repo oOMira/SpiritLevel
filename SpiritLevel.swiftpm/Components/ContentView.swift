@@ -2,14 +2,18 @@ import SwiftUI
 import Charts
 
 struct ContentView: View {
+    @AppStorage("selectedTab") private var selectedTab: Int = 0
+    
     var body: some View {
-        TabView {
-            ForEach(AppArea.allCases) { area in
+        TabView(selection: $selectedTab) {
+            ForEach(Array(AppArea.allCases.enumerated()), id: \.offset) { index, area in
                 Tab(area.label,
                     systemImage: area.systemImageName,
-                    content: { AnyView(area.tabView) })
+                    value: index) {
+                    AnyView(area.tabView)
+                }
             }
-            Tab(.searchTitle, systemImage: .magnifyingglass, role: .search) {
+            Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
                 SearchView()
             }
         }
@@ -41,4 +45,3 @@ extension LocalizedStringKey {
 extension String {
     static let magnifyingglass: Self = "magnifyingglass"
 }
-

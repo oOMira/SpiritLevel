@@ -1,19 +1,18 @@
 import SwiftUI
 
 struct TreatmentPlanView: View {
-    @State private var activePlan: Int = 0
     @State private var simulationStyle: Int = 1
     @State private var eeVisible: Bool = true
     @State private var eaVisible: Bool = true
     
     var body: some View {
         List {
-            Section("Active Plan") {
-                Picker("Plan", selection: $activePlan) {
-                    ForEach(Ester.allCases.enumerated(), id: \.element) { index, ester in
-                        Text(ester.name).tag(index)
-                    }
-                }.pickerStyle(.navigationLink)
+            Section {
+                NavigationLink(destination: {
+                    SelectTreatmentPlan()
+                }, label: {
+                    Text("Enanthate")
+                })
             }
             
             Section("Simulation") {
@@ -50,6 +49,7 @@ private struct CustomTreatmentPlanView: View {
     @State private var selectedEster: Ester = .enanthate
     @State private var dose: Double
     @State private var rythm: Int
+    @State private var treatmentPlanName: String = ""
 
     let ester: Ester
     let action: () -> Void
@@ -64,6 +64,13 @@ private struct CustomTreatmentPlanView: View {
     var body: some View  {
         List {
             Section("Configuration") {
+                HStack {
+                    Text("Name")
+                        .padding(.trailing, 8)
+                    TextField("Enter Alias", text: $treatmentPlanName)
+                        .multilineTextAlignment(.trailing)
+                        .padding(.trailing, 2)
+                }
                 Picker("Ester", selection: $selectedEster) {
                     ForEach(Ester.allCases) { ester in
                         Text(ester.name).tag(ester)
@@ -84,7 +91,7 @@ private struct CustomTreatmentPlanView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
             }
         }
-        .navigationTitle("Add new Simulation")
+        .navigationTitle("Add Simulation")
     }
 }
 
