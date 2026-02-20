@@ -6,33 +6,16 @@ struct ActionPill: View {
     let onLongPress: () -> Void
 
     var body: some View {
-        if expanded {
-            HStack {
-                Text("expanded")
-                Image(systemName: "plus")
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .onTapGesture {
-                        expanded.toggle()
-                        onTap()
-                    }
-                    .onLongPressGesture(minimumDuration: 0.5) {
-                        onLongPress()
-                    }
+        Image(systemName: "plus")
+            .fontWeight(.semibold)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .onTapGesture {
+                expanded.toggle()
+                onTap()
             }
-        } else {
-            Image(systemName: "plus")
-                .fontWeight(.semibold)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .onTapGesture {
-                    expanded.toggle()
-                    onTap()
-                }
-                .onLongPressGesture(minimumDuration: 0.5) {
-                    onLongPress()
-                }
-        }
+            .onLongPressGesture(minimumDuration: 0.5) {
+                onLongPress()
+            }
     }
 }
