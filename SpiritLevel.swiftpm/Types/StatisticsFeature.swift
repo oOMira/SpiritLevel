@@ -20,4 +20,9 @@ enum StatisticsFeature: String, SearchableItem {
         case .labResults:   "flask"
         }
     }
+    
+    // TODO: Add mapping
+    var view: any View {
+        Text(self.label)
+    }
 }

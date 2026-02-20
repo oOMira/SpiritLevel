@@ -51,15 +51,12 @@ struct Overview: View {
             }
             .navigationTitle(.navigationTitle)
             .safeAreaInset(edge: .bottom) {
-                HStack {
-                    Spacer()
-                    ActionPill(
-                        onTap: onTap,
-                        onLongPress: onLongPress
-                    )
-                    .padding(.trailing)
-                    .padding(.bottom, 8)
-                }
+                ActionPill(
+                    onTap: onTap
+                )
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.bottom, 8)
+                .padding(.trailing, 8)
             }
         }
     }

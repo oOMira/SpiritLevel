@@ -25,6 +25,11 @@ enum OverviewFeature: String, SearchableItem {
         case .trend:            "arrow.up.right"
         case .achivements:      "star"
         }
-        
+    }
+    
+    
+    // TODO: Add mapping
+    var view: any View {
+        Text(self.label)
     }
 }

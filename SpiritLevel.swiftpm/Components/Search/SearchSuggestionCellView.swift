@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SearchSuggestionCellView: View {
     let configuration: Configuration
+    @State private var isPressed = false
     
     var body: some View {
         VStack(alignment: .leading) {

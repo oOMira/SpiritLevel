@@ -62,7 +62,10 @@ struct SearchView: View {
                         } else {
                             ForEach(filteredItems, id: \.id) { item in
                                 NavigationLink(destination: {
-                                    Text("new")
+                                    List {
+                                        AnyView(item.view)
+                                    }
+                                    .navigationTitle(item.label)
                                 }, label: {
                                     SearchResultCellView(label: item.label, image: item.image)
                                 })

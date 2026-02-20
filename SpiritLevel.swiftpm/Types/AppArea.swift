@@ -37,4 +37,12 @@ enum AppArea: String, SearchableItem {
         case .settings:     .blue
         }
     }
+    
+    var view: any View {
+        switch self {
+        case .overview:     Overview()
+        case .statisitcs:   StatisticsView()
+        case .settings:     SettingsView()
+        }
+    }
 }

@@ -17,5 +17,10 @@ enum ShortcutFeature: String, SearchableItem {
         case .logLab:       "heart.text.clipboard"
         }
     }
+    
+    // TODO: Add mapping
+    var view: any View {
+        Text(self.label)
+    }
 }
 

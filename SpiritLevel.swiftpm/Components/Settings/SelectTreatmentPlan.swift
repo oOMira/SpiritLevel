@@ -13,6 +13,23 @@ struct SelectTreatmentPlan: View {
                     }
                 } label: { EmptyView() }
                 .pickerStyle(.inline)
+                NavigationLink("Create own plan", destination: {
+                    List {
+                        Section("Configuration") {
+                            CustomTreatmentPlanConfigurationView(ester: .enanthate)
+                        }
+                        Section {
+                            Button(action: {
+                                print("select")
+                            }, label: {
+                                Text("Set selected")
+                                    .frame(maxWidth: .infinity)
+                            })
+                        }
+                    }
+                    .navigationTitle("Create your own plan")
+                    .navigationBarTitleDisplayMode(.inline)
+                })
             }
             Section("Start") {
                 DatePicker("First Injection Date",

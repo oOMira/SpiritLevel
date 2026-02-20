@@ -3,6 +3,9 @@ import SwiftUI
 struct SearchInactiveView: View {
     @ObservedObject private var appState = AppStateManager.shared
     
+    @Namespace private var animationNamespace
+    private let addItemTransitionID = "addItemTransition"
+    
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]
     let allItems: [any SearchableItem]
@@ -11,12 +14,18 @@ struct SearchInactiveView: View {
         Group {
             Section("Navigation") {
                 ForEach(navigationItems, id: \.id) { item in
-                    SearchSuggestionCellView(configuration: .init(label: item.label,
-                                                                  image: item.image,
-                                                                  color: item.accentColor))
+                    NavigationLink(destination: {
+                        AnyView(item.view)
+                    }, label: {
+                        SearchSuggestionCellView(configuration: .init(label: item.label,
+                                                                      image: item.image,
+                                                                      color: item.accentColor))
+                    })
                     .listRowInsets(.bottom, 0)
+                    .navigationLinkIndicatorVisibility(.hidden)
                 }
                 .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
             }
             
             Section("Actions") {
@@ -37,7 +46,10 @@ struct SearchInactiveView: View {
             Section(isExpanded: $appState.allFeaturesExpanded) {
                 ForEach(allItems, id: \.id) { item in
                     NavigationLink(destination: {
-                        Text("Search Result")
+                        List {
+                            AnyView(item.view)
+                        }
+                        .navigationTitle(item.label)
                     }, label: {
                         SearchResultCellView(label: item.label, image: item.image)
                     })
@@ -49,8 +61,9 @@ struct SearchInactiveView: View {
                     HStack {
                         Text("All Features")
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Image(systemName: appState.allFeaturesExpanded ? "chevron.down" : "chevron.right")
+                        Image(systemName: "chevron.down")
                             .font(.caption.weight(.semibold))
+                            .rotationEffect(.degrees(appState.allFeaturesExpanded ? 0 : -90))
                     }
                 }
                 .buttonStyle(.plain)

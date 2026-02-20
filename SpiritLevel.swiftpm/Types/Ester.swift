@@ -38,3 +38,20 @@ extension Ester {
     }
 }
 
+
+
+extension Ester {
+    var defaultDose: Double {
+        switch self {
+        case .enanthate: 5
+        case .valerate: 5
+        }
+    }
+    
+    var defaultRythm: Int {
+        switch self {
+        case .enanthate: 10
+        case .valerate: 7
+        }
+    }
+}
