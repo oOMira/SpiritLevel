@@ -23,7 +23,7 @@ struct Overview: View {
                     .buttonStyle(.plain)
                 }
                 Section("Current Level") {
-                    CurrentLevelCellView()
+                    CurrentHormoneLevelCellView()
                 }
                 Section("Next Injection") {
                     NextInjectionCellView()
