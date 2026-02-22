@@ -21,7 +21,7 @@ struct TreatmentPlanView: View {
                     Text("Stable").tag(1)
                 }
                 .pickerStyle(.segmented)
-                StatisticsCellView()
+                TreatmentPlanCellSimulationView(simulationStyle: $simulationStyle)
                 Toggle("Enantathe visible", isOn: $eeVisible)
                 Toggle("Valerate visible", isOn: $eaVisible)
             }

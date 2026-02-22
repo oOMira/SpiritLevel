@@ -2,9 +2,9 @@ import SwiftUI
 
 struct Overview: View {
     @ObservedObject private var appState = AppStateManager.shared
-
+    
     var body: some  View {
-        NavigationView {
+        ZStack(alignment: .bottomTrailing) {
             List {
                 Section {
                     if appState.isMoodExpanded {
@@ -50,14 +50,16 @@ struct Overview: View {
                 }
             }
             .navigationTitle(.navigationTitle)
-            .safeAreaInset(edge: .bottom) {
-                ActionPill(
-                    onTap: onTap
-                )
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.bottom, 8)
-                .padding(.trailing, 8)
-            }
+            
+            QuickActionsControl(actions: [
+                .init(feature: .logInjection, action: { print("log injeciton") }),
+                .init(feature: .logLab, action: { print("log lab") }),
+                
+            ])
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.bottom, 16)
+            .padding(.trailing, 16)
+            .ignoresSafeArea(edges: .bottom)
         }
     }
 }
@@ -70,11 +72,11 @@ extension Overview {
             appState.isMoodExpanded.toggle()
         }
     }
-
+    
     private func onTap() {
         print("Tapped")
     }
-
+    
     private func onLongPress() {
         print("Long pressed")
     }

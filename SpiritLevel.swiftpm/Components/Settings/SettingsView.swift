@@ -2,62 +2,60 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
-
+    
     @State private var isSyncing: Bool = false
     @State private var isShowingSheet: Bool = false
     
     var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    NavigationLink {
-                        TreatmentPlanView()
-                    } label: {
-                        TreatmentPlanCellView()
-                    }
-                }
-                Section("Support") {
-                    SupportSection()
-                }
-                Section("Data Managment") {
-                    HStack {
-                        Toggle("iCloud Syncing", isOn: $isSyncing)
-                    }
-                    HStack {
-                        Text("Import")
-                        Spacer()
-                        Button {
-                            print("import")
-                        } label: {
-                            Image(systemName: "tray.and.arrow.down")
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    HStack {
-                        Text("Export")
-                        Spacer()
-                        Button {
-                            print("export")
-                        } label: {
-                            Image(systemName: "tray.and.arrow.up")
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                
-                Section {
-                    Button {
-                        isShowingSheet.toggle()
-                    } label: {
-                        Text("Delete Data")
-                            .font(.title3)
-                            .foregroundStyle(.red)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
+        List {
+            Section {
+                NavigationLink {
+                    TreatmentPlanView()
+                } label: {
+                    TreatmentPlanCellView()
                 }
             }
-            .navigationTitle("Settings")
+            Section("Support") {
+                SupportSection()
+            }
+            Section("Data Managment") {
+                HStack {
+                    Toggle("iCloud Syncing", isOn: $isSyncing)
+                }
+                HStack {
+                    Text("Import")
+                    Spacer()
+                    Button {
+                        print("import")
+                    } label: {
+                        Image(systemName: "tray.and.arrow.down")
+                    }
+                    .buttonStyle(.plain)
+                }
+                HStack {
+                    Text("Export")
+                    Spacer()
+                    Button {
+                        print("export")
+                    } label: {
+                        Image(systemName: "tray.and.arrow.up")
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            
+            Section {
+                Button {
+                    isShowingSheet.toggle()
+                } label: {
+                    Text("Delete Data")
+                        .font(.title3)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            }
         }
+        .navigationTitle("Settings")
         .sheet(isPresented: $isShowingSheet) {
             DeleteSheet(isShowingSheet: $isShowingSheet)
         }

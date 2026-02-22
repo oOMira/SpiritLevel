@@ -10,27 +10,14 @@ struct ContentView: View {
                 Tab(area.label,
                     systemImage: area.systemImageName,
                     value: index) {
-                    AnyView(area.tabView)
+                    NavigationView {
+                        AnyView(area.tabView)
+                    }
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
                 SearchView()
             }
-        }
-    }
-}
-
-// MARK: - AppArea+View
-
-private extension AppArea {
-    var tabView: any View {
-        switch self {
-        case .overview:
-            return Overview()
-        case .statisitcs:
-            return StatisticsView()
-        case .settings:
-            return SettingsView()
         }
     }
 }

@@ -12,7 +12,8 @@ struct SearchInactiveView: View {
     
     var body: some View {
         Group {
-            Section("Navigation") {
+            // MARK: Navigation Section
+            Section(.navigationTitle) {
                 ForEach(navigationItems, id: \.id) { item in
                     NavigationLink(destination: {
                         AnyView(item.view)
@@ -28,7 +29,8 @@ struct SearchInactiveView: View {
                 .listRowBackground(Color.clear)
             }
             
-            Section("Actions") {
+            // MARK: Quick Action Section
+            Section(.actionsTitle) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
                         ForEach(actionItems, id: \.id) { item in
@@ -43,6 +45,7 @@ struct SearchInactiveView: View {
                 .listRowInsets(.vertical, 0)
             }
             
+            // MARK: All Features Section
             Section(isExpanded: $appState.allFeaturesExpanded) {
                 ForEach(allItems, id: \.id) { item in
                     NavigationLink(destination: {
@@ -55,18 +58,7 @@ struct SearchInactiveView: View {
                     })
                 }
             } header: {
-                Button {
-                    withAnimation { appState.allFeaturesExpanded.toggle() }
-                } label: {
-                    HStack {
-                        Text("All Features")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Image(systemName: "chevron.down")
-                            .font(.caption.weight(.semibold))
-                            .rotationEffect(.degrees(appState.allFeaturesExpanded ? 0 : -90))
-                    }
-                }
-                .buttonStyle(.plain)
+                ExpandableSectionHeader(title: .browseTitle, expanded: $appState.allFeaturesExpanded)
             }
         }
     }
@@ -74,7 +66,7 @@ struct SearchInactiveView: View {
 
 @MainActor
 private extension LocalizedStringKey {
-    static let discoverTitle: Self = "Discover"
-    static let topPicksTitle: Self = "Top Picks"
-    static let browseTitle: Self = "Browse All"
+    static let navigationTitle: Self = "Navigation"
+    static let actionsTitle: Self = "Quick Actions"
+    static let browseTitle: Self = "All Features"
 }

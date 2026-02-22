@@ -22,6 +22,7 @@ struct OneComponentBateman {
     }
     
     func getConcentrationAtTime(_ t: Double) -> Double? {
+        guard t > 0 else { return 0 }
         guard let absorptionRate, let scaleFactor else { return nil }
         return scaleFactor * (exp(-eliminationRate * t) - exp(-absorptionRate * t))
     }

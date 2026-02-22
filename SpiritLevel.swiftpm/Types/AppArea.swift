@@ -46,3 +46,18 @@ enum AppArea: String, SearchableItem {
         }
     }
 }
+
+// MARK: - AppArea+View
+
+extension AppArea {
+    var tabView: any View {
+        switch self {
+        case .overview:
+            return Overview()
+        case .statisitcs:
+            return StatisticsView()
+        case .settings:
+            return SettingsView()
+        }
+    }
+}
