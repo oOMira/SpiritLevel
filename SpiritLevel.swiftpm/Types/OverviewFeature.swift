@@ -27,7 +27,6 @@ enum OverviewFeature: String, SearchableItem {
         }
     }
     
-    
     // TODO: Add mapping
     var view: any View {
         Text(self.label)

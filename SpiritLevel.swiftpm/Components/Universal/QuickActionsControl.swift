@@ -5,14 +5,14 @@ struct QuickActionsControl: View {
     let actions: [ActionConfiguration]
 
     var body: some View {
-        VStack(spacing: 25) {
+        VStack(spacing: .actionSpacing) {
             ForEach(actions) { action in
                 action.feature.image
                     .onTapGesture(perform: action.action)
             }
         }
-        .font(.system(size: 22))
-        .padding(8)
+        .font(.system(size: .iconSize))
+        .padding(.containerPadding)
         .glassEffect()
     }
 }
@@ -25,3 +25,11 @@ extension QuickActionsControl {
         let action: () -> Void
     }
 }
+// MARK: - Constants
+
+private extension CGFloat {
+    static let actionSpacing: Self = 25
+    static let iconSize: Self = 22
+    static let containerPadding: Self = 8
+}
+

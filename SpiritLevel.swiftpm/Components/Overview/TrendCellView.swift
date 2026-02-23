@@ -29,20 +29,32 @@ enum Trend: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Constants
+
 private extension String {
-    static let upArrow =        "arrow.up.right.circle.fill"
-    static let downArrow =      "arrow.down.right.circle.fill"
-    static let stableArrow =    "arrow.right.circle.fill"
+    static let upArrow = "arrow.up.right.circle.fill"
+    static let downArrow = "arrow.down.right.circle.fill"
+    static let stableArrow = "arrow.right.circle.fill"
 }
 
+// MARK: - Preview
 
-// MARK: Preview
-
-#Preview {
+#Preview("Light Mode") {
     List {
         TrendCellView(name: "Focus", trend: .up)
         TrendCellView(name: "Energy", trend: .down)
         TrendCellView(name: "Mood", trend: .stable)
     }
     .listStyle(.plain)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        TrendCellView(name: "Focus", trend: .up)
+        TrendCellView(name: "Energy", trend: .down)
+        TrendCellView(name: "Mood", trend: .stable)
+    }
+    .listStyle(.plain)
+    .preferredColorScheme(.dark)
 }

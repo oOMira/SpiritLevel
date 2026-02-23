@@ -5,12 +5,30 @@ struct MoodCellView: View {
     var body: some View {
         VStack(alignment: .center) {
             MoodView(mood: .happy)
-                .frame(width: 200, height: 200)
+                .frame(width: .moodViewSize, height: .moodViewSize)
         }
         .frame(maxWidth: .infinity)
     }
 }
 
-#Preview {
-    MoodCellView()
+// MARK: - Constants
+
+private extension CGFloat {
+    static let moodViewSize: Self = 200
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        MoodCellView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        MoodCellView()
+    }
+    .preferredColorScheme(.dark)
 }

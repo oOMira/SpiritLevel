@@ -4,19 +4,49 @@ extension SettingsView {
     struct TreatmentPlanCellView: View {
         var body: some View {
             HStack {
-                Image(systemName: "list.bullet.rectangle.portrait")
+                Image(systemName: .planIcon)
                     .font(.title2)
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, .iconHorizontalPadding)
                 VStack {
-                    Text("Treatment Plan")
+                    Text(.treatmentPlanTitle)
                         .font(.title3)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("5mg every 10 days")
+                    Text(.planDetails)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.footnote)
                 }
             }
         }
     }
-    
+}
+
+// MARK: - Constants
+
+private extension String {
+    static let planIcon = "list.bullet.rectangle.portrait"
+}
+
+private extension LocalizedStringKey {
+    static let treatmentPlanTitle: Self = "Treatment Plan"
+    static let planDetails: Self = "5mg every 10 days"
+}
+
+private extension CGFloat {
+    static let iconHorizontalPadding: Self = 4
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        SettingsView.TreatmentPlanCellView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        SettingsView.TreatmentPlanCellView()
+    }
+    .preferredColorScheme(.dark)
 }

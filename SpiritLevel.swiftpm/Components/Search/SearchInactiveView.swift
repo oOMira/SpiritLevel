@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SearchInactiveView: View {
+    @Binding var activeSheet: ShortcutFeature?
     @ObservedObject private var appState = AppStateManager.shared
     
     @Namespace private var animationNamespace
@@ -32,10 +33,13 @@ struct SearchInactiveView: View {
             // MARK: Quick Action Section
             Section(.actionsTitle) {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
+                    HStack(spacing: .horizontalSpacing) {
                         ForEach(actionItems, id: \.id) { item in
                             SearchActionCellView(configuration: .init(label: item.label,
                                                                       image: item.image))
+                            .onTapGesture {
+                                activeSheet = item
+                            }
                         }
                     }
                 }
@@ -64,9 +68,54 @@ struct SearchInactiveView: View {
     }
 }
 
+
+// MARK: - Constants
+
 @MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Navigation"
     static let actionsTitle: Self = "Quick Actions"
     static let browseTitle: Self = "All Features"
 }
+private extension CGFloat {
+    static let horizontalSpacing: Self = 16
+    static let listRowInsetVertical: Self = 0
+    static let listRowInsetBottom: Self = 0
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    @Previewable @State var activeSheet: ShortcutFeature? = nil
+    NavigationStack {
+        List {
+            SearchInactiveView(
+                activeSheet: $activeSheet,
+                navigationItems: AppArea.allCases,
+                actionItems: ShortcutFeature.allCases,
+                allItems: Content.allItems
+            )
+        }
+        .listStyle(.plain)
+        .navigationTitle("Search")
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    @Previewable @State var activeSheet: ShortcutFeature? = nil
+    NavigationStack {
+        List {
+            SearchInactiveView(
+                activeSheet: $activeSheet,
+                navigationItems: AppArea.allCases,
+                actionItems: ShortcutFeature.allCases,
+                allItems: Content.allItems
+            )
+        }
+        .listStyle(.plain)
+        .navigationTitle("Search")
+    }
+    .preferredColorScheme(.dark)
+}
+

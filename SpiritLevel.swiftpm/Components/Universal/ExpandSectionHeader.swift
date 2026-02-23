@@ -6,14 +6,14 @@ struct ExpandableSectionHeader: View {
     
     var body: some View {
         Button(action: {
-            expanded.toggle()
+            withAnimation { expanded.toggle() }
         }, label: {
             HStack {
                 Text(title)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: .chevronImage)
                     .font(.caption.weight(.semibold))
-                    .rotationEffect(.degrees(expanded ? 0 : -90))
+                    .rotationEffect(.degrees(expanded ? .expandedRotation : .collapsedRotation))
             }
         })
         .buttonStyle(.plain)
@@ -25,3 +25,58 @@ struct ExpandableSectionHeader: View {
 private extension String {
     static let chevronImage = "chevron.down"
 }
+private extension Double {
+    static let expandedRotation: Self = 0
+    static let collapsedRotation: Self = -90
+}
+
+// MARK: - Preview
+
+#Preview("Expanded - Light Mode") {
+    @Previewable @State var expanded = true
+    List {
+        Section {
+            Text("Content goes here")
+        } header: {
+            ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
+        }
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Collapsed - Light Mode") {
+    @Previewable @State var expanded = false
+    List {
+        Section {
+            Text("Content goes here")
+        } header: {
+            ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
+        }
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Expanded - Dark Mode") {
+    @Previewable @State var expanded = true
+    List {
+        Section {
+            Text("Content goes here")
+        } header: {
+            ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Collapsed - Dark Mode") {
+    @Previewable @State var expanded = false
+    List {
+        Section {
+            Text("Content goes here")
+        } header: {
+            ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+

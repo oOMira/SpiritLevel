@@ -18,8 +18,8 @@ struct SearchSuggestionCellView: View {
         }
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(configuration.color.opacity(0.75))
+            RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
+                .fill(configuration.color.opacity(.backgroundOpacity))
         )
     }
 }
@@ -32,4 +32,58 @@ extension SearchSuggestionCellView {
         let image: Image
         let color: Color
     }
+}
+
+// MARK: - Constants
+
+private extension CGFloat {
+    static let cornerRadius: Self = 20
+}
+
+private extension Double {
+    static let backgroundOpacity: Self = 0.75
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        SearchSuggestionCellView(
+            configuration: .init(
+                label: "Overview",
+                image: Image(systemName: "house"),
+                color: .blue
+            )
+        )
+        SearchSuggestionCellView(
+            configuration: .init(
+                label: "Settings",
+                image: Image(systemName: "gear"),
+                color: .green
+            )
+        )
+    }
+    .listStyle(.plain)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        SearchSuggestionCellView(
+            configuration: .init(
+                label: "Overview",
+                image: Image(systemName: "house"),
+                color: .blue
+            )
+        )
+        SearchSuggestionCellView(
+            configuration: .init(
+                label: "Settings",
+                image: Image(systemName: "gear"),
+                color: .green
+            )
+        )
+    }
+    .listStyle(.plain)
+    .preferredColorScheme(.dark)
 }

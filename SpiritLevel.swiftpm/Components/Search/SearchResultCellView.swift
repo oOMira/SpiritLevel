@@ -11,3 +11,23 @@ struct SearchResultCellView: View {
         }
     }
 }
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        SearchResultCellView(label: "Overview", image: Image(systemName: "house"))
+        SearchResultCellView(label: "Settings", image: Image(systemName: "gear"))
+        SearchResultCellView(label: "Statistics", image: Image(systemName: "chart.bar"))
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        SearchResultCellView(label: "Overview", image: Image(systemName: "house"))
+        SearchResultCellView(label: "Settings", image: Image(systemName: "gear"))
+        SearchResultCellView(label: "Statistics", image: Image(systemName: "chart.bar"))
+    }
+    .preferredColorScheme(.dark)
+}

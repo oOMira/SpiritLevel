@@ -7,25 +7,48 @@ struct StatisticsView: View {
                 StatisticsCellView()
             }
             
-            Section("Injections") {
-                Text("5 mg EE on 21.01.2025")
-                Button("Show more") {
+            Section(.injectionsSectionTitle) {
+                Text(.injectionSampleData)
+                Button(.showMoreButton) {
                     print("show more injections")
                 }
             }
             
-            Section("Lab Results") {
-                Text("200 pg on 21.01.2025")
-                Button("Show more") {
+            Section(.labResultsSectionTitle) {
+                Text(.labResultSampleData)
+                Button(.showMoreButton) {
                     print("show more lab results")
                 }
             }
         }
-        .navigationTitle("Statistics")
+        .navigationTitle(.navigationTitle)
     }
 }
 
-#Preview {
-    StatisticsView()
+// MARK: - Constants
+
+private extension LocalizedStringKey {
+    static let navigationTitle: Self = "Statistics"
+    static let injectionsSectionTitle: Self = "Injections"
+    static let injectionSampleData: Self = "5 mg EE on 21.01.2025"
+    static let labResultsSectionTitle: Self = "Lab Results"
+    static let labResultSampleData: Self = "200 pg on 21.01.2025"
+    static let showMoreButton: Self = "Show more"
 }
+
+// MARK: - Preview
+#Preview("Light Mode") {
+    NavigationStack {
+        StatisticsView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        StatisticsView()
+    }
+    .preferredColorScheme(.dark)
+}
+
 

@@ -37,8 +37,34 @@ struct CurrentHormoneLevelCellView: View {
                 .foregroundStyle(by: .value("Ester", "Injection"))
             }
         }
-        .frame(height: 200)
+        .frame(height: .chartHeight)
         .chartXScale(domain: -3 ... interval + 2)
         .chartYScale(domain: 100 ... 350)
     }
 }
+// MARK: - Constants
+
+private extension CGFloat {
+    static let chartHeight: Self = 200
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        Section("Current Level") {
+            CurrentHormoneLevelCellView()
+        }
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        Section("Current Level") {
+            CurrentHormoneLevelCellView()
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+

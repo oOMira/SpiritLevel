@@ -16,24 +16,65 @@ struct CustomTreatmentPlanConfigurationView: View {
     
     var body: some View  {
         HStack {
-            Text("Name")
-                .padding(.trailing, 8)
-            TextField("Enter Alias", text: $treatmentPlanName)
+            Text(.nameLabel)
+                .padding(.trailing, .nameLabelTrailingPadding)
+            TextField(.enterAliasPlaceholder, text: $treatmentPlanName)
                 .multilineTextAlignment(.trailing)
-                .padding(.trailing, 2)
+                .padding(.trailing, .textFieldTrailingPadding)
         }
-        Picker("Ester", selection: $selectedEster) {
+        Picker(.esterLabel, selection: $selectedEster) {
             ForEach(Ester.allCases) { ester in
                 Text(ester.name).tag(ester)
             }
         }
         Stepper(label: {
-            Text("Doseage: \(dose, specifier: "%.1f") mg")
+            Text("Doseage: \(dose, specifier: .doseageFormat) mg")
         }, onIncrement: {
-            dose += 0.1
+            dose += .doseStep
         }, onDecrement: {
-            dose -= 0.1
+            dose -= .doseStep
         })
-        Stepper("Repeat every \(rythm) days", value: $rythm, in: 0...31)
+        Stepper("Repeat every \(rythm) days", value: $rythm, in: .rythmRange)
     }
+}
+
+// MARK: - Constants
+
+private extension LocalizedStringKey {
+    static let nameLabel: Self = "Name"
+    static let enterAliasPlaceholder: Self = "Enter Alias"
+    static let esterLabel: Self = "Ester"
+}
+
+private extension String {
+    static let doseageFormat = "%.1f"
+}
+
+private extension Double {
+    static let doseStep: Self = 0.1
+}
+
+private extension ClosedRange where Bound == Int {
+    static let rythmRange: Self = 0...31
+}
+
+private extension CGFloat {
+    static let nameLabelTrailingPadding: Self = 8
+    static let textFieldTrailingPadding: Self = 2
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        CustomTreatmentPlanConfigurationView(ester: .enanthate)
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        CustomTreatmentPlanConfigurationView(ester: .enanthate)
+    }
+    .preferredColorScheme(.dark)
 }

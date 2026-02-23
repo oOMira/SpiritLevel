@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SearchView: View {
+    @State private var activeSheet: ShortcutFeature?
     @ObservedObject private var appState = AppStateManager.shared
     @State private var searchText: String = ""
     @State private var isSearching: Bool = false
@@ -15,7 +16,7 @@ struct SearchView: View {
         var history = searchHistory
         history.removeAll { $0 == trimmed }
         history.insert(trimmed, at: 0)
-        history = Array(history.prefix(10))
+        history = Array(history.prefix(Int.maxHistoryItems))
         if let data = try? JSONEncoder().encode(history) {
             appState.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
         }
@@ -73,7 +74,8 @@ struct SearchView: View {
                         }
                     }
                 } else {
-                    SearchInactiveView(navigationItems: AppArea.allCases,
+                    SearchInactiveView(activeSheet: $activeSheet,
+                                       navigationItems: AppArea.allCases,
                                        actionItems: ShortcutFeature.allCases,
                                        allItems: Content.allItems)
                 }
@@ -91,6 +93,16 @@ struct SearchView: View {
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
                 addToHistory(searchText)
+            }
+            .sheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .logInjection:
+                    LogInjectionView()
+                        .presentationDetents([.medium, .large])
+                case .logLab:
+                    LogLabView()
+                        .presentationDetents([.medium, .large])
+                }
             }
         }
     }
@@ -115,5 +127,24 @@ private extension SearchView {
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Search"
     static let searchPrompt: Self = "Search for feature"
+    static let recentSearchesTitle: Self = "Recent Searches"
+    static let clearHistoryButton: Self = "Clear history"
 }
+
+private extension Int {
+    static let maxHistoryItems: Self = 10
+}
+
+// MARK: - Preview
+#Preview("Light Mode") {
+    SearchView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    SearchView()
+        .preferredColorScheme(.dark)
+}
+
+
 

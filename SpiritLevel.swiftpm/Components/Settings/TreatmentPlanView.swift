@@ -11,33 +11,64 @@ struct TreatmentPlanView: View {
                 NavigationLink(destination: {
                     SelectTreatmentPlan()
                 }, label: {
-                    Text("Enanthate")
+                    Text(.enanthateLabel)
                 })
             }
             
-            Section("Simulation") {
-                Picker("Simulation Mode", selection: $simulationStyle) {
-                    Text("First Injection").tag(0)
-                    Text("Stable").tag(1)
+            Section(.simulationSectionTitle) {
+                Picker(.simulationModeLabel, selection: $simulationStyle) {
+                    Text(.firstInjectionLabel).tag(0)
+                    Text(.stableLabel).tag(1)
                 }
                 .pickerStyle(.segmented)
                 TreatmentPlanCellSimulationView(simulationStyle: $simulationStyle)
-                Toggle("Enantathe visible", isOn: $eeVisible)
-                Toggle("Valerate visible", isOn: $eaVisible)
+                Toggle(.enanthateVisibleToggle, isOn: $eeVisible)
+                Toggle(.valerateVisibleToggle, isOn: $eaVisible)
             }
             
-            Section("Add Simulation") {
+            Section(.addSimulationSectionTitle) {
                 NavigationLink(destination: {
                     CustomTreatmentPlanView(ester: .enanthate, action: {
                         print("Enanthate Added")
                     })
                 }, label: {
-                    Text("Add new simulation")
+                    Text(.addSimulationLabel)
                 })
             }
         }
-        .navigationTitle("Treatment Plan")
+        .navigationTitle(.navigationTitle)
     }
+}
+
+// MARK: - Constants
+
+private extension LocalizedStringKey {
+    static let navigationTitle: Self = "Treatment Plan"
+    static let enanthateLabel: Self = "Enanthate"
+    static let simulationSectionTitle: Self = "Simulation"
+    static let simulationModeLabel: Self = "Simulation Mode"
+    static let firstInjectionLabel: Self = "First Injection"
+    static let stableLabel: Self = "Stable"
+    static let enanthateVisibleToggle: Self = "Enantathe visible"
+    static let valerateVisibleToggle: Self = "Valerate visible"
+    static let addSimulationSectionTitle: Self = "Add Simulation"
+    static let addSimulationLabel: Self = "Add new simulation"
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    NavigationStack {
+        TreatmentPlanView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        TreatmentPlanView()
+    }
+    .preferredColorScheme(.dark)
 }
 
 
@@ -59,15 +90,21 @@ private struct CustomTreatmentPlanView: View {
     
     var body: some View  {
         List {
-            Section("Configuration") {
+            Section(.configurationSectionTitle) {
                 CustomTreatmentPlanConfigurationView(ester: .enanthate)
             }
             
             Section {
-                Button("Add", action: action)
+                Button(.addButtonTitle, action: action)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
         }
-        .navigationTitle("Add Simulation")
+        .navigationTitle(.addSimulationNavigationTitle)
     }
 }
+private extension LocalizedStringKey {
+    static let configurationSectionTitle: Self = "Configuration"
+    static let addButtonTitle: Self = "Add"
+    static let addSimulationNavigationTitle: Self = "Add Simulation"
+}
+

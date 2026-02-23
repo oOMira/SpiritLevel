@@ -15,30 +15,30 @@ struct SettingsView: View {
                     TreatmentPlanCellView()
                 }
             }
-            Section("Support") {
+            Section(.supportSectionTitle) {
                 SupportSection()
             }
-            Section("Data Managment") {
+            Section(.dataManagementSectionTitle) {
                 HStack {
-                    Toggle("iCloud Syncing", isOn: $isSyncing)
+                    Toggle(.iCloudSyncingToggle, isOn: $isSyncing)
                 }
                 HStack {
-                    Text("Import")
+                    Text(.importLabel)
                     Spacer()
                     Button {
                         print("import")
                     } label: {
-                        Image(systemName: "tray.and.arrow.down")
+                        Image(systemName: .trayDownIcon)
                     }
                     .buttonStyle(.plain)
                 }
                 HStack {
-                    Text("Export")
+                    Text(.exportLabel)
                     Spacer()
                     Button {
                         print("export")
                     } label: {
-                        Image(systemName: "tray.and.arrow.up")
+                        Image(systemName: .trayUpIcon)
                     }
                     .buttonStyle(.plain)
                 }
@@ -48,14 +48,14 @@ struct SettingsView: View {
                 Button {
                     isShowingSheet.toggle()
                 } label: {
-                    Text("Delete Data")
+                    Text(.deleteDataButtonTitle)
                         .font(.title3)
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
         }
-        .navigationTitle("Settings")
+        .navigationTitle(.settingsNavigationTitle)
         .sheet(isPresented: $isShowingSheet) {
             DeleteSheet(isShowingSheet: $isShowingSheet)
         }
@@ -81,7 +81,7 @@ extension SettingsView {
                         Button(action: {
                             withAnimation { isShowingSheet.toggle() }
                         }, label: {
-                            Text("Delete")
+                            Text(.deleteButtonTitle)
                                 .frame(maxWidth: .infinity)
                                 .padding(8)
                         })
@@ -106,19 +106,43 @@ extension SettingsView {
 }
 
 
-extension LocalizedStringKey {
+// MARK: - Constants
+
+private extension LocalizedStringKey {
+    static let settingsNavigationTitle: Self = "Settings"
+    static let supportSectionTitle: Self = "Support"
+    static let dataManagementSectionTitle: Self = "Data Managment"
+    static let iCloudSyncingToggle: Self = "iCloud Syncing"
+    static let importLabel: Self = "Import"
+    static let exportLabel: Self = "Export"
+    static let deleteDataButtonTitle: Self = "Delete Data"
     static let deleteDataTitle: Self = "Delete App Configuration"
     static let deleteAppConfiguration: Self = "Delete App Data"
     static let deleteDataDescription: Self = "This will delete all logged data like injections, lab results other things that you have logged in the app."
     static let deleteAppConfigurationDescription: Self = "This will delete things like closed or expanded sections, onboarding status and other small things that are not critical for the app to work but make the experience more personal."
     static let deleteDataNavigationTitle: Self = "Delete Data"
     static let closeLabelTitle: Self = "Close"
+    static let deleteButtonTitle: Self = "Delete"
 }
 
-extension String {
+private extension String {
     static let xMark = "xmark"
+    static let trayDownIcon = "tray.and.arrow.down"
+    static let trayUpIcon = "tray.and.arrow.up"
 }
 
-#Preview {
-    SettingsView()
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    NavigationStack {
+        SettingsView()
+    }
+    .preferredColorScheme(.light)
 }
+#Preview("Dark Mode") {
+    NavigationStack {
+        SettingsView()
+    }
+    .preferredColorScheme(.dark)
+}
+

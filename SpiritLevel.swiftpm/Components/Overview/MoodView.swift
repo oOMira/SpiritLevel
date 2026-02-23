@@ -17,7 +17,7 @@ struct MoodView: View {
             GIFView(mood: mood, isLoading: $isLoading)
                 .opacity(isLoading ? 0 : 1)
         }
-        .animation(.easeInOut(duration: 0.3), value: isLoading)
+        .animation(.easeInOut(duration: .animationDuration), value: isLoading)
     }
 }
 
@@ -35,7 +35,7 @@ private struct GIFView: UIViewRepresentable {
         
         // Load GIF on background thread
         Task {
-            guard let url = Bundle.main.url(forResource: mood.imageName, withExtension: "gif") else {
+            guard let url = Bundle.main.url(forResource: mood.imageName, withExtension: .gifExtension) else {
                 await MainActor.run {
                     isLoading = false
                 }
@@ -45,7 +45,7 @@ private struct GIFView: UIViewRepresentable {
             do {
                 let data = try Data(contentsOf: url)
                 await MainActor.run {
-                    webview.load(data, mimeType: "image/gif", characterEncodingName: "UTF-8", baseURL: url.deletingLastPathComponent())
+                    webview.load(data, mimeType: .gifMimeType, characterEncodingName: .utf8Encoding, baseURL: url.deletingLastPathComponent())
                 }
             } catch {
                 await MainActor.run {
@@ -82,11 +82,51 @@ private struct GIFView: UIViewRepresentable {
     }
 }
 
+// MARK: - Constants
+
 private extension Mood {
     var imageName: String {
         switch self {
-        case .happy: return "smileCat"
-        case .sad: return "sadCat"
+        case .happy: return .happyImageName
+        case .sad: return .sadImageName
         }
     }
+}
+
+private extension String {
+    static let happyImageName = "smileCat"
+    static let sadImageName = "sadCat"
+    static let gifExtension = "gif"
+    static let gifMimeType = "image/gif"
+    static let utf8Encoding = "UTF-8"
+}
+
+private extension Double {
+    static let animationDuration: Self = 0.3
+}
+
+// MARK: - Preview
+
+#Preview("Happy - Light Mode") {
+    MoodView(mood: .happy)
+        .frame(width: 200, height: 200)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Happy - Dark Mode") {
+    MoodView(mood: .happy)
+        .frame(width: 200, height: 200)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Sad - Light Mode") {
+    MoodView(mood: .sad)
+        .frame(width: 200, height: 200)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Sad - Dark Mode") {
+    MoodView(mood: .sad)
+        .frame(width: 200, height: 200)
+        .preferredColorScheme(.dark)
 }

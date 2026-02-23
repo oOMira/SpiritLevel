@@ -2,8 +2,8 @@ import SwiftUI
 
 struct EmptySearchResultsView: View {
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
+        VStack(spacing: .iconTextSpacing) {
+            Image(systemName: .magnifyingglassIcon)
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundStyle(.secondary)
@@ -12,7 +12,7 @@ struct EmptySearchResultsView: View {
                 .padding(.top)
         }
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.top, 50)
+        .padding(.top, .topPadding)
     }
 }
 
@@ -21,4 +21,31 @@ struct EmptySearchResultsView: View {
 @MainActor
 private extension LocalizedStringKey {
     static let noResultsTitle: Self = "No Results"
+}
+
+private extension String {
+    static let magnifyingglassIcon = "magnifyingglass"
+}
+
+private extension CGFloat {
+    static let iconTextSpacing: Self = 8
+    static let topPadding: Self = 50
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        EmptySearchResultsView()
+            .listRowSeparator(.hidden)
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        EmptySearchResultsView()
+            .listRowSeparator(.hidden)
+    }
+    .preferredColorScheme(.dark)
 }

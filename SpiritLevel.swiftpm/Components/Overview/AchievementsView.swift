@@ -8,9 +8,9 @@ struct AchievementsView: View {
                     achivement.image
                         .resizable()
                         .scaledToFit()
-                        .clipShape(RoundedRectangle(cornerRadius: 8,
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadius,
                                                     style: .continuous))
-                        .frame(width: 50)
+                        .frame(width: .frameWidth)
                         .padding(.trailing)
                     VStack {
                         Text(achivement.name)
@@ -23,6 +23,33 @@ struct AchievementsView: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle("Achievements")
+        .navigationTitle(.navigationTitle)
     }
 }
+
+// MARK: - Constants
+
+private extension CGFloat {
+    static let frameWidth: CGFloat = 50
+    static let cornerRadius: CGFloat = 8
+}
+private extension LocalizedStringKey {
+    static let navigationTitle: Self = "Achievements"
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    NavigationStack {
+        AchievementsView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        AchievementsView()
+    }
+    .preferredColorScheme(.dark)
+}
+

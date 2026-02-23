@@ -1,33 +1,26 @@
 import SwiftUI
 
 struct Overview: View {
+    @State private var activeSheet: ShortcutFeature?
     @ObservedObject private var appState = AppStateManager.shared
     
     var body: some  View {
         ZStack(alignment: .bottomTrailing) {
             List {
                 Section {
-                    if appState.isMoodExpanded {
-                        MoodCellView()
-                    }
+                    if appState.isMoodExpanded { MoodCellView() }
                 } header: {
-                    Button(action: toggleMoodExpanded) {
-                        HStack {
-                            Text("Mood")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Image(systemName: "chevron.down")
-                                .font(.caption.weight(.semibold))
-                                .rotationEffect(.degrees(appState.isMoodExpanded ? 0 : -90))
-                        }
-                    }
-                    .buttonStyle(.plain)
+                    ExpandableSectionHeader(title: .moodTitle, expanded: $appState.isMoodExpanded)
                 }
+                
                 Section("Current Level") {
                     CurrentHormoneLevelCellView()
                 }
+
                 Section("Next Injection") {
                     NextInjectionCellView()
                 }
+
                 Section("Trend") {
                     TrendCellView(name: "Consistency", trend: .up)
                     TrendCellView(name: "HormoneLevel", trend: .down)
@@ -50,16 +43,26 @@ struct Overview: View {
                 }
             }
             .navigationTitle(.navigationTitle)
-            
-            QuickActionsControl(actions: [
-                .init(feature: .logInjection, action: { print("log injeciton") }),
-                .init(feature: .logLab, action: { print("log lab") }),
-                
-            ])
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.bottom, 16)
-            .padding(.trailing, 16)
-            .ignoresSafeArea(edges: .bottom)
+            .sheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .logInjection: LogInjectionView()
+                    .presentationDetents([.medium, .large])
+                case .logLab: LogLabView()
+                    .presentationDetents([.medium, .large])
+                }
+            }
+
+            let quickActions: [QuickActionsControl.ActionConfiguration] = ShortcutFeature.allCases.map { feature in
+                .init(feature: feature, action: {
+                    activeSheet = feature
+                })
+            }
+
+            QuickActionsControl(actions: quickActions)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.bottom, 16)
+                .padding(.trailing, 16)
+                .ignoresSafeArea(edges: .bottom)
         }
     }
 }
@@ -87,6 +90,7 @@ extension Overview {
 @MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Overview"
+    static let moodTitle: Self = "Mood"
 }
 
 // MARK: - Preview
@@ -94,3 +98,4 @@ private extension LocalizedStringKey {
 #Preview {
     Overview()
 }
+

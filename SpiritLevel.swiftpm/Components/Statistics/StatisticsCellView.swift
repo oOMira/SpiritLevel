@@ -25,16 +25,16 @@ struct StatisticsCellView: View {
     var body: some View {
         let today = Self.today
         let interval = Int(ceil(levelManager.lastIterval))
-        let visibleRange = interval + 5
+        let visibleRange = interval + .visibleRangeOffset
         
         return Chart {
             LinePlot(x: "x", y: "y") { x in
-                let date = today.addingTimeInterval(x * 86_400)
+                let date = today.addingTimeInterval(x * .secondsPerDay)
                 return levelManager.levelForDate(date)
             }
             .foregroundStyle(by: .value("Ester", "Injection"))
             ForEach(Self.injections) { injection in
-                let day = injection.date.timeIntervalSince(today) / 86_400
+                let day = injection.date.timeIntervalSince(today) / .secondsPerDay
                 PointMark(
                     x: .value("Injection Day", day),
                     y: .value("Concentration", levelManager.levelForDate(injection.date))
@@ -42,11 +42,41 @@ struct StatisticsCellView: View {
                 .foregroundStyle(by: .value("Ester", "Injection"))
             }
         }
-        .frame(height: 200)
+        .frame(height: .chartHeight)
         .chartScrollableAxes(.horizontal)
         .chartXVisibleDomain(length: visibleRange)
         .chartScrollPosition(x: $scrollPosition)
         .chartXScale(domain: -30 ... interval + 30)
         .chartYScale(domain: 100 ... 350)
     }
+}
+
+// MARK: - Constants
+
+private extension Int {
+    static let visibleRangeOffset: Self = 5
+}
+
+private extension Double {
+    static let secondsPerDay: Self = 86_400
+}
+
+private extension CGFloat {
+    static let chartHeight: Self = 200
+}
+
+// MARK: - Preview
+
+#Preview("Light Mode") {
+    List {
+        StatisticsCellView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        StatisticsCellView()
+    }
+    .preferredColorScheme(.dark)
 }

@@ -11,12 +11,12 @@ struct AchievementsCellView: View {
                     achievement.image
                         .resizable()
                         .scaledToFit()
-                        .clipShape(RoundedRectangle(cornerRadius: 20,
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadius,
                                                     style: .continuous))
-                        .shadow(color: .black.opacity(0.2),
-                                radius: 6,
-                                x: 0,
-                                y: 3)
+                        .shadow(color: .shadowColor,
+                                radius: .shadowRadius,
+                                x: .xShadwoOffset,
+                                y: .yShadwoOffset)
                         .containerRelativeFrame(.horizontal,
                                                 count: 1,
                                                 spacing: .contentSpacing)
@@ -33,7 +33,7 @@ struct AchievementsCellView: View {
         .scrollPosition(id: $scrolledID)
         .scrollClipDisabled(true)
         .scrollTargetBehavior(.viewAligned)
-        .contentMargins(.horizontal, 50, for: .scrollContent)
+        .contentMargins(.horizontal, .contentMargins, for: .scrollContent)
         .onAppear {
             scrolledID = appState.selectedAchievement.isEmpty ? Achievement.allCases.first?.id : appState.selectedAchievement
         }
@@ -45,5 +45,14 @@ struct AchievementsCellView: View {
 }
 
 private extension CGFloat {
+    static let contentMargins: Self  = 50.0
     static let contentSpacing: Self = 4.0
+    static let cornerRadius: Self = 20.0
+    static let shadowRadius: Self = 6.0
+    static let xShadwoOffset: Self  = 0.0
+    static let yShadwoOffset: Self  = 3.0
+}
+
+private extension Color {
+    static let shadowColor: Self = .black.opacity(0.2)
 }
