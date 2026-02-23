@@ -1,17 +1,43 @@
 import SwiftUI
 
+// MARK: - TrendCellView
+
 struct TrendCellView: View {
-    let name: String
-    let trend: Trend
+    let configurations: [TrendView.Configuration]
     
     var body: some View {
-        HStack {
-            Text(name)
-            Spacer()
-            trend.image
+        ForEach(configurations) { configuration in
+            TrendView(configuration: configuration)
         }
     }
 }
+
+// MARK: - TrendView
+
+struct TrendView: View, Identifiable {
+    var id: UUID { configuration.id }
+    let configuration: Configuration
+    
+    var body: some View {
+        HStack {
+            Text(configuration.name)
+            Spacer()
+            configuration.trend.image
+        }
+    }
+}
+
+// MARK: - TrendView+Configuration
+
+extension TrendView {
+    struct Configuration: Identifiable {
+        let id = UUID()
+        let name: String
+        let trend: Trend
+    }
+}
+
+// MARK: - Trend
 
 enum Trend: String, CaseIterable, Identifiable {
     var id: String { rawValue }
@@ -35,26 +61,4 @@ private extension String {
     static let upArrow = "arrow.up.right.circle.fill"
     static let downArrow = "arrow.down.right.circle.fill"
     static let stableArrow = "arrow.right.circle.fill"
-}
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        TrendCellView(name: "Focus", trend: .up)
-        TrendCellView(name: "Energy", trend: .down)
-        TrendCellView(name: "Mood", trend: .stable)
-    }
-    .listStyle(.plain)
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        TrendCellView(name: "Focus", trend: .up)
-        TrendCellView(name: "Energy", trend: .down)
-        TrendCellView(name: "Mood", trend: .stable)
-    }
-    .listStyle(.plain)
-    .preferredColorScheme(.dark)
 }

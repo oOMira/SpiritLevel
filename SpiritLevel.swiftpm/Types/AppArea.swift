@@ -37,27 +37,20 @@ enum AppArea: String, SearchableItem {
         case .settings:     .blue
         }
     }
-    
-    var view: any View {
-        switch self {
-        case .overview:     Overview()
-        case .statisitcs:   StatisticsView()
-        case .settings:     SettingsView()
-        }
-    }
 }
 
 // MARK: - AppArea+View
 
-extension AppArea {
-    var tabView: any View {
-        switch self {
-        case .overview:
-            return Overview()
-        case .statisitcs:
-            return StatisticsView()
-        case .settings:
-            return SettingsView()
-        }
-    }
-}
+//extension AppArea {
+//    @ViewBuilder
+//    func getInnverView() -> some View {
+//        switch self {
+//        case .overview:
+//            return Overview()
+//        case .statisitcs:
+//            return StatisticsView()
+//        case .settings:
+//            return SettingsView()
+//        }
+//    }
+//}

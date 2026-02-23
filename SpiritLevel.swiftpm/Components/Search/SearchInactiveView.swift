@@ -17,11 +17,16 @@ struct SearchInactiveView: View {
             Section(.navigationTitle) {
                 ForEach(navigationItems, id: \.id) { item in
                     NavigationLink(destination: {
-                        AnyView(item.view)
+                        switch item {
+                        case .overview: Overview()
+                        case .statisitcs: StatisticsView()
+                        case .settings: SettingsView()
+                        }
                     }, label: {
-                        SearchSuggestionCellView(configuration: .init(label: item.label,
-                                                                      image: item.image,
-                                                                      color: item.accentColor))
+                        SearchSuggestionCellView(configuration:
+                                .init(label: item.label,
+                                      image: item.image,
+                                      color: item.accentColor))
                     })
                     .listRowInsets(.bottom, 0)
                     .navigationLinkIndicatorVisibility(.hidden)
@@ -35,8 +40,9 @@ struct SearchInactiveView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: .horizontalSpacing) {
                         ForEach(actionItems, id: \.id) { item in
-                            SearchActionCellView(configuration: .init(label: item.label,
-                                                                      image: item.image))
+                            SearchActionCellView(configuration:
+                                    .init(label: item.label,
+                                          image: item.image))
                             .onTapGesture {
                                 activeSheet = item
                             }
@@ -50,20 +56,20 @@ struct SearchInactiveView: View {
             }
             
             // MARK: All Features Section
-            Section(isExpanded: $appState.allFeaturesExpanded) {
-                ForEach(allItems, id: \.id) { item in
-                    NavigationLink(destination: {
-                        List {
-                            AnyView(item.view)
-                        }
-                        .navigationTitle(item.label)
-                    }, label: {
-                        SearchResultCellView(label: item.label, image: item.image)
-                    })
-                }
-            } header: {
-                ExpandableSectionHeader(title: .browseTitle, expanded: $appState.allFeaturesExpanded)
-            }
+//            Section(isExpanded: $appState.allFeaturesExpanded) {
+//                ForEach(allItems, id: \.id) { item in
+//                    NavigationLink(destination: {
+//                        List {
+//                            AnyView(item.view)
+//                        }
+//                        .navigationTitle(item.label)
+//                    }, label: {
+//                        SearchResultCellView(label: item.label, image: item.image)
+//                    })
+//                }
+//            } header: {
+//                ExpandableSectionHeader(title: .browseTitle, expanded: $appState.allFeaturesExpanded)
+//            }
         }
     }
 }
@@ -82,40 +88,3 @@ private extension CGFloat {
     static let listRowInsetVertical: Self = 0
     static let listRowInsetBottom: Self = 0
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    @Previewable @State var activeSheet: ShortcutFeature? = nil
-    NavigationStack {
-        List {
-            SearchInactiveView(
-                activeSheet: $activeSheet,
-                navigationItems: AppArea.allCases,
-                actionItems: ShortcutFeature.allCases,
-                allItems: Content.allItems
-            )
-        }
-        .listStyle(.plain)
-        .navigationTitle("Search")
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    @Previewable @State var activeSheet: ShortcutFeature? = nil
-    NavigationStack {
-        List {
-            SearchInactiveView(
-                activeSheet: $activeSheet,
-                navigationItems: AppArea.allCases,
-                actionItems: ShortcutFeature.allCases,
-                allItems: Content.allItems
-            )
-        }
-        .listStyle(.plain)
-        .navigationTitle("Search")
-    }
-    .preferredColorScheme(.dark)
-}
-

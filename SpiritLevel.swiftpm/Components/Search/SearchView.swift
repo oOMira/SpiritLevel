@@ -64,7 +64,7 @@ struct SearchView: View {
                             ForEach(filteredItems, id: \.id) { item in
                                 NavigationLink(destination: {
                                     List {
-                                        AnyView(item.view)
+                                        Text(item.label)
                                     }
                                     .navigationTitle(item.label)
                                 }, label: {

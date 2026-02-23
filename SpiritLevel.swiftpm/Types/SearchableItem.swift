@@ -4,7 +4,6 @@ protocol SearchableItem: CaseIterable, Identifiable, RawRepresentable where RawV
     var label: String { get }
     var systemImageName: String { get }
     var image: Image { get }
-    var view: any View { get }
 }
 
 extension SearchableItem {

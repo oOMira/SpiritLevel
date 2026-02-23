@@ -17,6 +17,8 @@ struct QuickActionsControl: View {
     }
 }
 
+// MARK: - QuickActionsControl+ActionConfiguration
+
 extension QuickActionsControl {
     struct ActionConfiguration: Identifiable {
         var id: ShortcutFeature.ID { feature.id }
