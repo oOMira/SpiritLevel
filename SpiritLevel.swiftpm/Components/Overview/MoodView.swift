@@ -38,6 +38,7 @@ final class MoodViewModel: ObservableObject {
                   baseURL: resourceUrl.deletingLastPathComponent())
     }
 
+    // TODO: load from File
     func loadBlank() {
         let emptyHTML = "<html><body></body></html>"
         page.load(html: emptyHTML, baseURL: .init(string: "about:blank")!)
