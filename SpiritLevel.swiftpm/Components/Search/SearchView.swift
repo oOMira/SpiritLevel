@@ -30,31 +30,7 @@ struct SearchView: View {
         NavigationView {
             List {
                 if isSearching {
-                    if searchText.isEmpty {
-                        if searchHistory.isEmpty {
-                            NoSearchHistoryCell()
-                                .listRowSeparator(.hidden)
-                        } else {
-                            SearchHistoryView(searchHistory: searchHistory,
-                                              clearHistory: clearHistory)
-                        }
-                    } else {
-                        if filteredItems.isEmpty {
-                            EmptySearchResultsView()
-                                .listRowSeparator(.hidden)
-                        } else {
-                            ForEach(filteredItems, id: \.id) { item in
-                                NavigationLink(destination: {
-                                    List {
-                                        Text(item.label)
-                                    }
-                                    .navigationTitle(item.label)
-                                }, label: {
-                                    SearchResultCellView(label: item.label, image: item.image)
-                                })
-                            }
-                        }
-                    }
+                    SearchActiveView(searchText: $searchText)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
                                        navigationItems: AppArea.allCases,

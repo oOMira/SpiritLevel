@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "My App",
+    name: "Spirit Level",
     platforms: [
         .iOS("26.0")
     ],
     products: [
         .iOSApplication(
-            name: "My App",
+            name: "Spirit Level",
             targets: ["AppModule"],
             bundleIdentifier: "mkr.SpiritLevel",
             teamIdentifier: "7B9QCSCYM6",
@@ -31,7 +31,8 @@ let package = Package(
                 .landscapeRight,
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
-            ]
+            ],
+            appCategory: .healthcareFitness
         )
     ],
     targets: [

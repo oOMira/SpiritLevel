@@ -1,6 +1,5 @@
 import SwiftUI
 import WebKit
-import RegexBuilder
 
 struct MoodView: View {
     @StateObject private var model: MoodViewModel
@@ -13,6 +12,7 @@ struct MoodView: View {
         WebView(model.page)
             .onAppear { model.loadGif() }
             .onDisappear { model.loadBlank() }
+            .webViewContentBackground(.hidden)
     }
 }
 
@@ -32,16 +32,15 @@ final class MoodViewModel: ObservableObject {
         guard let resourceUrl = Bundle.module.url(forResource: "smilecat",
                                                   withExtension: .gifExtension),
               let data = try? Data(contentsOf: resourceUrl) else { return }
-        page.load(data,
-                  mimeType: .gifMimeType,
-                  characterEncoding: .utf8,
-                  baseURL: resourceUrl.deletingLastPathComponent())
+        
+        let base64 = data.base64EncodedString()
+        let html = String.gifHTML(base64Encoded: base64)
+        
+        page.load(html: html, baseURL: resourceUrl.deletingLastPathComponent())
     }
 
-    // TODO: load from File
     func loadBlank() {
-        let emptyHTML = "<html><body></body></html>"
-        page.load(html: emptyHTML, baseURL: .init(string: "about:blank")!)
+        page.load(html: .emptyHTML, baseURL: .init(string: "about:blank")!)
     }
 }
 
@@ -50,4 +49,33 @@ final class MoodViewModel: ObservableObject {
 private extension String {
     static let gifExtension = "gif"
     static let gifMimeType = "image/gif"
+    
+    static let emptyHTML = "<html><body style=\"background:transparent;\"></body></html>"
+    
+    static func gifHTML(base64Encoded base64: String) -> String {
+        """
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+            <style>
+                * { margin: 0; padding: 0; }
+                html, body {
+                    width: 100%;
+                    height: 100%;
+                    background: transparent;
+                    overflow: hidden;
+                }
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            </style>
+        </head>
+        <body>
+            <img src="data:image/gif;base64,\(base64)" />
+        </body>
+        </html>
+        """
+    }
 }

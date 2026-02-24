@@ -20,9 +20,6 @@ struct SettingsView: View {
             }
             Section(.dataManagementSectionTitle) {
                 HStack {
-                    Toggle(.iCloudSyncingToggle, isOn: $isSyncing)
-                }
-                HStack {
                     Text(.importLabel)
                     Spacer()
                     Button {
