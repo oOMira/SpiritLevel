@@ -18,28 +18,6 @@ struct SettingsView: View {
             Section(.supportSectionTitle) {
                 SupportSection()
             }
-            Section(.dataManagementSectionTitle) {
-                HStack {
-                    Text(.importLabel)
-                    Spacer()
-                    Button {
-                        print("import")
-                    } label: {
-                        Image(systemName: .trayDownIcon)
-                    }
-                    .buttonStyle(.plain)
-                }
-                HStack {
-                    Text(.exportLabel)
-                    Spacer()
-                    Button {
-                        print("export")
-                    } label: {
-                        Image(systemName: .trayUpIcon)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
             
             Section {
                 Button {
@@ -60,7 +38,9 @@ struct SettingsView: View {
 }
 
 extension SettingsView {
+
     struct DeleteSheet: View {
+        @Environment(\.horizontalSizeClass) private var horizontalSizeClass
         @Binding var isShowingSheet: Bool
         @State private var deleteAppConfiguration: Bool = true
         @State private var deleteAppLogData: Bool = false
@@ -97,7 +77,9 @@ extension SettingsView {
                     }
                 }
             }
-            .presentationDetents([.medium])
+            .presentationDetents(horizontalSizeClass == .compact
+                                 ? [.large]
+                                 : [.medium])
         }
     }
 }

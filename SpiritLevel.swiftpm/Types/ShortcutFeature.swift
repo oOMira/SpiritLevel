@@ -1,20 +1,20 @@
 import SwiftUI
 
 enum ShortcutFeature: String, SearchableItem {
-    case logInjection
     case logLab
+    case logInjection
     
     var label: String {
         switch self {
-        case .logInjection: "Log Injection"
         case .logLab:       "Log Lab Result"
+        case .logInjection: "Log Injection"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .logInjection: "syringe"
         case .logLab:       "heart.text.clipboard"
+        case .logInjection: "syringe"
         }
     }
     

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SplitViewLayout: View {
     @ObservedObject private var appState = AppStateManager.shared
-    @State private var isShowingListSheet = false
+    @State private var activeSheet: ShortcutFeature? = nil
     
     var body: some View {
         let enumaratedAppAreas = Array(AppArea.allCases.enumerated())
@@ -16,32 +16,34 @@ struct SplitViewLayout: View {
             }
             .safeAreaInset(edge: .bottom) {
                 VStack(spacing: 8) {
-                    Button(action: {
-                        isShowingListSheet = true
-                    }, label: {
-                        Text("Log Lab Results")
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity)
-                    })
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.roundedRectangle)
-                    .tint(.primary)
-                    .padding(.horizontal, 16)
-                    Button(action: {
-                        isShowingListSheet = true
-                    }, label: {
-                        Text("Log Injection")
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity)
-                    })
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.roundedRectangle)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
+                    ForEach(ShortcutFeature.allCases, id: \.id) { feature in
+                        let button = Button(action: {
+                            activeSheet = feature
+                        }, label: {
+                            Text(feature.label)
+                                .padding(.vertical, 8)
+                                .frame(maxWidth: .infinity)
+                        })
+                        .buttonBorderShape(.roundedRectangle)
+                        .tint(feature.buttonColor)
+                        .padding(.horizontal, 16)
+                        
+                        switch feature {
+                        case .logLab:
+                            button.buttonStyle(.bordered)
+                        case .logInjection:
+                            button.buttonStyle(.borderedProminent)
+                        }
+                    }
                 }
             }
-            .sheet(isPresented: $isShowingListSheet) {
-                Text("Sheet")
+            .sheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .logInjection: LogInjectionView()
+                    .presentationDetents([.large])
+                case .logLab: LogLabView()
+                    .presentationDetents([.large])
+                }
             }
         } detail: {
             NavigationStack {
@@ -72,4 +74,14 @@ private extension Binding where Value == Int {
             set: { self.wrappedValue = $0 ?? 0 }
         )
     }
+}
+
+private extension ShortcutFeature {
+    var buttonColor: Color {
+        switch self {
+        case .logInjection: return .accentColor
+        case .logLab: return .primary
+        }
+    }
+
 }

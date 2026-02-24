@@ -8,8 +8,6 @@ final class AppStateManager: ObservableObject {
 
     @AppStorage("selectedTab") var selectedTab: Int = 0
     @AppStorage("moodExpanded") var isMoodExpanded: Bool = true
-    @AppStorage("selectedAchievement") var selectedAchievement: String = ""
-    @AppStorage("allFeaturesExpanded") var allFeaturesExpanded: Bool = true
     @AppStorage("searchHistory") var searchHistoryData: String = "[]"
     
     // MARK: - Initialization

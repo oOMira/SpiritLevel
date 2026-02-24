@@ -54,22 +54,6 @@ struct SearchInactiveView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(.vertical, 0)
             }
-            
-            // MARK: All Features Section
-//            Section(isExpanded: $appState.allFeaturesExpanded) {
-//                ForEach(allItems, id: \.id) { item in
-//                    NavigationLink(destination: {
-//                        List {
-//                            AnyView(item.view)
-//                        }
-//                        .navigationTitle(item.label)
-//                    }, label: {
-//                        SearchResultCellView(label: item.label, image: item.image)
-//                    })
-//                }
-//            } header: {
-//                ExpandableSectionHeader(title: .browseTitle, expanded: $appState.allFeaturesExpanded)
-//            }
         }
     }
 }

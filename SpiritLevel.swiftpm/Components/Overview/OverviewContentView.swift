@@ -30,7 +30,6 @@ struct OverviewContentView: View {
             case .achivements:
                 Section {
                     AchievementsCellView()
-                        .listRowBackground(Color.clear)
                 } header: {
                     NavigationLink(destination: {
                         AchievementsView()
