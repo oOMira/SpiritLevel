@@ -35,26 +35,8 @@ struct SearchView: View {
                             NoSearchHistoryCell()
                                 .listRowSeparator(.hidden)
                         } else {
-                            HStack {
-                                Text("Recent Searches")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Button(action: {
-                                    withAnimation {
-                                        clearHistory()
-                                    }
-                                }, label: {
-                                    Text("Clear history")
-                                        .font(.footnote.bold())
-                                        .foregroundStyle(.red)
-                                })
-                            }
-                            .listRowSeparator(.hidden)
-                            ForEach(searchHistory.enumerated(), id: \.offset) { _, query in
-                                Text(query)
-                                    .listRowBackground(Color.clear)
-                            }
-                            .onTapGesture { }
+                            SearchHistoryView(searchHistory: searchHistory,
+                                              clearHistory: clearHistory)
                         }
                     } else {
                         if filteredItems.isEmpty {

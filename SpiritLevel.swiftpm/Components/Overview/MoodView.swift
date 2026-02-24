@@ -1,132 +1,52 @@
 import SwiftUI
 import WebKit
+import RegexBuilder
 
-
-/// Hint: This struct is AI generated
 struct MoodView: View {
-    let mood: Mood
-    @State private var isLoading = true
-    
+    @StateObject private var model: MoodViewModel
+
+    init(mood: Mood) {
+        _model = StateObject(wrappedValue: MoodViewModel(mood: mood))
+    }
+
     var body: some View {
-        ZStack {
-            if isLoading {
-                ProgressView()
-                    .controlSize(.large)
-            }
-            
-            GIFView(mood: mood, isLoading: $isLoading)
-                .opacity(isLoading ? 0 : 1)
-        }
-        .animation(.easeInOut(duration: .animationDuration), value: isLoading)
+        WebView(model.page)
+            .onAppear { model.loadGif() }
+            .onDisappear { model.loadBlank() }
     }
 }
 
-/// Hint: This struct is AI generated
-private struct GIFView: UIViewRepresentable {
-    let mood: Mood
-    @Binding var isLoading: Bool
-    
-    func makeUIView(context: Context) -> WKWebView {
-        let webview = WKWebView()
-        webview.backgroundColor = .clear
-        webview.isOpaque = false
-        webview.scrollView.backgroundColor = .clear
-        webview.navigationDelegate = context.coordinator
-        
-        // Load GIF on background thread
-        Task {
-            guard let url = Bundle.main.url(forResource: mood.imageName, withExtension: .gifExtension) else {
-                await MainActor.run {
-                    isLoading = false
-                }
-                return
-            }
-            
-            do {
-                let data = try Data(contentsOf: url)
-                await MainActor.run {
-                    webview.load(data, mimeType: .gifMimeType, characterEncodingName: .utf8Encoding, baseURL: url.deletingLastPathComponent())
-                }
-            } catch {
-                await MainActor.run {
-                    isLoading = false
-                }
-            }
-        }
-        
-        return webview
+// MARK: - ViewModel
+
+@MainActor
+final class MoodViewModel: ObservableObject {
+    private(set) var page: WebPage
+    @Published var mood: Mood
+
+    init(mood: Mood) {
+        self.mood = mood
+        self.page = .init()
     }
-    
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        // No need to reload on update
+
+    func loadGif() {
+        guard let resourceUrl = Bundle.module.url(forResource: "smilecat",
+                                                  withExtension: .gifExtension),
+              let data = try? Data(contentsOf: resourceUrl) else { return }
+        page.load(data,
+                  mimeType: .gifMimeType,
+                  characterEncoding: .utf8,
+                  baseURL: resourceUrl.deletingLastPathComponent())
     }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(isLoading: $isLoading)
-    }
-    
-    class Coordinator: NSObject, WKNavigationDelegate {
-        @Binding var isLoading: Bool
-        
-        init(isLoading: Binding<Bool>) {
-            _isLoading = isLoading
-        }
-        
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            isLoading = false
-        }
-        
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            isLoading = false
-        }
+
+    func loadBlank() {
+        let emptyHTML = "<html><body></body></html>"
+        page.load(html: emptyHTML, baseURL: .init(string: "about:blank")!)
     }
 }
 
 // MARK: - Constants
 
-private extension Mood {
-    var imageName: String {
-        switch self {
-        case .happy: return .happyImageName
-        case .sad: return .sadImageName
-        }
-    }
-}
-
 private extension String {
-    static let happyImageName = "smileCat"
-    static let sadImageName = "sadCat"
     static let gifExtension = "gif"
     static let gifMimeType = "image/gif"
-    static let utf8Encoding = "UTF-8"
-}
-
-private extension Double {
-    static let animationDuration: Self = 0.3
-}
-
-// MARK: - Preview
-
-#Preview("Happy - Light Mode") {
-    MoodView(mood: .happy)
-        .frame(width: 200, height: 200)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Happy - Dark Mode") {
-    MoodView(mood: .happy)
-        .frame(width: 200, height: 200)
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Sad - Light Mode") {
-    MoodView(mood: .sad)
-        .frame(width: 200, height: 200)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Sad - Dark Mode") {
-    MoodView(mood: .sad)
-        .frame(width: 200, height: 200)
-        .preferredColorScheme(.dark)
 }
