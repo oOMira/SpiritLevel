@@ -42,6 +42,26 @@ extension Achievement {
         case .lLab:             "lLab"
         }
     }
+    
+    var imageDescription: String {
+        switch self {
+        case .sStreak:          "A stack of colorful books on a wooden surface"
+        case .mStreak:          "A cute orange cat wearing glasses and a suit, holding books while standing in front of a chalkboard"
+        case .lStreak:          "A hand holding up a graduation cap against a sky background with trees"
+        case .sTime:            "A pink chronograph watch with a leather strap against a pink background with green leaves"
+        case .mTime:            "A desk calendar showing a month view with some dates highlighted in pink"
+        case .lTime:            "Colorful fireworks bursting in a night sky"
+        case .xlTime:           "A pink rocking chair on a wooden porch with a scenic outdoor view"
+        case .firstInjection:   "A medical vial with a blue cap and colorful label on a purple and pink background"
+        case .sInjection:       "A single syringe with blue liquid on a coral pink background"
+        case .mInjection:       "Three syringes standing upright with blue liquid and measurement markings, on a surface with plants"
+        case .lInjection:       "A yellow sharps disposal container with a biohazard symbol and SHARPS label"
+        case .firstLab:         "A light blue and gray stethoscope on a pale background"
+        case .sLab:             "A healthcare professional in a white coat with a stethoscope, sitting at a desk writing in a notebook"
+        case .mLab:             "A red and white ambulance or emergency medical vehicle in front of residential buildings"
+        case .lLab:             "A white hospital building with a red cross symbol on the front, featuring multiple windows and a grand entrance"
+        }
+    }
 }
 
 extension Achievement {

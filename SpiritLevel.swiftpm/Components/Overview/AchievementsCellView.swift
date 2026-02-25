@@ -23,6 +23,18 @@ struct AchievementsCellView: View {
                                                 count: 1,
                                                 spacing: .contentSpacing)
                         .accessibilityIgnoresInvertColors()
+                        .accessibilityRemoveTraits([.isImage, .isButton])
+                        .accessibilityLabel(achievement.name)
+                        .accessibilityValue(isDone ? "Completed" : "Not completed")
+                        .accessibilityAction(named: "Describe Image") {
+                            let imageDescription = isDone
+                                ? achievement.imageDescription
+                                : "\(achievement.imageDescription) - grayedOut"
+                            UIAccessibility.post(
+                                notification: .announcement,
+                                argument: imageDescription
+                            )
+                        }
                         .overlay(alignment: .bottomTrailing) {
                             if accessibilityDifferentiateWithoutColor {
                                 GeometryReader { proxy in
@@ -51,6 +63,7 @@ struct AchievementsCellView: View {
                         }
                         .grayscale(isDone ? 0.0 : 1.0)
                         .contentShape(.accessibility, roundedRectangle)
+                        .accessibilityValue(isDone ? "Completed" : "Not completed")
                 }
             }
             .scrollTargetLayout()

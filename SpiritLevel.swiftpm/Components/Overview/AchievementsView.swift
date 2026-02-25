@@ -39,11 +39,25 @@ struct AchievementsView: View {
                     }
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityValue(isDone ? "done" : "")
+                .accessibilityValue(isDone ? "Completed" : "Not completed")
             }
         }
         .listStyle(.plain)
         .navigationTitle(.navigationTitle)
+        .accessibilityRotor("Completed Achievements") {
+            ForEach(Achievement.allCases) { achievement in
+                if isDone {
+                    AccessibilityRotorEntry(achievement.name, id: achievement.id)
+                }
+            }
+        }
+        .accessibilityRotor("Incomplete Achievements") {
+            ForEach(Achievement.allCases) { achievement in
+                if !isDone {
+                    AccessibilityRotorEntry(achievement.name, id: achievement.id)
+                }
+            }
+        }
     }
 }
 
