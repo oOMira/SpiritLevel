@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum OverviewFeature: String, SearchableItem {
+enum OverviewFeature: String, CaseIterable, SearchableItem {
     case mood
     case currentLevel
     case nextInjection

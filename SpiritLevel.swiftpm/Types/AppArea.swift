@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum AppArea: String, SearchableItem {
+enum AppArea: String, CaseIterable, SearchableItem {
     case overview
     case statisitcs
     case settings

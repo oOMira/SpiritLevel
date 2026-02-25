@@ -1,10 +1,10 @@
 import SwiftUI
 
 final class SearchHistoryViewModel: ObservableObject {
-    @ObservedObject private var appState = AppStateManager.shared
+    @State private var appStateManager = AppStateManager.shared
     
     var searchHistory: [String] {
-        (try? JSONDecoder().decode([String].self, from: Data(appState.searchHistoryData.utf8))) ?? []
+        (try? JSONDecoder().decode([String].self, from: Data(appStateManager.searchHistoryData.utf8))) ?? []
     }
 
     func addToHistory(_ query: String) {
@@ -15,12 +15,12 @@ final class SearchHistoryViewModel: ObservableObject {
         history.insert(trimmed, at: 0)
         history = Array(history.prefix(Int.maxHistoryItems))
         if let data = try? JSONEncoder().encode(history) {
-            appState.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
+            appStateManager.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
         }
     }
 
     func clearHistory() {
-        appState.searchHistoryData = "[]"
+        appStateManager.searchHistoryData = "[]"
     }
 }
 

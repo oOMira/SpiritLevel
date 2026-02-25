@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct Overview: View {
+struct Overview<AppStateMangerType: AppStateManagable>: View {
     @State private var activeSheet: ShortcutFeature?
-    @ObservedObject private var appState = AppStateManager.shared
+    var appStateManager: AppStateMangerType
     
     var body: some  View {
         ZStack(alignment: .bottomTrailing) {
             List {
-                OverviewContentView()
+                OverviewContentView(appStateManager: appStateManager)
             }
             .navigationTitle(.navigationTitle)
             // MARK: - Quick Actions
@@ -37,9 +37,4 @@ private extension LocalizedStringKey {
     static let moodTitle: Self = "Mood"
 }
 
-// MARK: - Preview
-
-#Preview {
-    Overview()
-}
 

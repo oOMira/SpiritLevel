@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct SearchActiveView: View {
-    @Binding var searchText: String
+struct SearchActiveView<SearchManagerType: SearchResultsManagable>: View {
     @ObservedObject var viewModel = SearchHistoryViewModel()
+    var searchManager: SearchManagerType
     
     var body: some View {
-        if searchText.isEmpty {
+        if searchManager.searchText.isEmpty {
             if viewModel.searchHistory.isEmpty {
                 NoSearchHistoryCell()
                     .listRowSeparator(.hidden)
@@ -15,11 +15,11 @@ struct SearchActiveView: View {
                                   clearHistory: viewModel.clearHistory)
             }
         } else {
-            if filteredItems.isEmpty {
+            if searchManager.filteredItems.isEmpty {
                 EmptySearchResultsView()
                     .listRowSeparator(.hidden)
             } else {
-                ForEach(filteredItems, id: \.id) { item in
+                ForEach(searchManager.filteredItems, id: \.id) { item in
                     NavigationLink(destination: {
                         List {
                             Text(item.label)
@@ -30,15 +30,6 @@ struct SearchActiveView: View {
                     })
                 }
             }
-        }
-    }
-    
-    var filteredItems: [any SearchableItem] {
-        let allItems = Content.allItems
-        guard !searchText.isEmpty else { return allItems }
-
-        return allItems.filter {
-            $0.label.localizedCaseInsensitiveContains(searchText)
         }
     }
 }

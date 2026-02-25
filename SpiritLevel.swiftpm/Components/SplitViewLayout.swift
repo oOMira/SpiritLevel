@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct SplitViewLayout: View {
-    @ObservedObject private var appState = AppStateManager.shared
+struct SplitViewLayout<AppStateManagerType: AppStateManagable>: View {
+    @Bindable var appStateManager: AppStateManagerType
     @State private var activeSheet: ShortcutFeature? = nil
     
     var body: some View {
         let enumaratedAppAreas = Array(AppArea.allCases.enumerated())
         NavigationSplitView {
-            List(selection: $appState.selectedTab.toOptional()) {
+            List(selection: $appStateManager.selectedTab.toOptional()) {
                 Label("Search", systemImage: "magnifyingglass")
                     .tag(-1)
                 ForEach(enumaratedAppAreas, id: \.offset) { index, area in
@@ -48,13 +48,13 @@ struct SplitViewLayout: View {
             }
         } detail: {
             NavigationStack {
-                if appState.selectedTab == -1 {
+                if appStateManager.selectedTab == -1 {
                     CompactSearchView()
                 } else {
-                    let selectedAppArea = enumaratedAppAreas[appState.selectedTab].element
+                    let selectedAppArea = enumaratedAppAreas[appStateManager.selectedTab].element
                     switch selectedAppArea {
                     case .overview:
-                        CompactOverview()
+                        CompactOverview(appStateManager: appStateManager)
                     case .statisitcs:
                         StatisticsView()
                     case .settings:

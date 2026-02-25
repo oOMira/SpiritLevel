@@ -1,21 +1,22 @@
 import SwiftUI
 
-struct OverviewContentView: View {
-    @ObservedObject private var appState = AppStateManager.shared
+struct OverviewContentView<AppStateManagerType: AppStateManagable>: View {
+    @Bindable var appStateManager: AppStateManagerType
     
     var body: some View {
         ForEach(OverviewFeature.allCases) { feature in
             switch feature {
             case .mood:
                 Section {
-                    if appState.isMoodExpanded {
+                    if appStateManager.isMoodExpanded {
                         MoodCellView()
                             .accessibilityElement(children: .combine)
                             .accessibilityAddTraits(.isImage)
                             .accessibilityLabel(Mood.happy.rawValue)
                     }
                 } header: {
-                    ExpandableSectionHeader(title: .moodTitle, expanded: $appState.isMoodExpanded)
+                    ExpandableSectionHeader(title: .moodTitle,
+                                            expanded: $appStateManager.isMoodExpanded)
                 }
             case .currentLevel:
                 Section(feature.label) {

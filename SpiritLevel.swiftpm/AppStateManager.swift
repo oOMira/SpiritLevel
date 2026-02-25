@@ -1,18 +1,26 @@
 import SwiftUI
 
-final class AppStateManager: ObservableObject {
-    // Singleton instance
-    static let shared = AppStateManager()
-    
-    // MARK: - App Storage Properties
+protocol AppStateManagable: Observable, AnyObject {
+    var selectedTab: Int { get set }
+    var isMoodExpanded: Bool { get set }
+    var searchHistoryData: String { get set }
+}
 
-    @AppStorage("selectedTab") var selectedTab: Int = 0
-    @AppStorage("moodExpanded") var isMoodExpanded: Bool = true
-    @AppStorage("searchHistory") var searchHistoryData: String = "[]"
-    
-    // MARK: - Initialization
-    
-    private init() {
-        // Private initializer to enforce singleton pattern
+@Observable
+final class AppStateManager: AppStateManagable {
+    static let shared = AppStateManager()
+
+    var selectedTab: Int = UserDefaults.standard.integer(forKey: "selectedTab") {
+        didSet { UserDefaults.standard.set(selectedTab, forKey: "selectedTab") }
     }
+
+    var isMoodExpanded: Bool = UserDefaults.standard.bool(forKey: "moodExpanded") {
+        didSet { UserDefaults.standard.set(isMoodExpanded, forKey: "moodExpanded") }
+    }
+
+    var searchHistoryData: String = UserDefaults.standard.string(forKey: "searchHistory") ?? "[]" {
+        didSet { UserDefaults.standard.set(searchHistoryData, forKey: "searchHistory") }
+    }
+
+    private init() {}
 }

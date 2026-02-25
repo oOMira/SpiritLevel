@@ -1,15 +1,15 @@
 import SwiftUI
 import Charts
 
-struct ContentView: View {
+struct ContentView<AppStateManagerType: AppStateManagable>: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @ObservedObject private var appState = AppStateManager.shared
+    var appStateManager: AppStateManagerType
     
     var body: some View {
         if horizontalSizeClass == .compact {
-            TabViewLayout()
+            TabViewLayout(appStateManager: appStateManager)
         } else {
-            SplitViewLayout()
+            SplitViewLayout(appStateManager: appStateManager)
         }
     }
 }

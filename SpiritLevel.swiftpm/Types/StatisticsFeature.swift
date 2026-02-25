@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum StatisticsFeature: String, SearchableItem {
+enum StatisticsFeature: String, CaseIterable, SearchableItem {
     case graph
     case injections
     case labResults

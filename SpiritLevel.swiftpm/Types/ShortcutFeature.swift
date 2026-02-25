@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum ShortcutFeature: String, SearchableItem {
+enum ShortcutFeature: String, SearchableItem, CaseIterable {
     case logLab
     case logInjection
     

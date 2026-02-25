@@ -6,7 +6,9 @@ struct CompactSearchView: View {
     
     var body: some View {
         List {
-            SearchActiveView(searchText: $searchText)
+            Text("something")
+//            SearchActiveView(searchText: $searchText,
+//                             manager: SearchResultsManager())
         }
         .listStyle(.plain)
         .navigationTitle("Search")

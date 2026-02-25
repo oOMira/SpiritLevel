@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct CompactOverview: View {
-    @ObservedObject private var appState = AppStateManager.shared
+struct CompactOverview<AppStateMangerType: AppStateManagable>: View {
+    var appStateManager: AppStateMangerType
     
     var body: some  View {
         ZStack(alignment: .bottomTrailing) {
             List {
-                OverviewContentView()
+                OverviewContentView(appStateManager: appStateManager)
             }
             .navigationTitle(.navigationTitle)
         }
@@ -20,10 +20,3 @@ private extension LocalizedStringKey {
     static let navigationTitle: Self = "Overview"
     static let moodTitle: Self = "Mood"
 }
-
-// MARK: - Preview
-
-#Preview {
-    Overview()
-}
-

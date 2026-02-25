@@ -2,14 +2,13 @@ import SwiftUI
 
 struct SearchInactiveView: View {
     @Binding var activeSheet: ShortcutFeature?
-    @ObservedObject private var appState = AppStateManager.shared
+    @State private var appStateManager = AppStateManager.shared
     
     @Namespace private var animationNamespace
     private let addItemTransitionID = "addItemTransition"
     
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]
-    let allItems: [any SearchableItem]
     
     var body: some View {
         Group {
@@ -18,7 +17,7 @@ struct SearchInactiveView: View {
                 ForEach(navigationItems, id: \.id) { item in
                     NavigationLink(destination: {
                         switch item {
-                        case .overview: Overview()
+                        case .overview: Overview(appStateManager: appStateManager)
                         case .statisitcs: StatisticsView()
                         case .settings: SettingsView()
                         }

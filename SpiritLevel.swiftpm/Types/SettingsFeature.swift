@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum SettingsFeature: String, SearchableItem {
+enum SettingsFeature: String, CaseIterable, SearchableItem {
     case plan
     case support
     case data

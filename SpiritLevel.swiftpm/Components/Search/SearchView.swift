@@ -1,13 +1,14 @@
 import SwiftUI
 
-struct SearchView: View {
+struct SearchView<AppStateManagerType: AppStateManagable>: View {
+    var appStateManager: AppStateManagerType
+    
     @State private var activeSheet: ShortcutFeature?
-    @ObservedObject private var appState = AppStateManager.shared
-    @State private var searchText: String = ""
     @State private var isSearching: Bool = false
+    @State var searchResultsManager = SearchResultsManager()
 
     private var searchHistory: [String] {
-        (try? JSONDecoder().decode([String].self, from: Data(appState.searchHistoryData.utf8))) ?? []
+        (try? JSONDecoder().decode([String].self, from: Data(appStateManager.searchHistoryData.utf8))) ?? []
     }
 
     private func addToHistory(_ query: String) {
@@ -18,39 +19,38 @@ struct SearchView: View {
         history.insert(trimmed, at: 0)
         history = Array(history.prefix(Int.maxHistoryItems))
         if let data = try? JSONEncoder().encode(history) {
-            appState.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
+            appStateManager.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
         }
     }
 
     private func clearHistory() {
-        appState.searchHistoryData = "[]"
+        appStateManager.searchHistoryData = "[]"
     }
 
     var body: some View {
         NavigationView {
             List {
                 if isSearching {
-                    SearchActiveView(searchText: $searchText)
+                    SearchActiveView(searchManager: searchResultsManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
                                        navigationItems: AppArea.allCases,
-                                       actionItems: ShortcutFeature.allCases,
-                                       allItems: Content.allItems)
+                                       actionItems: ShortcutFeature.allCases)
                 }
             }
-            .animation(.snappy, value: searchText)
+            .animation(.snappy, value: searchResultsManager.searchText)
             .animation(.snappy, value: searchHistory.isEmpty)
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(
-                text: $searchText,
+                text: $searchResultsManager.searchText,
                 isPresented: $isSearching,
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: Text(.searchPrompt)
             )
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
-                addToHistory(searchText)
+                addToHistory(searchResultsManager.searchText)
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
@@ -62,19 +62,6 @@ struct SearchView: View {
                         .presentationDetents([.medium, .large])
                 }
             }
-        }
-    }
-}
-
-// MARK: - Helper
-
-private extension SearchView {
-    var filteredItems: [any SearchableItem] {
-        let allItems = Content.allItems
-        guard !searchText.isEmpty else { return allItems }
-
-        return allItems.filter {
-            $0.label.localizedCaseInsensitiveContains(searchText)
         }
     }
 }
@@ -92,17 +79,3 @@ private extension LocalizedStringKey {
 private extension Int {
     static let maxHistoryItems: Self = 10
 }
-
-// MARK: - Preview
-#Preview("Light Mode") {
-    SearchView()
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    SearchView()
-        .preferredColorScheme(.dark)
-}
-
-
-
