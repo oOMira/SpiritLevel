@@ -16,6 +16,8 @@ struct ExpandableSectionHeader: View {
                     .rotationEffect(.degrees(expanded ? .expandedRotation : .collapsedRotation))
             }
         })
+        .accessibilityValue(expanded ? "expanded" : "collapsed")
+        .accessibilityHint("Double tap to toggle")
         .buttonStyle(.plain)
     }
 }

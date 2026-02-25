@@ -13,7 +13,7 @@ enum OverviewFeature: String, SearchableItem {
         case .currentLevel:     "Current Level"
         case .nextInjection:    "Next Injection"
         case .trend:            "Trend"
-        case .achivements:      "Achivements"
+        case .achivements:      "Achievements"
         }
     }
     

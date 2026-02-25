@@ -4,13 +4,14 @@ struct AchievementsCellView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .contentSpacing) {
+                let roundedRectangle = RoundedRectangle(cornerRadius: .cornerRadius,
+                                                        style: .continuous)
                 ForEach(Achievement.allCases) { achievement in
                     achievement.image
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 300.0)
-                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadius,
-                                                    style: .continuous))
+                        .clipShape(roundedRectangle)
                         .shadow(color: .shadowColor,
                                 radius: .shadowRadius,
                                 x: .xShadwoOffset,
@@ -24,6 +25,7 @@ struct AchievementsCellView: View {
                             return effect.scaleEffect(CGFloat(scale))
                         }
                         .grayscale(1.0)
+                        .contentShape(.accessibility, roundedRectangle)
                 }
             }
             .scrollTargetLayout()

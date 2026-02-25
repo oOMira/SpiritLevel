@@ -7,8 +7,12 @@ struct QuickActionsControl: View {
     var body: some View {
         VStack(spacing: .actionSpacing) {
             ForEach(actions) { action in
-                action.feature.image
-                    .onTapGesture(perform: action.action)
+                Button(action: action.action, label: {
+                    action.feature.image
+                })
+                .accessibilityLabel(action.feature.label)
+                .foregroundStyle(.primary)
+                .contentShape(.accessibility, Circle().inset(by: -.accessibilityHitInset))
             }
         }
         .font(.system(size: .iconSize))
@@ -30,8 +34,9 @@ extension QuickActionsControl {
 // MARK: - Constants
 
 private extension CGFloat {
-    static let actionSpacing: Self = 25
-    static let iconSize: Self = 22
+    static let actionSpacing: Self = 28
+    static let iconSize: Self = 23
     static let containerPadding: Self = 8
+    static let accessibilityHitInset: Self = 6
 }
 

@@ -1,21 +1,10 @@
 import SwiftUI
 
 struct NextInjectionCellView: View {
-    private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = .dateFormat
-        return formatter.string(from: Date())
-    }
-
     var body: some View {
-        Text(formattedDate)
+        Text(Date(), format: .dateTime.month(.wide).day().year())
+            .accessibilityElement(children: .combine)
     }
-}
-
-// MARK: - Constants
-
-private extension String {
-    static let dateFormat = "dd.MM.yyyy"
 }
 
 // MARK: - Preview

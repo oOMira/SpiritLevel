@@ -3,6 +3,7 @@ import WebKit
 
 struct MoodView: View {
     @StateObject private var model: MoodViewModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(mood: Mood) {
         _model = StateObject(wrappedValue: MoodViewModel(mood: mood))
@@ -10,9 +11,11 @@ struct MoodView: View {
 
     var body: some View {
         WebView(model.page)
-            .onAppear { model.loadGif() }
+            .onAppear { model.loadGif(isStatic: reduceMotion) }
             .onDisappear { model.loadBlank() }
             .webViewContentBackground(.hidden)
+            .webViewTextSelection(.disabled)
+            .onChange(of: reduceMotion) { model.loadGif(isStatic: reduceMotion) }
     }
 }
 
@@ -28,8 +31,9 @@ final class MoodViewModel: ObservableObject {
         self.page = .init()
     }
 
-    func loadGif() {
-        guard let resourceUrl = Bundle.module.url(forResource: "smilecat",
+    func loadGif(isStatic: Bool) {
+        let resourceName = mood.getResourceName(isStatic: isStatic)
+        guard let resourceUrl = Bundle.module.url(forResource: resourceName,
                                                   withExtension: .gifExtension),
               let data = try? Data(contentsOf: resourceUrl) else { return }
         
@@ -77,5 +81,15 @@ private extension String {
         </body>
         </html>
         """
+    }
+}
+
+private extension Mood {
+    func getResourceName(isStatic: Bool = false) -> String {
+        let resourceName: String
+        switch self {
+        case .happy: return isStatic ? "smilecatstatic" : "smilecat"
+        case .sad: return isStatic ? "sadcatstatic" : "sadsmilecat"
+        }
     }
 }

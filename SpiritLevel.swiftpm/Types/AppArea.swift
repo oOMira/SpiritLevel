@@ -39,18 +39,3 @@ enum AppArea: String, SearchableItem {
     }
 }
 
-// MARK: - AppArea+View
-
-//extension AppArea {
-//    @ViewBuilder
-//    func getInnverView() -> some View {
-//        switch self {
-//        case .overview:
-//            return Overview()
-//        case .statisitcs:
-//            return StatisticsView()
-//        case .settings:
-//            return SettingsView()
-//        }
-//    }
-//}

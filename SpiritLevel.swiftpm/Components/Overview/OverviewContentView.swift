@@ -30,6 +30,7 @@ struct OverviewContentView: View {
             case .achivements:
                 Section {
                     AchievementsCellView()
+                        .accessibilityElement(children: .contain)
                 } header: {
                     NavigationLink(destination: {
                         AchievementsView()
@@ -41,6 +42,7 @@ struct OverviewContentView: View {
                         }
                     })
                     .buttonStyle(.plain)
+                    .accessibilityHint("Double tap for details")
                 }
             }
         }

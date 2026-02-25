@@ -23,6 +23,8 @@ struct Overview: View {
             PhoneQuickActionsView(action: { feature in
                 activeSheet = feature
             })
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Quick Actions")
         }
     }
 }

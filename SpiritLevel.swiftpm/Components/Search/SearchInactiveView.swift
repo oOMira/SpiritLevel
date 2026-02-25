@@ -28,7 +28,7 @@ struct SearchInactiveView: View {
                                       image: item.image,
                                       color: item.accentColor))
                     })
-                    .listRowInsets(.bottom, 0)
+                    .listRowInsets(.vertical, 8)
                     .navigationLinkIndicatorVisibility(.hidden)
                 }
                 .listRowSeparator(.hidden)
@@ -40,12 +40,14 @@ struct SearchInactiveView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: .horizontalSpacing) {
                         ForEach(actionItems, id: \.id) { item in
-                            SearchActionCellView(configuration:
-                                    .init(label: item.label,
-                                          image: item.image))
-                            .onTapGesture {
+                            Button(action: {
                                 activeSheet = item
-                            }
+                            }, label: {
+                                SearchActionCellView(configuration:
+                                        .init(label: item.label,
+                                              image: item.image))
+                            })
+                            .foregroundStyle(.primary)
                         }
                     }
                 }

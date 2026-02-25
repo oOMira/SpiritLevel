@@ -24,6 +24,8 @@ struct TrendView: View, Identifiable {
             Spacer()
             configuration.trend.image
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(configuration.trend.rawValue)
     }
 }
 

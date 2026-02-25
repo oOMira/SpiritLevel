@@ -35,6 +35,10 @@ struct SelectTreatmentPlan: View {
                 DatePicker(.firstInjectionDateLabel,
                            selection: $selectedDate,
                            displayedComponents: .date)
+                .accessibilityElement(children: .combine)
+                //TODO: - Fill Date
+                .accessibilityValue("Date")
+                .accessibilityHint("Double tap to change")
 
             }
             Section {
