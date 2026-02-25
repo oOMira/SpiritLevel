@@ -26,9 +26,4 @@ enum OverviewFeature: String, CaseIterable, SearchableItem {
         case .achivements:      "star"
         }
     }
-    
-    // TODO: Add mapping
-    var view: any View {
-        Text(self.label)
-    }
 }

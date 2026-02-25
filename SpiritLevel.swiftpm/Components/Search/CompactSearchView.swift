@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct CompactSearchView: View {
-    @ObservedObject var viewModel = SearchHistoryViewModel()
     @State private var searchText: String = ""
     
     var body: some View {

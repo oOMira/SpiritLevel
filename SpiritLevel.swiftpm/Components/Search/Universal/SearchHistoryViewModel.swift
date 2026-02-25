@@ -1,7 +1,12 @@
 import SwiftUI
 
-final class SearchHistoryViewModel: ObservableObject {
-    @State private var appStateManager = AppStateManager.shared
+@Observable
+final class SearchHistoryViewManager<AppStateManagerType: AppStateManagable> {
+    var appStateManager: AppStateManagerType
+    
+    init(appStateManager: AppStateManagerType) {
+        self.appStateManager = appStateManager
+    }
     
     var searchHistory: [String] {
         (try? JSONDecoder().decode([String].self, from: Data(appStateManager.searchHistoryData.utf8))) ?? []

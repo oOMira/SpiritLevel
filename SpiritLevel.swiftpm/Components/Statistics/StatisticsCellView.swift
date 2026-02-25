@@ -9,7 +9,7 @@ struct StatisticsCellView: View {
                                            t_max: Ester.enanthate.configuration.tMax,
                                            c_max: Ester.enanthate.configuration.cMax)
 
-    static let injections: [Injection] = [
+    static let injections: [OldInjection] = [
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -30, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -15, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: today),

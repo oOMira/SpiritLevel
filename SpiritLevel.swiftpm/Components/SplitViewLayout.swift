@@ -2,7 +2,12 @@ import SwiftUI
 
 struct SplitViewLayout<AppStateManagerType: AppStateManagable>: View {
     @Bindable var appStateManager: AppStateManagerType
+    
     @State private var activeSheet: ShortcutFeature? = nil
+    
+    init(appStateManager: AppStateManagerType) {
+        self.appStateManager = appStateManager
+    }
     
     var body: some View {
         let enumaratedAppAreas = Array(AppArea.allCases.enumerated())

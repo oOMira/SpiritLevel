@@ -38,7 +38,9 @@ private extension Double {
     @Previewable @State var expanded = true
     List {
         Section {
-            Text("Content goes here")
+            if expanded {
+                Text("Content goes here")
+            }
         } header: {
             ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
         }
@@ -50,19 +52,9 @@ private extension Double {
     @Previewable @State var expanded = false
     List {
         Section {
-            Text("Content goes here")
-        } header: {
-            ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
-        }
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Expanded - Dark Mode") {
-    @Previewable @State var expanded = true
-    List {
-        Section {
-            Text("Content goes here")
+            if expanded {
+                Text("Content goes here")
+            }
         } header: {
             ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
         }
@@ -70,15 +62,4 @@ private extension Double {
     .preferredColorScheme(.dark)
 }
 
-#Preview("Collapsed - Dark Mode") {
-    @Previewable @State var expanded = false
-    List {
-        Section {
-            Text("Content goes here")
-        } header: {
-            ExpandableSectionHeader(title: "Section Title", expanded: $expanded)
-        }
-    }
-    .preferredColorScheme(.dark)
-}
 

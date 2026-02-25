@@ -8,7 +8,7 @@ struct CurrentHormoneLevelCellView: View {
                                            t_max: Ester.enanthate.configuration.tMax,
                                            c_max: Ester.enanthate.configuration.cMax)
 
-    static let injections: [Injection] = [
+    static let injections: [OldInjection] = [
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -30, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -15, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: today),
@@ -47,24 +47,3 @@ struct CurrentHormoneLevelCellView: View {
 private extension CGFloat {
     static let chartHeight: Self = 200
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        Section("Current Level") {
-            CurrentHormoneLevelCellView()
-        }
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        Section("Current Level") {
-            CurrentHormoneLevelCellView()
-        }
-    }
-    .preferredColorScheme(.dark)
-}
-

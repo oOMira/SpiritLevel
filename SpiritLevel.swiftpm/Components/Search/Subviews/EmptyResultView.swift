@@ -11,6 +11,7 @@ struct EmptySearchResultsView: View {
                 .font(.title3)
                 .padding(.top)
         }
+        .accessibilityElement(children: .combine)
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.top, .topPadding)
     }
@@ -30,22 +31,4 @@ private extension String {
 private extension CGFloat {
     static let iconTextSpacing: Self = 8
     static let topPadding: Self = 50
-}
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        EmptySearchResultsView()
-            .listRowSeparator(.hidden)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        EmptySearchResultsView()
-            .listRowSeparator(.hidden)
-    }
-    .preferredColorScheme(.dark)
 }

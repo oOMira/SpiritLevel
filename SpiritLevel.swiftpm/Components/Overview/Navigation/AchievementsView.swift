@@ -71,33 +71,3 @@ private extension LocalizedStringKey {
     static let navigationTitle: Self = "Achievements"
 }
 
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    NavigationStack {
-        AchievementsView(isDone: false)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Light Mode - Done") {
-    NavigationStack {
-        AchievementsView(isDone: true)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        AchievementsView(isDone: false)
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Dark Mode - Done") {
-    NavigationStack {
-        AchievementsView(isDone: true)
-    }
-    .preferredColorScheme(.dark)
-}
-

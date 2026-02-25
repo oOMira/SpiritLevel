@@ -1,10 +1,14 @@
 import SwiftUI
 
+// MARK: - AppStateManagable
+
 protocol AppStateManagable: Observable, AnyObject {
     var selectedTab: Int { get set }
     var isMoodExpanded: Bool { get set }
     var searchHistoryData: String { get set }
 }
+
+// MARK: - AppStateManager
 
 @Observable
 final class AppStateManager: AppStateManagable {

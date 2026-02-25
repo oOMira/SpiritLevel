@@ -23,9 +23,4 @@ enum SettingsFeature: String, CaseIterable, SearchableItem {
         case .deleteData:   "trash"
         }
     }
-    
-    // TODO: Add mapping
-    var view: any View {
-        Text(self.label)
-    }
 }

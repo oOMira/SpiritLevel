@@ -1,45 +1,45 @@
 import SwiftUI
 
-struct SearchView<AppStateManagerType: AppStateManagable>: View {
-    var appStateManager: AppStateManagerType
+struct SearchView<AppStateManagerType: AppStateManagable,
+                  SearchResultsManagerType: SearchResultsManagable>: View {
+    
+    private var appStateManager: AppStateManagerType
+    private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
+    @Bindable private var searchResultsManager: SearchResultsManagerType
+    
+    init(appStateManager: AppStateManagerType,
+         searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>,
+         searchResultsManager: SearchResultsManagerType) {
+        self.appStateManager = appStateManager
+        self.searchHistoryManager = searchHistoryManager
+        self.searchResultsManager = searchResultsManager
+    }
+    
+    init(appStateManager: AppStateManagerType,
+         searchResultsManager: SearchResultsManagerType) {
+        self.appStateManager = appStateManager
+        self.searchHistoryManager = .init(appStateManager: appStateManager)
+        self.searchResultsManager = searchResultsManager
+    }
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
-    @State var searchResultsManager = SearchResultsManager()
-
-    private var searchHistory: [String] {
-        (try? JSONDecoder().decode([String].self, from: Data(appStateManager.searchHistoryData.utf8))) ?? []
-    }
-
-    private func addToHistory(_ query: String) {
-        let trimmed = query.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
-        var history = searchHistory
-        history.removeAll { $0 == trimmed }
-        history.insert(trimmed, at: 0)
-        history = Array(history.prefix(Int.maxHistoryItems))
-        if let data = try? JSONEncoder().encode(history) {
-            appStateManager.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"
-        }
-    }
-
-    private func clearHistory() {
-        appStateManager.searchHistoryData = "[]"
-    }
 
     var body: some View {
         NavigationView {
             List {
                 if isSearching {
-                    SearchActiveView(searchManager: searchResultsManager)
+                    SearchActiveView(searchManager: searchResultsManager,
+                                     searchHistoryManager: searchHistoryManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
+                                       appStateManager: appStateManager,
                                        navigationItems: AppArea.allCases,
                                        actionItems: ShortcutFeature.allCases)
                 }
             }
             .animation(.snappy, value: searchResultsManager.searchText)
-            .animation(.snappy, value: searchHistory.isEmpty)
+            .animation(.snappy, value: searchHistoryManager.searchHistory.isEmpty)
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(
@@ -50,7 +50,7 @@ struct SearchView<AppStateManagerType: AppStateManagable>: View {
             )
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
-                addToHistory(searchResultsManager.searchText)
+                searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {

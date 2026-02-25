@@ -17,10 +17,5 @@ enum ShortcutFeature: String, SearchableItem, CaseIterable {
         case .logInjection: "syringe"
         }
     }
-    
-    // TODO: Add mapping
-    var view: any View {
-        Text(self.label)
-    }
 }
 

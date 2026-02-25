@@ -1,11 +1,8 @@
 import SwiftUI
 
-struct SearchInactiveView: View {
+struct SearchInactiveView<AppStateMangerType: AppStateManagable>: View {
     @Binding var activeSheet: ShortcutFeature?
-    @State private var appStateManager = AppStateManager.shared
-    
-    @Namespace private var animationNamespace
-    private let addItemTransitionID = "addItemTransition"
+    var appStateManager: AppStateMangerType
     
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]

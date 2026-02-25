@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct MoodCellView: View {
     var body: some View {
@@ -15,20 +14,4 @@ struct MoodCellView: View {
 
 private extension CGFloat {
     static let moodViewSize: Self = 200
-}
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        MoodCellView()
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        MoodCellView()
-    }
-    .preferredColorScheme(.dark)
 }

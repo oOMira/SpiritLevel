@@ -1,7 +1,16 @@
 import SwiftUI
 
-struct TabViewLayout<AppStateManagerType: AppStateManagable>: View {
-    @Bindable var appStateManager: AppStateManagerType
+struct TabViewLayout<AppStateManagerType: AppStateManagable,
+                     SearchResultsManagerType: SearchResultsManagable>: View {
+    
+    @Bindable private var appStateManager: AppStateManagerType
+    private var searchResultsManager: SearchResultsManagerType
+    
+    init(appStateManager: AppStateManagerType, searchResultsManager: SearchResultsManagerType) {
+        self.appStateManager = appStateManager
+        self.searchResultsManager = searchResultsManager
+    }
+    
     
     var body: some View {
         TabView(selection: $appStateManager.selectedTab) {
@@ -20,8 +29,9 @@ struct TabViewLayout<AppStateManagerType: AppStateManagable>: View {
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
-                SearchView(appStateManager: appStateManager)
+                SearchView(appStateManager: appStateManager, searchResultsManager: searchResultsManager)
             }
         }
     }
 }
+

@@ -1,7 +1,7 @@
 import Foundation
 
 struct HormoneLevelManager {
-    private let injections: [Injection]
+    private let injections: [OldInjection]
     private let lvlFunctions: [OneComponentBateman]
     
     var lastIterval: Double {
@@ -9,7 +9,7 @@ struct HormoneLevelManager {
         return lastTwo[1].date.timeIntervalSince(lastTwo[0].date) / 86_400
     }
     
-    init(injections: [Injection]) {
+    init(injections: [OldInjection]) {
         self.injections = injections
         self.lvlFunctions = injections.map { injection in
             let esterConfiguration = injection.ester.configuration

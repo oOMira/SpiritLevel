@@ -19,21 +19,3 @@ private extension LocalizedStringKey {
 private extension CGFloat {
     static let topPadding: Self = 32
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        NoSearchHistoryCell()
-            .listRowSeparator(.hidden)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        NoSearchHistoryCell()
-            .listRowSeparator(.hidden)
-    }
-    .preferredColorScheme(.dark)
-}
