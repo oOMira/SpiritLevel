@@ -68,6 +68,10 @@ private extension String {
                     height: 100%;
                     background: transparent;
                     overflow: hidden;
+                    pointer-events: none;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    -webkit-touch-callout: none;
                 }
                 img {
                     width: 100%;
@@ -86,7 +90,6 @@ private extension String {
 
 private extension Mood {
     func getResourceName(isStatic: Bool = false) -> String {
-        let resourceName: String
         switch self {
         case .happy: return isStatic ? "smilecatstatic" : "smilecat"
         case .sad: return isStatic ? "sadcatstatic" : "sadsmilecat"

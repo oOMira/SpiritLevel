@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct AchievementsView: View {
+    @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
+    let isDone: Bool
+    
     var body: some View {
         List {
             ForEach(Achievement.allCases) { achivement in
@@ -11,7 +14,22 @@ struct AchievementsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: .cornerRadius,
                                                     style: .continuous))
                         .frame(width: .frameWidth)
-                        .padding(.trailing)
+                        .grayscale(isDone ? 0.0 : 1.0)
+                        .opacity(accessibilityDifferentiateWithoutColor ? 0.5 : 1.0)
+                        .accessibilityIgnoresInvertColors()
+                        .overlay {
+                            if accessibilityDifferentiateWithoutColor {
+                                Image(systemName: isDone
+                                      ? "checkmark.circle"
+                                      : "x.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .frame(maxHeight: .infinity, alignment: .center)
+                                .padding(4)
+                                .accessibilityHidden(true)
+                            }
+                        }
                     VStack {
                         Text(achivement.name)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -20,6 +38,8 @@ struct AchievementsView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityValue(isDone ? "done" : "")
             }
         }
         .listStyle(.plain)
@@ -41,14 +61,28 @@ private extension LocalizedStringKey {
 
 #Preview("Light Mode") {
     NavigationStack {
-        AchievementsView()
+        AchievementsView(isDone: false)
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Light Mode - Done") {
+    NavigationStack {
+        AchievementsView(isDone: true)
     }
     .preferredColorScheme(.light)
 }
 
 #Preview("Dark Mode") {
     NavigationStack {
-        AchievementsView()
+        AchievementsView(isDone: false)
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Dark Mode - Done") {
+    NavigationStack {
+        AchievementsView(isDone: true)
     }
     .preferredColorScheme(.dark)
 }

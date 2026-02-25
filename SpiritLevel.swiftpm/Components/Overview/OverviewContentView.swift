@@ -8,7 +8,12 @@ struct OverviewContentView: View {
             switch feature {
             case .mood:
                 Section {
-                    if appState.isMoodExpanded { MoodCellView() }
+                    if appState.isMoodExpanded {
+                        MoodCellView()
+                            .accessibilityElement(children: .combine)
+                            .accessibilityAddTraits(.isImage)
+                            .accessibilityLabel(Mood.happy.rawValue)
+                    }
                 } header: {
                     ExpandableSectionHeader(title: .moodTitle, expanded: $appState.isMoodExpanded)
                 }
@@ -29,11 +34,11 @@ struct OverviewContentView: View {
                 }
             case .achivements:
                 Section {
-                    AchievementsCellView()
+                    AchievementsCellView(isDone: false)
                         .accessibilityElement(children: .contain)
                 } header: {
                     NavigationLink(destination: {
-                        AchievementsView()
+                        AchievementsView(isDone: true)
                     }, label: {
                         HStack {
                             Text(feature.label)

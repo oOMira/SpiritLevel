@@ -84,7 +84,7 @@ private extension SearchView {
 @MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Search"
-    static let searchPrompt: Self = "Search for feature"
+    static let searchPrompt: Self = "Search"
     static let recentSearchesTitle: Self = "Recent Searches"
     static let clearHistoryButton: Self = "Clear history"
 }

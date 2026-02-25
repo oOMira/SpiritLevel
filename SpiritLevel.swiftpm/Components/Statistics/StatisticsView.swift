@@ -8,14 +8,21 @@ struct StatisticsView: View {
             }
             
             Section(.injectionsSectionTitle) {
-                Text(.injectionSampleData)
+                Group {
+                    Text(.injectionSampleData)
+                    Text(.injectionSampleData)
+                }
+                .accessibilityElement(children: .contain)
                 Button(.showMoreButton) {
                     print("show more injections")
                 }
             }
             
             Section(.labResultsSectionTitle) {
-                Text(.labResultSampleData)
+                Group {
+                    Text(.labResultSampleData)
+                }
+                .accessibilityElement(children: .contain)
                 Button(.showMoreButton) {
                     print("show more lab results")
                 }

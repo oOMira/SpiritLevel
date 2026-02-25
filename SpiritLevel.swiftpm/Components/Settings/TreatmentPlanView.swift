@@ -12,6 +12,7 @@ struct TreatmentPlanView: View {
                     SelectTreatmentPlan()
                 }, label: {
                     Text(.enanthateLabel)
+                        .accessibilityHint("active treatment plan, double tap to select a different one")
                 })
             }
             

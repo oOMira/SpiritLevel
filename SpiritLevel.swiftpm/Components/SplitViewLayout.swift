@@ -36,6 +36,7 @@ struct SplitViewLayout: View {
                         }
                     }
                 }
+                .accessibilityElement(children: .contain)
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {

@@ -22,6 +22,10 @@ struct CustomTreatmentPlanConfigurationView: View {
                 .multilineTextAlignment(.trailing)
                 .padding(.trailing, .textFieldTrailingPadding)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint("double tab to edit name")
+
         Picker(.esterLabel, selection: $selectedEster) {
             ForEach(Ester.allCases) { ester in
                 Text(ester.name).tag(ester)

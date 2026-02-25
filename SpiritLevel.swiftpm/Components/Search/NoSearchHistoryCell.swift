@@ -6,7 +6,6 @@ struct NoSearchHistoryCell: View {
             .font(.title3)
             .frame(maxWidth: .infinity)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, .topPadding)
             .padding(.horizontal)
     }
 }

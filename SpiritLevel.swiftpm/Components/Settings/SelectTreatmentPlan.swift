@@ -36,8 +36,7 @@ struct SelectTreatmentPlan: View {
                            selection: $selectedDate,
                            displayedComponents: .date)
                 .accessibilityElement(children: .combine)
-                //TODO: - Fill Date
-                .accessibilityValue("Date")
+                .accessibilityValue(selectedDate.formatted(date: .abbreviated, time: .omitted))
                 .accessibilityHint("Double tap to change")
 
             }

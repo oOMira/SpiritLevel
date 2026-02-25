@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SearchSuggestionCellView: View {
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     let configuration: Configuration
     
     var body: some View {
@@ -18,7 +19,7 @@ struct SearchSuggestionCellView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
-                .fill(configuration.color.opacity(.backgroundOpacity))
+                .fill(configuration.color.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))
         )
     }
 }
@@ -40,7 +41,9 @@ private extension CGFloat {
 }
 
 private extension Double {
-    static let backgroundOpacity: Self = 0.75
+    static func backgroundOpacity(increasedContrast: Bool) -> Self {
+        increasedContrast ? 0.3 : 0.75
+    }
 }
 
 // MARK: - Preview

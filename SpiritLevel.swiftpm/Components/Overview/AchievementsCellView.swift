@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct AchievementsCellView: View {
+    let isDone: Bool
+    @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
+    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .contentSpacing) {
@@ -19,12 +22,34 @@ struct AchievementsCellView: View {
                         .containerRelativeFrame(.horizontal,
                                                 count: 1,
                                                 spacing: .contentSpacing)
+                        .accessibilityIgnoresInvertColors()
+                        .overlay(alignment: .bottomTrailing) {
+                            if accessibilityDifferentiateWithoutColor {
+                                GeometryReader { proxy in
+                                    Image(systemName: isDone
+                                          ? "checkmark.circle"
+                                          : "x.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: proxy.size.width / 4.0,
+                                           height: proxy.size.height / 4.0)
+                                    .padding(8)
+                                    // important for readability
+                                    .shadow(color: Color(uiColor: .systemBackground),
+                                            radius: 5, x: 0, y: 0)
+                                    .frame(maxWidth: .infinity,
+                                           maxHeight: .infinity,
+                                           alignment: .bottomTrailing)
+                                    .accessibilityHidden(true)
+                                }
+                            }
+                        }
                         .scrollTransition(.interactive,
                                           axis: .horizontal) { effect, phase in
                             let scale = 1.0 - min(0.15, abs(phase.value))
                             return effect.scaleEffect(CGFloat(scale))
                         }
-                        .grayscale(1.0)
+                        .grayscale(isDone ? 0.0 : 1.0)
                         .contentShape(.accessibility, roundedRectangle)
                 }
             }

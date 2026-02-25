@@ -13,6 +13,9 @@ struct QuickActionsControl: View {
                 .accessibilityLabel(action.feature.label)
                 .foregroundStyle(.primary)
                 .contentShape(.accessibility, Circle().inset(by: -.accessibilityHitInset))
+                .accessibilityShowsLargeContentViewer {
+                    Label(action.feature.label, systemImage: action.feature.systemImageName)
+                }
             }
         }
         .font(.system(size: .iconSize))

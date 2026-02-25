@@ -16,6 +16,10 @@ extension SettingsView {
                         .font(.footnote)
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(.treatmentPlanTitle)
+            .accessibilityValue(.planDetails)
+            .accessibilityHint("selected treatment plan, double tap to configure")
         }
     }
 }

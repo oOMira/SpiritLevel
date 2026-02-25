@@ -9,6 +9,7 @@ struct SearchActiveView: View {
             if viewModel.searchHistory.isEmpty {
                 NoSearchHistoryCell()
                     .listRowSeparator(.hidden)
+                    .padding(.vertical, 32)
             } else {
                 SearchHistoryView(searchHistory: viewModel.searchHistory,
                                   clearHistory: viewModel.clearHistory)

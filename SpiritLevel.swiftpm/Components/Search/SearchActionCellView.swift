@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SearchActionCellView: View {
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     let configuration: Configuration
 
     var body: some View {
@@ -9,7 +10,7 @@ struct SearchActionCellView: View {
                 .font(.title)
                 .padding(.top)
             Text(configuration.label)
-                .font(.default)
+                .font(.title3)
                 .padding()
         }
         .containerRelativeFrame(.horizontal,
@@ -17,7 +18,7 @@ struct SearchActionCellView: View {
                                 spacing: .horizontalSpacing)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
-                .fill(.gray.opacity(.backgroundOpacity))
+                .fill(.gray.opacity(.backgroundOpacity(increasedContrast: colorSchemeContrast == .increased)))
         )
     }
 }
@@ -41,7 +42,9 @@ private extension CGFloat {
 }
 
 private extension Double {
-    static let backgroundOpacity: Self = 0.75
+    static func backgroundOpacity(increasedContrast: Bool) -> Self {
+        increasedContrast ? 0.3 : 0.75
+    }
 }
 
 // MARK: - Preview
