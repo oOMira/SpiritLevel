@@ -67,19 +67,3 @@ private extension CGFloat {
     static let nameLabelTrailingPadding: Self = 8
     static let textFieldTrailingPadding: Self = 2
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        CustomTreatmentPlanConfigurationView(ester: .enanthate)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        CustomTreatmentPlanConfigurationView(ester: .enanthate)
-    }
-    .preferredColorScheme(.dark)
-}

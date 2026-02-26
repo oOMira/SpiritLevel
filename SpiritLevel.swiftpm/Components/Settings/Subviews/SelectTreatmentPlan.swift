@@ -68,19 +68,3 @@ private extension LocalizedStringKey {
     static let firstInjectionDateLabel: Self = "First Injection Date"
     static let setPlanButtonTitle: Self = "Set Plan"
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    NavigationStack {
-        SelectTreatmentPlan()
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        SelectTreatmentPlan()
-    }
-    .preferredColorScheme(.dark)
-}

@@ -64,19 +64,3 @@ private extension Double {
 private extension CGFloat {
     static let chartHeight: Self = 200
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    List {
-        StatisticsCellView()
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        StatisticsCellView()
-    }
-    .preferredColorScheme(.dark)
-}

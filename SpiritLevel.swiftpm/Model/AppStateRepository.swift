@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 // MARK: - AppStateManagable
 
@@ -11,8 +11,8 @@ protocol AppStateManagable: Observable, AnyObject {
 // MARK: - AppStateManager
 
 @Observable
-final class AppStateManager: AppStateManagable {
-    @MainActor static let shared = AppStateManager()
+final class AppStateRepository: AppStateManagable {
+    @MainActor static let shared = AppStateRepository()
 
     var selectedTab: Int = UserDefaults.standard.integer(forKey: "selectedTab") {
         didSet { UserDefaults.standard.set(selectedTab, forKey: "selectedTab") }

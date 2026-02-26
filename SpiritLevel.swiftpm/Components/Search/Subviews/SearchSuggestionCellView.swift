@@ -16,7 +16,6 @@ struct SearchSuggestionCellView: View {
             }
             .padding()
         }
-        .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
                 .fill(configuration.color.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))

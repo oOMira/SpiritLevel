@@ -31,7 +31,7 @@ final class SearchResultsManager: SearchResultsManagable {
 }
 
 extension SearchResultsManager {
-    static func getDefaultItems(appStateManager: AppStateManager) -> [SearchItem] {
+    static func getDefaultItems(appStateManager: AppStateRepository) -> [SearchItem] {
         [
             AppArea.getSearchItems(appStateManager: appStateManager),
             OverviewFeature.getSearchItems(),

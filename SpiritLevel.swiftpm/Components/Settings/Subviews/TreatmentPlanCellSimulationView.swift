@@ -51,38 +51,3 @@ private extension CGFloat {
     static let yScaleMin: Self = 0
     static let yScaleMax: Self = 500
 }
-
-// MARK: - Preview
-
-#Preview("First Injection - Light Mode") {
-    @Previewable @State var simulationStyle = 0
-    List {
-        TreatmentPlanCellSimulationView(simulationStyle: $simulationStyle)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Stable - Light Mode") {
-    @Previewable @State var simulationStyle = 1
-    List {
-        TreatmentPlanCellSimulationView(simulationStyle: $simulationStyle)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("First Injection - Dark Mode") {
-    @Previewable @State var simulationStyle = 0
-    List {
-        TreatmentPlanCellSimulationView(simulationStyle: $simulationStyle)
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Stable - Dark Mode") {
-    @Previewable @State var simulationStyle = 1
-    List {
-        TreatmentPlanCellSimulationView(simulationStyle: $simulationStyle)
-    }
-    .preferredColorScheme(.dark)
-}
-

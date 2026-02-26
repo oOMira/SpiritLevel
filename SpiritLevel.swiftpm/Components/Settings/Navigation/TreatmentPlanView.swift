@@ -57,22 +57,6 @@ private extension LocalizedStringKey {
     static let addSimulationLabel: Self = "Add new simulation"
 }
 
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    NavigationStack {
-        TreatmentPlanView()
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        TreatmentPlanView()
-    }
-    .preferredColorScheme(.dark)
-}
-
 
 private struct CustomTreatmentPlanView: View {
     @State private var selectedEster: Ester = .enanthate

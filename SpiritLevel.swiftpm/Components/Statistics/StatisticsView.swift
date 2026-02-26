@@ -3,28 +3,33 @@ import SwiftUI
 struct StatisticsView: View {
     var body: some View {
         List {
-            Section {
-                StatisticsCellView()
-            }
-            
-            Section(.injectionsSectionTitle) {
-                Group {
-                    Text(.injectionSampleData)
-                    Text(.injectionSampleData)
-                }
-                .accessibilityElement(children: .contain)
-                Button(.showMoreButton) {
-                    print("show more injections")
-                }
-            }
-            
-            Section(.labResultsSectionTitle) {
-                Group {
-                    Text(.labResultSampleData)
-                }
-                .accessibilityElement(children: .contain)
-                Button(.showMoreButton) {
-                    print("show more lab results")
+            ForEach(StatisticsFeature.allCases) { feature in
+                switch feature {
+                case .graph:
+                    Section {
+                        StatisticsCellView()
+                    }
+                case .labResults:
+                    Section(.injectionsSectionTitle) {
+                        Group {
+                            Text(.injectionSampleData)
+                            Text(.injectionSampleData)
+                        }
+                        .accessibilityElement(children: .contain)
+                        Button(.showMoreButton) {
+                            print("show more injections")
+                        }
+                    }
+                case .injections:
+                    Section(.labResultsSectionTitle) {
+                        Group {
+                            Text(.labResultSampleData)
+                        }
+                        .accessibilityElement(children: .contain)
+                        Button(.showMoreButton) {
+                            print("show more lab results")
+                        }
+                    }
                 }
             }
         }

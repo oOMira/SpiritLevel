@@ -40,7 +40,6 @@ struct SearchActiveView<SearchManagerType: SearchResultsManagable,
                 ForEach(searchManager.filteredItems, id: \.id) { item in
                     NavigationLink(destination: {
                         item.configuration.getDestination()
-//                        .navigationTitle(item.label)
                     }, label: {
                         SearchResultCellView(label: item.label, image: item.image)
                     })

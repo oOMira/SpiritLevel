@@ -1,7 +1,7 @@
 // MARK: - AppArea+SearchItems
 
 extension AppArea {
-    static func getSearchItems(appStateManager: AppStateManager) -> [SearchItem] {
+    static func getSearchItems(appStateManager: AppStateRepository) -> [SearchItem] {
         Self.allCases.compactMap { area in
             var configuration: NavigationConfiguration {
                 switch area {
@@ -76,7 +76,7 @@ extension SettingsFeature {
                 return nil
             case .support:
                 return .settings(feature: feature,
-                                 configuration: .init(destination: { SupportSection() }))
+                                 configuration: .init(embedInList: true, destination: { SupportSection() }))
             case .data:
                 return nil
             }

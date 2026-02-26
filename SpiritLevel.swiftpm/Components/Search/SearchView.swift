@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SearchView<AppStateManagerType: AppStateManagable,
                   SearchResultsManagerType: SearchResultsManagable>: View {
+
+    @State private var navManager = NavigationManager()
     
     private var appStateManager: AppStateManagerType
     private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
@@ -26,7 +28,7 @@ struct SearchView<AppStateManagerType: AppStateManagable,
     @State private var isSearching: Bool = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $navManager.path) {
             List {
                 if isSearching {
                     SearchActiveView(searchManager: searchResultsManager,
@@ -62,7 +64,15 @@ struct SearchView<AppStateManagerType: AppStateManagable,
                         .presentationDetents([.medium, .large])
                 }
             }
+            .navigationDestination(for: AppArea.self) { item in
+                switch item {
+                case .overview: Overview(appStateManager: appStateManager)
+                case .statisitcs: StatisticsView()
+                case .settings: SettingsView()
+                }
+            }
         }
+        .environment(navManager)
     }
 }
 
