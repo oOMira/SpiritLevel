@@ -5,6 +5,8 @@ enum StatisticsFeature: String, CaseIterable, SearchableItem {
     case injections
     case labResults
     
+    var itemType: ItemType { .content }
+    
     var label: String {
         switch self {
         case .graph:        "Graph"

@@ -54,27 +54,26 @@ struct SearchView<AppStateManagerType: AppStateManagable,
             .onSubmit(of: .search) {
                 searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
-            .sheet(item: $activeSheet) { sheet in
-                switch sheet {
-                case .logInjection:
-                    LogInjectionView()
-                        .presentationDetents([.medium, .large])
-                case .logLab:
-                    LogLabView()
-                        .presentationDetents([.medium, .large])
-                }
-            }
-            .navigationDestination(for: AppArea.self) { item in
-                switch item {
-                case .overview: Overview(appStateManager: appStateManager)
-                case .statisitcs: StatisticsView()
-                case .settings: SettingsView()
-                }
-            }
+            .activeSheetDestination(activeSheet: $activeSheet)
+            .appAreaNavigationDestinations(appStateManager: appStateManager)
+            .selectedSearchItemDestination()
         }
         .environment(navManager)
     }
 }
+
+// MARK: - View Modifiers
+
+private extension View {
+    func activeSheetDestination(activeSheet: Binding<ShortcutFeature?>) -> some View {
+        modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(activeSheet: activeSheet))
+    }
+
+    func appAreaNavigationDestinations<AppStateManagerType: AppStateManagable>(appStateManager: AppStateManagerType) -> some View {
+        modifier(SearchInactiveViewModifier.SearchActiveNavigationModifier(appStateManager: appStateManager))
+    }
+}
+
 
 // MARK: - Constants
 

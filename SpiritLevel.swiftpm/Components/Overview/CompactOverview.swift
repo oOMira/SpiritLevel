@@ -4,7 +4,7 @@ struct CompactOverview<AppStateMangerType: AppStateManagable>: View {
     var appStateManager: AppStateMangerType
     
     var body: some  View {
-        ZStack(alignment: .bottomTrailing) {
+        NavigationStack {
             List {
                 OverviewContentView(appStateManager: appStateManager)
             }

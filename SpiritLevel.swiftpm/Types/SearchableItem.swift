@@ -1,6 +1,7 @@
 import SwiftUI
 
 protocol SearchableItem: Identifiable, Hashable, RawRepresentable where RawValue == String {
+    var itemType: ItemType { get }
     var label: String { get }
     var systemImageName: String { get }
     var image: Image { get }

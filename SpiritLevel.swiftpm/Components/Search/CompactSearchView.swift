@@ -3,6 +3,8 @@ import SwiftUI
 struct CompactSearchView<AppStateManagerType: AppStateManagable,
                          SearchResultsManagerType: SearchResultsManagable>: View {
     
+    @State private var navigationManager = NavigationManager()
+    
     private var appStateManager: AppStateManagerType
     private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
     @Bindable private var searchResultsManager: SearchResultsManagerType
@@ -23,17 +25,25 @@ struct CompactSearchView<AppStateManagerType: AppStateManagable,
     }
     
     var body: some View {
-        List {
-            SearchActiveView(appStateManager: appStateManager,
-                             searchManager: searchResultsManager)
+        NavigationStack(path: $navigationManager.path) {
+            List {
+                SearchActiveView(appStateManager: appStateManager,
+                                 searchManager: searchResultsManager)
+            }
+            .animation(.snappy, value: searchResultsManager.searchText)
+            .animation(.snappy, value: searchHistoryManager.searchHistory.isEmpty)
+            .listStyle(.plain)
+            .autocorrectionDisabled(true)
+            .searchable(
+                text: $searchResultsManager.searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: Text("search")
+            )
+            .onSubmit(of: .search) {
+                searchHistoryManager.addToHistory(searchResultsManager.searchText)
+            }
+            .selectedSearchItemDestination()
         }
-        .listStyle(.plain)
-        .navigationTitle("Search")
-        .navigationBarTitleDisplayMode(.large)
-        .searchable(
-            text: $searchResultsManager.searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: Text("search")
-        )
+        .environment(navigationManager)
     }
 }

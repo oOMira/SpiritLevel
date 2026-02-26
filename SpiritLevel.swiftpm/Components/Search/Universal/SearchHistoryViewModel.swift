@@ -13,11 +13,10 @@ final class SearchHistoryViewManager<AppStateManagerType: AppStateManagable> {
     }
 
     func addToHistory(_ query: String) {
-        let trimmed = query.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
+        guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         var history = searchHistory
-        history.removeAll { $0 == trimmed }
-        history.insert(trimmed, at: 0)
+        history.removeAll { $0 == query }
+        history.insert(query, at: 0)
         history = Array(history.prefix(Int.maxHistoryItems))
         if let data = try? JSONEncoder().encode(history) {
             appStateManager.searchHistoryData = String(data: data, encoding: .utf8) ?? "[]"

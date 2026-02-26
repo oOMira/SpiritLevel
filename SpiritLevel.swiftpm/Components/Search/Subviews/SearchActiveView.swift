@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SearchActiveView<SearchManagerType: SearchResultsManagable,
                         AppStateManagerType: AppStateManagable>: View {
-    
+
     var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
     @Bindable var searchManager: SearchManagerType
     
@@ -38,11 +38,9 @@ struct SearchActiveView<SearchManagerType: SearchResultsManagable,
                     .listRowSeparator(.hidden)
             } else {
                 ForEach(searchManager.filteredItems, id: \.id) { item in
-                    NavigationLink(destination: {
-                        item.configuration.getDestination()
-                    }, label: {
+                    NavigationLink(value: item) {
                         SearchResultCellView(label: item.label, image: item.image)
-                    })
+                    }
                 }
             }
         }

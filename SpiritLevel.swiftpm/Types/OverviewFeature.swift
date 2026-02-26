@@ -6,6 +6,8 @@ enum OverviewFeature: String, CaseIterable, SearchableItem {
     case nextInjection
     case trend
     case achivements
+    
+    var itemType: ItemType { .content }
 
     var label: String {
         switch self {

@@ -6,6 +6,8 @@ enum SettingsFeature: String, CaseIterable, SearchableItem {
     case data
     case deleteData
     
+    var itemType: ItemType { .content }
+    
     var label: String {
         switch self {
         case .plan:         "Plan"

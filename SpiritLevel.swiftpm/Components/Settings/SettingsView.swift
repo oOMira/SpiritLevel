@@ -20,11 +20,11 @@ struct SettingsView: View {
                     }
                 case .support:
                     Section(.supportSectionTitle) {
-                        SupportSection()
+                        SupportCellView()
                     }
                 case .data:
                     Section {
-                        Text("Implement Data Section")
+                        UsedDataCellView()
                     }
                 case .deleteData:
                     Section {

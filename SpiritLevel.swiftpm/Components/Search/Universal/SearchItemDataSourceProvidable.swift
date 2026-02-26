@@ -3,17 +3,17 @@
 extension AppArea {
     static func getSearchItems(appStateManager: AppStateRepository) -> [SearchItem] {
         Self.allCases.compactMap { area in
-            var configuration: NavigationConfiguration {
+            var configuration: NavigationConfiguration<AppArea> {
                 switch area {
                 case .overview:
-                        .init { Overview(appStateManager: appStateManager) }
+                        .init(feature: area) { Overview(appStateManager: appStateManager) }
                 case .statisitcs:
-                        .init {StatisticsView() }
+                        .init(feature: area) { StatisticsView() }
                 case .settings:
-                        .init { SettingsView() }
+                        .init(feature: area) { SettingsView() }
                 }
             }
-            return .navigation(feature: area, configuration: configuration)
+            return .navigation(configuration)
         }
     }
 }
@@ -25,21 +25,19 @@ extension OverviewFeature {
         Self.allCases.compactMap { feature in
             switch feature {
             case .mood:
-                return .overview(feature: feature,
-                                 configuration: .init(embedInList: true, destination: { MoodCellView() }))
+                return .overview(.init(feature: feature, destination: { MoodCellView() }))
             case .currentLevel:
-                    return .overview(feature: feature,
-                                     configuration: .init(embedInList: true, destination: { CurrentHormoneLevelCellView() }))
+                    return .overview(.init(feature: feature, destination: { CurrentHormoneLevelCellView() }))
             case .nextInjection:
-                return .overview(feature: feature, configuration: .init(embedInList: true, destination: { NextInjectionCellView() }))
+                return .overview(.init(feature: feature, destination: { NextInjectionCellView() }))
             case .trend:
-                let configuration = NavigationConfiguration.init(embedInList: true, destination: {
+                let configuration = NavigationConfiguration.init(feature: feature, destination: {
                     TrendCellView(configurations: [
                         .init(name: "Level", trend: .up),
                         .init(name: "Consistency", trend: .down),
                     ])
                 })
-                return .overview(feature: feature, configuration: configuration)
+                return .overview(configuration)
             case .achivements: return nil
             }
         }
@@ -53,12 +51,11 @@ extension StatisticsFeature {
         Self.allCases.compactMap { feature in
             switch feature {
             case .graph:
-                return .statistics(feature: feature,
-                                   configuration: .init(embedInList: true, destination: { StatisticsCellView() }))
+                return .statistics(.init(feature: feature, destination: { StatisticsCellView() }))
             case .injections:
-                return nil
+                return .statistics(.init(feature: feature, destination: { InjectionsCellView() }))
             case .labResults:
-                return nil
+                return .statistics(.init(feature: feature, destination: { LabResultsCellView() }))
             }
         }
     }
@@ -73,12 +70,11 @@ extension SettingsFeature {
             case .deleteData:
                 return nil
             case .plan:
-                return nil
+                return .settings(.init(feature: feature, destination: { TreatmentPlanCellView() }))
             case .support:
-                return .settings(feature: feature,
-                                 configuration: .init(embedInList: true, destination: { SupportSection() }))
+                return .settings(.init(feature: feature, destination: { SupportCellView() }))
             case .data:
-                return nil
+                return .settings(.init(feature: feature, destination: { UsedDataCellView() }))
             }
         }
     }

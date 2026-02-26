@@ -1,45 +1,71 @@
 import SwiftUI
 
 enum SearchItem {
-    case navigation(feature: AppArea, configuration: NavigationConfiguration)
-    case overview(feature: OverviewFeature, configuration: NavigationConfiguration)
-    case statistics(feature: StatisticsFeature, configuration: NavigationConfiguration)
-    case settings(feature: SettingsFeature, configuration: NavigationConfiguration)
+    case navigation(NavigationConfiguration<AppArea>)
+    case overview(NavigationConfiguration<OverviewFeature>)
+    case statistics(NavigationConfiguration<StatisticsFeature>)
+    case settings(NavigationConfiguration<SettingsFeature>)
 }
 
 // MARK: - SearchItem+SearchableItem
 
 extension SearchItem: SearchableItem {
     init?(rawValue: String) { nil }
+    var rawValue: String { feature.rawValue }
     
-    private var value: (item: any SearchableItem, configuration: NavigationConfiguration) {
+    var configuration: any NavigationConfigurationProvidable {
         switch self {
-        case let .navigation(feature, configuration): (feature, configuration)
-        case let .overview(feature, configuration): (feature, configuration)
-        case let .statistics(feature, configuration): (feature, configuration)
-        case let .settings(feature, configuration): (feature, configuration)
+        case let .navigation(configuration): configuration
+        case let .overview(configuration): configuration
+        case let .statistics(configuration): configuration
+        case let .settings(configuration): configuration
         }
     }
     
-    var feature: any SearchableItem { value.item }
-    var configuration: NavigationConfiguration { value.configuration }
+    var feature: any SearchableItem { configuration.feature }
 
-    var rawValue: String { feature.rawValue }
+    var itemType: ItemType { feature.itemType }
     var label: String { feature.label }
     var systemImageName: String { feature.systemImageName }
 }
 
+// MARK: - NavigationConfigurationProvidable
+
+protocol NavigationConfigurationProvidable {
+    associatedtype FeatureType: SearchableItem
+    var feature: FeatureType { get }
+    @ViewBuilder func getDestination() -> AnyView
+}
+
 // MARK: - SearchItem+NavigationConfiguration
 
-struct NavigationConfiguration {
+struct NavigationConfiguration<FeatureType: SearchableItem>: NavigationConfigurationProvidable {
+    let feature: FeatureType
     private let _destination: () -> AnyView
     
-    init<V: View>(embedInList inList: Bool = false, @ViewBuilder destination: @escaping () -> V) {
-        self._destination = { inList ? AnyView(List { destination() }) : AnyView(destination()) }
+    init<V: View>(feature: FeatureType, @ViewBuilder destination: @escaping () -> V) {
+        var embedInList: Bool {
+            switch feature.itemType {
+            case .content: return true
+            case .navigation: return false
+            }
+        }
+
+        self.feature = feature
+        self._destination = {
+            if embedInList {
+                AnyView(
+                    List { destination() }
+                        .navigationTitle(feature.label)
+                )
+            } else {
+                AnyView(destination())
+            }
+        }
     }
     
     @ViewBuilder
-    func getDestination() -> some View {
+    func getDestination() -> AnyView {
         _destination()
     }
 }

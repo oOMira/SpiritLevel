@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct SearchInactiveView<AppStateMangerType: AppStateManagable>: View {
-    @Environment(NavigationManager.self) var navigationManager
-
     @Binding var activeSheet: ShortcutFeature?
     var appStateManager: AppStateMangerType
     

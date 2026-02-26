@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct SupportSection: View {
+struct SupportCellView: View {
     var body: some View {
         Group {
-            let configurations: [SupportSection.Cell.Configuration] = [
+            let configurations: [SupportCellView.Cell.Configuration] = [
                 .init(url: .githubURL!, title: .githubTitle),
                 .init(url: .inspirationURL!, title: .inspirationTitle),
                 .init(url: .feedbackURL!, title: .feedbackTitle)
@@ -16,7 +16,7 @@ struct SupportSection: View {
     }
 }
 
-extension SupportSection {
+extension SupportCellView {
     struct Cell: View {
         let configuration: Configuration
         
@@ -32,7 +32,7 @@ extension SupportSection {
     }
 }
 
-extension SupportSection.Cell {
+extension SupportCellView.Cell {
     struct Configuration: Identifiable {
         let id = UUID()
         
@@ -62,5 +62,5 @@ private extension String {
 }
 
 #Preview {
-    SupportSection()
+    SupportCellView()
 }

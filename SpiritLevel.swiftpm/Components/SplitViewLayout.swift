@@ -56,20 +56,18 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable,
                 }
             }
         } detail: {
-            NavigationStack {
-                if appStateManager.selectedTab == -1 {
-                    CompactSearchView(appStateManager: appStateManager,
-                                      searchResultsManager: searchResultsManger)
-                } else {
-                    let selectedAppArea = enumaratedAppAreas[appStateManager.selectedTab].element
-                    switch selectedAppArea {
-                    case .overview:
-                        CompactOverview(appStateManager: appStateManager)
-                    case .statisitcs:
-                        StatisticsView()
-                    case .settings:
-                        SettingsView()
-                    }
+            if appStateManager.selectedTab == -1 {
+                CompactSearchView(appStateManager: appStateManager,
+                                  searchResultsManager: searchResultsManger)
+            } else {
+                let selectedAppArea = enumaratedAppAreas[appStateManager.selectedTab].element
+                switch selectedAppArea {
+                case .overview:
+                    CompactOverview(appStateManager: appStateManager)
+                case .statisitcs:
+                    StatisticsView()
+                case .settings:
+                    SettingsView()
                 }
             }
         }

@@ -4,6 +4,8 @@ enum AppArea: String, CaseIterable, SearchableItem {
     case overview
     case statisitcs
     case settings
+    
+    var itemType: ItemType { .navigation }
 
     var localizedLabel: LocalizedStringKey {
         switch self {
