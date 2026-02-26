@@ -12,7 +12,7 @@ protocol AppStateManagable: Observable, AnyObject {
 
 @Observable
 final class AppStateManager: AppStateManagable {
-    static let shared = AppStateManager()
+    @MainActor static let shared = AppStateManager()
 
     var selectedTab: Int = UserDefaults.standard.integer(forKey: "selectedTab") {
         didSet { UserDefaults.standard.set(selectedTab, forKey: "selectedTab") }

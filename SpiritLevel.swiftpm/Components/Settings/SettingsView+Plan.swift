@@ -30,6 +30,7 @@ private extension String {
     static let planIcon = "list.bullet.rectangle.portrait"
 }
 
+@MainActor
 private extension LocalizedStringKey {
     static let treatmentPlanTitle: Self = "Treatment Plan"
     static let planDetails: Self = "5mg every 10 days"

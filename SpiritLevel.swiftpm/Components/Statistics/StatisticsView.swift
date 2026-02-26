@@ -34,6 +34,7 @@ struct StatisticsView: View {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Statistics"
     static let injectionsSectionTitle: Self = "Injections"
@@ -42,20 +43,3 @@ private extension LocalizedStringKey {
     static let labResultSampleData: Self = "200 pg on 21.01.2025"
     static let showMoreButton: Self = "Show more"
 }
-
-// MARK: - Preview
-#Preview("Light Mode") {
-    NavigationStack {
-        StatisticsView()
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        StatisticsView()
-    }
-    .preferredColorScheme(.dark)
-}
-
-

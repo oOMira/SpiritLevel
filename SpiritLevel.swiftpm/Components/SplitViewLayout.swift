@@ -1,12 +1,16 @@
 import SwiftUI
 
-struct SplitViewLayout<AppStateManagerType: AppStateManagable>: View {
+struct SplitViewLayout<AppStateManagerType: AppStateManagable,
+                       SearchResultsMangerType: SearchResultsManagable>: View {
+
     @Bindable var appStateManager: AppStateManagerType
-    
+    var searchResultsManger: SearchResultsMangerType
+
     @State private var activeSheet: ShortcutFeature? = nil
     
-    init(appStateManager: AppStateManagerType) {
+    init(appStateManager: AppStateManagerType, searchReultsManger: SearchResultsMangerType) {
         self.appStateManager = appStateManager
+        self.searchResultsManger = searchReultsManger
     }
     
     var body: some View {
@@ -54,7 +58,8 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable>: View {
         } detail: {
             NavigationStack {
                 if appStateManager.selectedTab == -1 {
-                    CompactSearchView()
+                    CompactSearchView(appStateManager: appStateManager,
+                                      searchResultsManager: searchResultsManger)
                 } else {
                     let selectedAppArea = enumaratedAppAreas[appStateManager.selectedTab].element
                     switch selectedAppArea {

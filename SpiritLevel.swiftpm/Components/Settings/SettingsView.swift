@@ -38,7 +38,6 @@ struct SettingsView: View {
 }
 
 extension SettingsView {
-
     struct DeleteSheet: View {
         @Environment(\.horizontalSizeClass) private var horizontalSizeClass
         @Binding var isShowingSheet: Bool
@@ -87,13 +86,12 @@ extension SettingsView {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let settingsNavigationTitle: Self = "Settings"
     static let supportSectionTitle: Self = "Support"
     static let dataManagementSectionTitle: Self = "Data Managment"
     static let iCloudSyncingToggle: Self = "iCloud Syncing"
-    static let importLabel: Self = "Import"
-    static let exportLabel: Self = "Export"
     static let deleteDataButtonTitle: Self = "Delete Data"
     static let deleteDataTitle: Self = "Delete App Configuration"
     static let deleteAppConfiguration: Self = "Delete App Data"
@@ -109,19 +107,3 @@ private extension String {
     static let trayDownIcon = "tray.and.arrow.down"
     static let trayUpIcon = "tray.and.arrow.up"
 }
-
-// MARK: - Preview
-
-#Preview("Light Mode") {
-    NavigationStack {
-        SettingsView()
-    }
-    .preferredColorScheme(.light)
-}
-#Preview("Dark Mode") {
-    NavigationStack {
-        SettingsView()
-    }
-    .preferredColorScheme(.dark)
-}
-

@@ -22,11 +22,13 @@ struct LogLabView: View {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let placeholderText: Self = "Log Lab View"
     static let navigationTitle: Self = "Log Lab Results"
     static let closeLabel: Self = "Close"
 }
+
 private extension String {
     static let xmarkIcon = "xmark"
 }

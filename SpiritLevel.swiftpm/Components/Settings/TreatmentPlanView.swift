@@ -43,6 +43,7 @@ struct TreatmentPlanView: View {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Treatment Plan"
     static let enanthateLabel: Self = "Enanthate"
@@ -103,6 +104,8 @@ private struct CustomTreatmentPlanView: View {
         .navigationTitle(.addSimulationNavigationTitle)
     }
 }
+
+@MainActor
 private extension LocalizedStringKey {
     static let configurationSectionTitle: Self = "Configuration"
     static let addButtonTitle: Self = "Add"

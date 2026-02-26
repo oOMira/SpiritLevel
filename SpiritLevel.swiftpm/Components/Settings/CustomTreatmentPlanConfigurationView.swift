@@ -44,6 +44,7 @@ struct CustomTreatmentPlanConfigurationView: View {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let nameLabel: Self = "Name"
     static let enterAliasPlaceholder: Self = "Enter Alias"

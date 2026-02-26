@@ -18,7 +18,8 @@ struct ContentView<AppStateManagerType: AppStateManagable,
             TabViewLayout(appStateManager: appStateManager,
                           searchResultsManager: searchResultsManager)
         } else {
-            SplitViewLayout(appStateManager: appStateManager)
+            SplitViewLayout(appStateManager: appStateManager,
+                            searchReultsManger: searchResultsManager)
         }
     }
 }

@@ -56,6 +56,7 @@ struct SelectTreatmentPlan: View {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Select Plan"
     static let choosePlanSectionTitle: Self = "Choose Plan"

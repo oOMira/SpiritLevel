@@ -67,6 +67,8 @@ private extension CGFloat {
     static let frameWidth: CGFloat = 50
     static let cornerRadius: CGFloat = 8
 }
+
+@MainActor
 private extension LocalizedStringKey {
     static let navigationTitle: Self = "Achievements"
 }

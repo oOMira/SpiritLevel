@@ -22,6 +22,7 @@ struct LogInjectionView: View {
 
 // MARK: - Constants
 
+@MainActor
 private extension LocalizedStringKey {
     static let placeholderText: Self = "Log Injectin View"
     static let navigationTitle: Self = "Log Injectin"

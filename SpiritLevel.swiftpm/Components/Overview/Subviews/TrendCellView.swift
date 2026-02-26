@@ -14,7 +14,7 @@ struct TrendCellView: View {
 
 // MARK: - TrendView
 
-struct TrendView: View, Identifiable {
+struct TrendView: View, @MainActor Identifiable {
     var id: UUID { configuration.id }
     let configuration: Configuration
     
