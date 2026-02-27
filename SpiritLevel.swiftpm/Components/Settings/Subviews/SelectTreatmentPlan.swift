@@ -32,12 +32,8 @@ struct SelectTreatmentPlan: View {
                 })
             }
             Section(.startSectionTitle) {
-                DatePicker(.firstInjectionDateLabel,
-                           selection: $selectedDate,
-                           displayedComponents: .date)
-                .accessibilityElement(children: .combine)
-                .accessibilityValue(selectedDate.formatted(date: .abbreviated, time: .omitted))
-                .accessibilityHint("Double tap to change")
+                AccessibleDatePicker(title: .firstInjectionDateLabel,
+                                     selectedDate: $selectedDate)
 
             }
             Section {
@@ -56,8 +52,7 @@ struct SelectTreatmentPlan: View {
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let navigationTitle: Self = "Select Plan"
     static let choosePlanSectionTitle: Self = "Choose Plan"
     static let createOwnPlanLink: Self = "Create own plan"

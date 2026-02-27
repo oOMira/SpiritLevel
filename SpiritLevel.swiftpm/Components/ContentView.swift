@@ -2,24 +2,31 @@ import SwiftUI
 import Charts
 
 struct ContentView<AppStateManagerType: AppStateManagable,
-                   SearchResultsManagerType: SearchResultsManagable>: View {
+                   SearchResultsManagerType: SearchResultsManagable,
+                   InjectionRepositoryType: InjectionManagable>: View {
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    private var appStateManager: AppStateManagerType
-    private var searchResultsManager: SearchResultsManagerType
+    private let appStateManager: AppStateManagerType
+    private let searchResultsManager: SearchResultsManagerType
+    private let injectionRepository: InjectionRepositoryType
     
-    init(appStateManager: AppStateManagerType, searchResultsManager: SearchResultsManagerType) {
+    init(appStateManager: AppStateManagerType,
+         searchResultsManager: SearchResultsManagerType,
+         injectionRepository: InjectionRepositoryType) {
         self.appStateManager = appStateManager
         self.searchResultsManager = searchResultsManager
+        self.injectionRepository = injectionRepository
     }
     
     var body: some View {
         if horizontalSizeClass == .compact {
             TabViewLayout(appStateManager: appStateManager,
-                          searchResultsManager: searchResultsManager)
+                          searchResultsManager: searchResultsManager,
+                          injectionReposetory: injectionRepository)
         } else {
             SplitViewLayout(appStateManager: appStateManager,
-                            searchReultsManger: searchResultsManager)
+                            searchReultsManger: searchResultsManager,
+                            injectionReposetory: injectionRepository)
         }
     }
 }

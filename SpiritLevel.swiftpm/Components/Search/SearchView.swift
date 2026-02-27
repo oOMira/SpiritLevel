@@ -1,27 +1,33 @@
 import SwiftUI
 
 struct SearchView<AppStateManagerType: AppStateManagable,
-                  SearchResultsManagerType: SearchResultsManagable>: View {
+                  SearchResultsManagerType: SearchResultsManagable,
+                  InjectionReposetoryType: InjectionManagable>: View {
 
     @State private var navManager = NavigationManager()
     
     private var appStateManager: AppStateManagerType
     private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
+    private var injectionReposetory: InjectionReposetoryType
     @Bindable private var searchResultsManager: SearchResultsManagerType
     
     init(appStateManager: AppStateManagerType,
          searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>,
-         searchResultsManager: SearchResultsManagerType) {
+         searchResultsManager: SearchResultsManagerType,
+         injectionReposetory: InjectionReposetoryType) {
         self.appStateManager = appStateManager
         self.searchHistoryManager = searchHistoryManager
         self.searchResultsManager = searchResultsManager
+        self.injectionReposetory = injectionReposetory
     }
     
     init(appStateManager: AppStateManagerType,
-         searchResultsManager: SearchResultsManagerType) {
+         searchResultsManager: SearchResultsManagerType,
+         injectionReposetory: InjectionReposetoryType) {
         self.appStateManager = appStateManager
         self.searchHistoryManager = .init(appStateManager: appStateManager)
         self.searchResultsManager = searchResultsManager
+        self.injectionReposetory = injectionReposetory
     }
     
     @State private var activeSheet: ShortcutFeature?
@@ -55,7 +61,8 @@ struct SearchView<AppStateManagerType: AppStateManagable,
                 searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
             .activeSheetDestination(activeSheet: $activeSheet)
-            .appAreaNavigationDestinations(appStateManager: appStateManager)
+            .appAreaNavigationDestinations(appStateManager: appStateManager,
+                                           injectionReposetory: injectionReposetory)
             .selectedSearchItemDestination()
         }
         .environment(navManager)
@@ -69,8 +76,12 @@ private extension View {
         modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(activeSheet: activeSheet))
     }
 
-    func appAreaNavigationDestinations<AppStateManagerType: AppStateManagable>(appStateManager: AppStateManagerType) -> some View {
-        modifier(SearchInactiveViewModifier.SearchActiveNavigationModifier(appStateManager: appStateManager))
+    func appAreaNavigationDestinations<AppStateManagerType: AppStateManagable,
+                                       InjectionReposetoryType: InjectionManagable>(
+                                        appStateManager: AppStateManagerType,
+                                        injectionReposetory: InjectionReposetoryType) -> some View {
+        modifier(SearchInactiveViewModifier.SearchActiveNavigationModifier(appStateManager: appStateManager,
+                                                                           injectionReposetory: injectionReposetory))
     }
 }
 

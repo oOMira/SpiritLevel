@@ -1,16 +1,21 @@
 import SwiftUI
 
 struct SplitViewLayout<AppStateManagerType: AppStateManagable,
-                       SearchResultsMangerType: SearchResultsManagable>: View {
+                       SearchResultsMangerType: SearchResultsManagable,
+                       InjectionReposetoryType: InjectionManagable>: View {
 
     @Bindable var appStateManager: AppStateManagerType
     var searchResultsManger: SearchResultsMangerType
+    private let injectionReposetory: InjectionReposetoryType
 
     @State private var activeSheet: ShortcutFeature? = nil
     
-    init(appStateManager: AppStateManagerType, searchReultsManger: SearchResultsMangerType) {
+    init(appStateManager: AppStateManagerType,
+         searchReultsManger: SearchResultsMangerType,
+         injectionReposetory: InjectionReposetoryType) {
         self.appStateManager = appStateManager
         self.searchResultsManger = searchReultsManger
+        self.injectionReposetory = injectionReposetory
     }
     
     var body: some View {
@@ -51,7 +56,7 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable,
                 switch sheet {
                 case .logInjection: LogInjectionView()
                     .presentationDetents([.large])
-                case .logLab: LogLabView()
+                case .logLab: LogLabResultView()
                     .presentationDetents([.large])
                 }
             }
@@ -63,7 +68,8 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable,
                 let selectedAppArea = enumaratedAppAreas[appStateManager.selectedTab].element
                 switch selectedAppArea {
                 case .overview:
-                    CompactOverview(appStateManager: appStateManager)
+                    CompactOverview(appStateManager: appStateManager,
+                                    injectionReposetory: injectionReposetory)
                 case .statisitcs:
                     StatisticsView()
                 case .settings:

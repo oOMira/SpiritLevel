@@ -31,9 +31,11 @@ final class SearchResultsManager: SearchResultsManagable {
 }
 
 extension SearchResultsManager {
-    static func getDefaultItems(appStateManager: AppStateRepository) -> [SearchItem] {
+    static func getDefaultItems(appStateManager: AppStateRepository,
+                                injectionRepository: InjectionRepository) -> [SearchItem] {
         [
-            AppArea.getSearchItems(appStateManager: appStateManager),
+            AppArea.getSearchItems(appStateManager: appStateManager,
+                                   injectionRepository: injectionRepository),
             OverviewFeature.getSearchItems(),
             StatisticsFeature.getSearchItems(),
             SettingsFeature.getSearchItems()

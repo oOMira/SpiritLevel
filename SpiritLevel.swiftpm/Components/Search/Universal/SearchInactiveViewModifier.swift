@@ -14,7 +14,7 @@ struct SearchInactiveViewModifier {
                         LogInjectionView()
                             .presentationDetents([.medium, .large])
                     case .logLab:
-                        LogLabView()
+                        LogLabResultView()
                             .presentationDetents([.medium, .large])
                     }
                 }
@@ -23,14 +23,16 @@ struct SearchInactiveViewModifier {
 
     // MARK: - Navigation Destination Modifier
 
-    struct SearchActiveNavigationModifier<AppStateManagerType: AppStateManagable>: ViewModifier {
+    struct SearchActiveNavigationModifier<AppStateManagerType: AppStateManagable,
+                                         InjectionRepositoryType: InjectionManagable>: ViewModifier {
         let appStateManager: AppStateManagerType
+        let injectionReposetory: InjectionRepositoryType
 
         func body(content: Content) -> some View {
             content
                 .navigationDestination(for: AppArea.self) { item in
                     switch item {
-                    case .overview:    Overview(appStateManager: appStateManager)
+                    case .overview:    Overview(appStateManager: appStateManager, injectionRepository: injectionReposetory)
                     case .statisitcs:  StatisticsView()
                     case .settings:    SettingsView()
                     }

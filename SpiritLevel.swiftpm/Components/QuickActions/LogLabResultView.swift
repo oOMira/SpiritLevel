@@ -1,27 +1,21 @@
 import SwiftUI
 
-struct LogInjectionView: View {
+struct LogLabResultView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var dose: Double = 5
-    @State private var injectionDate: Date = Date()
-    @State private var selectedEster: Ester = .enanthate
+    @State private var labResultDate = Date()
+    @State private var concentraiton: String = ""
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    Picker(.esterLabel, selection: $selectedEster) {
-                        ForEach(Ester.allCases) { ester in
-                            Text(ester.name).tag(ester)
-                        }
-                    }
-                    
-                    AccessibleDosagePicker(dosage: $dose)
-                    AccessibleDatePicker(title: "Injection Date", selectedDate: $injectionDate)
+                    AccessibleNumberPicker(title: .bloodConcentrationTitle,
+                                           placeholder: .concentrationPlaceholder,
+                                           value: $concentraiton)
+                    AccessibleDatePicker(title: .dateTitle, selectedDate: $labResultDate)
                 }
                 
                 Section {
-                
                     Button(action: {
                         dismiss()
                     }, label: {
@@ -48,17 +42,14 @@ struct LogInjectionView: View {
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let buttonTitle: Self = "Log Injection"
-    static let navigationTitle: Self = "Log Injection"
+    static let buttonTitle: Self = "Log Lab Result"
+    static let navigationTitle: Self = "Log Lab Results"
+    static let bloodConcentrationTitle: Self = "Blood concentration in pg/ml"
     static let closeLabel: Self = "Close"
-    static let esterLabel: Self = "Ester"
+    static let concentrationPlaceholder: Self = "Concentration"
+    static let dateTitle: Self = "Date"
 }
 
 private extension String {
     static let xmarkIcon = "xmark"
 }
-
-private extension String {
-    static let doseageFormat = "%.1f"
-}
-

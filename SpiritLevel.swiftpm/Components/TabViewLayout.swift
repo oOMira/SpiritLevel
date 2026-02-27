@@ -1,14 +1,19 @@
 import SwiftUI
 
 struct TabViewLayout<AppStateManagerType: AppStateManagable,
-                     SearchResultsManagerType: SearchResultsManagable>: View {
+                     SearchResultsManagerType: SearchResultsManagable,
+                     InjectionReposetoryType: InjectionManagable>: View {
     
     @Bindable private var appStateManager: AppStateManagerType
     private var searchResultsManager: SearchResultsManagerType
+    private var injectionReposetory: InjectionReposetoryType
     
-    init(appStateManager: AppStateManagerType, searchResultsManager: SearchResultsManagerType) {
+    init(appStateManager: AppStateManagerType,
+         searchResultsManager: SearchResultsManagerType,
+         injectionReposetory: InjectionReposetoryType) {
         self.appStateManager = appStateManager
         self.searchResultsManager = searchResultsManager
+        self.injectionReposetory = injectionReposetory
     }
     
     
@@ -21,7 +26,8 @@ struct TabViewLayout<AppStateManagerType: AppStateManagable,
                     value: index) {
                     NavigationView {
                         switch area {
-                        case .overview: Overview(appStateManager: appStateManager)
+                        case .overview: Overview(appStateManager: appStateManager,
+                                                 injectionRepository: injectionReposetory)
                         case .statisitcs: StatisticsView()
                         case .settings: SettingsView()
                         }
@@ -29,7 +35,9 @@ struct TabViewLayout<AppStateManagerType: AppStateManagable,
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
-                SearchView(appStateManager: appStateManager, searchResultsManager: searchResultsManager)
+                SearchView(appStateManager: appStateManager,
+                           searchResultsManager: searchResultsManager,
+                           injectionReposetory: injectionReposetory)
             }
         }
     }

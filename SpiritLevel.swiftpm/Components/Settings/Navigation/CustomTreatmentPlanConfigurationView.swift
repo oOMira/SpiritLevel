@@ -31,21 +31,14 @@ struct CustomTreatmentPlanConfigurationView: View {
                 Text(ester.name).tag(ester)
             }
         }
-        Stepper(label: {
-            Text("Doseage: \(dose, specifier: .doseageFormat) mg")
-        }, onIncrement: {
-            dose += .doseStep
-        }, onDecrement: {
-            dose -= .doseStep
-        })
+        AccessibleDosagePicker(dosage: $dose)
         Stepper("Repeat every \(rythm) days", value: $rythm, in: .rythmRange)
     }
 }
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let nameLabel: Self = "Name"
     static let enterAliasPlaceholder: Self = "Enter Alias"
     static let esterLabel: Self = "Ester"

@@ -1,7 +1,9 @@
 import SwiftUI
 
-struct OverviewContentView<AppStateManagerType: AppStateManagable>: View {
-    @Bindable var appStateManager: AppStateManagerType
+struct OverviewContentView<AppStateMangerType: AppStateManagable,
+                           InjectionRepositoryType: InjectionManagable>: View {
+    @Bindable var appStateManager: AppStateMangerType
+    let injectionRepository: InjectionRepositoryType
     
     var body: some View {
         ForEach(OverviewFeature.allCases) { feature in

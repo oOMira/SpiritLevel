@@ -1,12 +1,12 @@
 // MARK: - AppArea+SearchItems
 
 extension AppArea {
-    static func getSearchItems(appStateManager: AppStateRepository) -> [SearchItem] {
+    static func getSearchItems(appStateManager: AppStateRepository, injectionRepository: InjectionRepository) -> [SearchItem] {
         Self.allCases.compactMap { area in
             var configuration: NavigationConfiguration<AppArea> {
                 switch area {
                 case .overview:
-                        .init(feature: area) { Overview(appStateManager: appStateManager) }
+                        .init(feature: area) { Overview(appStateManager: appStateManager, injectionRepository: injectionRepository) }
                 case .statisitcs:
                         .init(feature: area) { StatisticsView() }
                 case .settings:

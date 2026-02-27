@@ -1,17 +1,28 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct MyApp: App {
     let appStartRepository: AppStartRepository
     let appStateRepository: AppStateRepository
+    let injectionRepository: InjectionRepository
     let searchResultsManager: SearchResultsManager
+    
+    let modelContainer: ModelContainer
+    let modelContex: ModelContext
     
     init() {
         appStartRepository = AppStartRepository.shared
         appStateRepository = AppStateRepository.shared
-        let defaultItems = SearchResultsManager.getDefaultItems(appStateManager: appStateRepository)
-        searchResultsManager = SearchResultsManager(items: defaultItems)
+        
+        modelContainer = try! ModelContainer(for: Injection.self)
+        modelContex = modelContainer.mainContext
 
+        injectionRepository = InjectionRepository(modelContext: modelContex)
+        
+        let defaultItems = SearchResultsManager.getDefaultItems(appStateManager: appStateRepository,
+                                                                injectionRepository: injectionRepository)
+        searchResultsManager = SearchResultsManager(items: defaultItems)
         Self.logFirstAppStart(in: appStartRepository)
     }
     
@@ -24,7 +35,9 @@ struct MyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(appStateManager: appStateRepository, searchResultsManager: searchResultsManager)
+            ContentView(appStateManager: appStateRepository,
+                        searchResultsManager: searchResultsManager,
+                        injectionRepository: injectionRepository)
         }
     }
 }

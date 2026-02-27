@@ -1,13 +1,16 @@
 import SwiftUI
 
-struct Overview<AppStateMangerType: AppStateManagable>: View {
+struct Overview<AppStateMangerType: AppStateManagable,
+                InjectionRepositoryType: InjectionManagable>: View {
     @State private var activeSheet: ShortcutFeature?
     var appStateManager: AppStateMangerType
+    var injectionRepository: InjectionRepositoryType
     
     var body: some  View {
         ZStack(alignment: .bottomTrailing) {
             List {
-                OverviewContentView(appStateManager: appStateManager)
+                OverviewContentView(appStateManager: appStateManager,
+                                    injectionRepository: injectionRepository)
             }
             .navigationTitle(.navigationTitle)
             // MARK: - Quick Actions
@@ -15,7 +18,7 @@ struct Overview<AppStateMangerType: AppStateManagable>: View {
                 switch sheet {
                 case .logInjection: LogInjectionView()
                     .presentationDetents([.medium, .large])
-                case .logLab: LogLabView()
+                case .logLab: LogLabResultView()
                     .presentationDetents([.medium, .large])
                 }
             }
