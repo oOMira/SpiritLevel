@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct InjectionsCellView: View {
+    var injections: [Injection]
+    
     var body: some View {
         Group {
-            Text(.injectionSampleData)
-            Text(.injectionSampleData)
+            ForEach(injections) { injection in
+                Text("\(injection.dosage, specifier: .doseageFormat) mg EE on \(injection.date, format: .dateTime.day().month().year())")
+            }
         }
         .accessibilityElement(children: .contain)
         Button(.showMoreButton) {
@@ -16,6 +19,10 @@ struct InjectionsCellView: View {
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let injectionSampleData: Self = "5 mg EE on 21.01.2025"
     static let showMoreButton: Self = "Show more"
 }
+
+private extension String {
+    static let doseageFormat: Self = "%.1f"
+}
+    

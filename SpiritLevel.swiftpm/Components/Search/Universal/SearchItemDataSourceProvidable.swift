@@ -1,14 +1,15 @@
 // MARK: - AppArea+SearchItems
 
 extension AppArea {
-    static func getSearchItems(appStateManager: AppStateRepository, injectionRepository: InjectionRepository) -> [SearchItem] {
+    static func getSearchItems(appStateManager: AppStateRepository,
+                               injectionRepository: InjectionRepository) -> [SearchItem] {
         Self.allCases.compactMap { area in
             var configuration: NavigationConfiguration<AppArea> {
                 switch area {
                 case .overview:
                         .init(feature: area) { Overview(appStateManager: appStateManager, injectionRepository: injectionRepository) }
                 case .statisitcs:
-                        .init(feature: area) { StatisticsView() }
+                        .init(feature: area) { StatisticsView(injectionRepository: injectionRepository) }
                 case .settings:
                         .init(feature: area) { SettingsView() }
                 }
@@ -47,13 +48,13 @@ extension OverviewFeature {
 // MARK: - StatisticsFeature+SearchItems
 
 extension StatisticsFeature {
-    static func getSearchItems() -> [SearchItem] {
+    static func getSearchItems(injectionRepository: InjectionRepository) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
             case .graph:
                 return .statistics(.init(feature: feature, destination: { StatisticsCellView() }))
             case .injections:
-                return .statistics(.init(feature: feature, destination: { InjectionsCellView() }))
+                return .statistics(.init(feature: feature, destination: { InjectionsCellView(injections: injectionRepository.allItems) }))
             case .labResults:
                 return .statistics(.init(feature: feature, destination: { LabResultsCellView() }))
             }

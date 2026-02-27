@@ -44,10 +44,6 @@ private extension LocalizedStringResource {
     static let esterLabel: Self = "Ester"
 }
 
-private extension String {
-    static let doseageFormat = "%.1f"
-}
-
 private extension Double {
     static let doseStep: Self = 0.1
 }

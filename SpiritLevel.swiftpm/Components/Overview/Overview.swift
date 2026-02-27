@@ -16,7 +16,7 @@ struct Overview<AppStateMangerType: AppStateManagable,
             // MARK: - Quick Actions
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
-                case .logInjection: LogInjectionView()
+                case .logInjection: LogInjectionView(injecionRepository: injectionRepository)
                     .presentationDetents([.medium, .large])
                 case .logLab: LogLabResultView()
                     .presentationDetents([.medium, .large])

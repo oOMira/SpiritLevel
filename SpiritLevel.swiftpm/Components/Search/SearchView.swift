@@ -60,7 +60,7 @@ struct SearchView<AppStateManagerType: AppStateManagable,
             .onSubmit(of: .search) {
                 searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
-            .activeSheetDestination(activeSheet: $activeSheet)
+            .activeSheetDestination(activeSheet: $activeSheet, injectionRepository: injectionReposetory)
             .appAreaNavigationDestinations(appStateManager: appStateManager,
                                            injectionReposetory: injectionReposetory)
             .selectedSearchItemDestination()
@@ -72,8 +72,8 @@ struct SearchView<AppStateManagerType: AppStateManagable,
 // MARK: - View Modifiers
 
 private extension View {
-    func activeSheetDestination(activeSheet: Binding<ShortcutFeature?>) -> some View {
-        modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(activeSheet: activeSheet))
+    func activeSheetDestination<T: InjectionManagable>(activeSheet: Binding<ShortcutFeature?>, injectionRepository: T) -> some View {
+        modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(injectionRepository: injectionRepository, activeSheet: activeSheet))
     }
 
     func appAreaNavigationDestinations<AppStateManagerType: AppStateManagable,

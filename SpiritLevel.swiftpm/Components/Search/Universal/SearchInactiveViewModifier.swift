@@ -3,7 +3,8 @@ import SwiftUI
 // MARK: - Sheet Modifier
 
 struct SearchInactiveViewModifier {
-    struct SearchActiveActionsModifier: ViewModifier {
+    struct SearchActiveActionsModifier<InjectionRepositoryType: InjectionManagable>: ViewModifier {
+        let injectionRepository: InjectionRepositoryType
         @Binding var activeSheet: ShortcutFeature?
 
         func body(content: Content) -> some View {
@@ -11,7 +12,7 @@ struct SearchInactiveViewModifier {
                 .sheet(item: $activeSheet) { sheet in
                     switch sheet {
                     case .logInjection:
-                        LogInjectionView()
+                        LogInjectionView(injecionRepository: injectionRepository)
                             .presentationDetents([.medium, .large])
                     case .logLab:
                         LogLabResultView()
@@ -33,7 +34,7 @@ struct SearchInactiveViewModifier {
                 .navigationDestination(for: AppArea.self) { item in
                     switch item {
                     case .overview:    Overview(appStateManager: appStateManager, injectionRepository: injectionReposetory)
-                    case .statisitcs:  StatisticsView()
+                    case .statisitcs:  StatisticsView(injectionRepository: injectionReposetory)
                     case .settings:    SettingsView()
                     }
                 }

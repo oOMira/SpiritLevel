@@ -1,6 +1,8 @@
 import SwiftUI
 
-struct StatisticsView: View {
+struct StatisticsView<InjectionRepositoryType: InjectionManagable>: View {
+    let injectionRepository: InjectionRepositoryType
+    
     var body: some View {
         List {
             ForEach(StatisticsFeature.allCases) { feature in
@@ -11,7 +13,7 @@ struct StatisticsView: View {
                     }
                 case .labResults:
                     Section(.injectionsSectionTitle) {
-                        InjectionsCellView()
+                        InjectionsCellView(injections: injectionRepository.allItems)
                     }
                 case .injections:
                     Section(.labResultsSectionTitle) {

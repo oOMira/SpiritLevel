@@ -37,7 +37,7 @@ extension SearchResultsManager {
             AppArea.getSearchItems(appStateManager: appStateManager,
                                    injectionRepository: injectionRepository),
             OverviewFeature.getSearchItems(),
-            StatisticsFeature.getSearchItems(),
+            StatisticsFeature.getSearchItems(injectionRepository: injectionRepository),
             SettingsFeature.getSearchItems()
         ].flatMap { $0 }
     }

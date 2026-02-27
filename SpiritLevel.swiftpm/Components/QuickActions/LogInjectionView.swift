@@ -1,10 +1,12 @@
 import SwiftUI
 
-struct LogInjectionView: View {
+struct LogInjectionView<InjectionRepositoryType: InjectionManagable>: View {
     @Environment(\.dismiss) private var dismiss
     @State private var dose: Double = 5
     @State private var injectionDate: Date = Date()
     @State private var selectedEster: Ester = .enanthate
+    
+    let injecionRepository: InjectionRepositoryType
 
     var body: some View {
         NavigationStack {
@@ -23,6 +25,14 @@ struct LogInjectionView: View {
                 Section {
                 
                     Button(action: {
+                        // TODO: Add error UI
+                        do {
+                            try injecionRepository.add(item: .init(ester: selectedEster,
+                                                                   dosage: dose,
+                                                                   date: injectionDate))
+                        } catch {
+                            print(error)
+                        }
                         dismiss()
                     }, label: {
                         Text(.buttonTitle)

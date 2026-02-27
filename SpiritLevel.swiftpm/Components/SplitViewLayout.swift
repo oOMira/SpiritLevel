@@ -54,7 +54,7 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable,
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
-                case .logInjection: LogInjectionView()
+                case .logInjection: LogInjectionView(injecionRepository: injectionReposetory)
                     .presentationDetents([.large])
                 case .logLab: LogLabResultView()
                     .presentationDetents([.large])
@@ -71,7 +71,7 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable,
                     CompactOverview(appStateManager: appStateManager,
                                     injectionReposetory: injectionReposetory)
                 case .statisitcs:
-                    StatisticsView()
+                    StatisticsView(injectionRepository: injectionReposetory)
                 case .settings:
                     SettingsView()
                 }

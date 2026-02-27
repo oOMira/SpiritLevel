@@ -28,7 +28,7 @@ struct TabViewLayout<AppStateManagerType: AppStateManagable,
                         switch area {
                         case .overview: Overview(appStateManager: appStateManager,
                                                  injectionRepository: injectionReposetory)
-                        case .statisitcs: StatisticsView()
+                        case .statisitcs: StatisticsView(injectionRepository: injectionReposetory)
                         case .settings: SettingsView()
                         }
                     }
