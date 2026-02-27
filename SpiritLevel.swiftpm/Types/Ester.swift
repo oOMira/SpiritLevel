@@ -61,7 +61,7 @@ extension Ester {
 }
 
 extension Ester {
-    private static let stableInjectionsEnanthate: [OldInjection] = [
+    private static let stableInjectionsEnanthate: [Injection] = [
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -60, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -45, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -30, to: today) ?? Date()),
@@ -73,7 +73,7 @@ extension Ester {
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 60, to: today) ?? Date()),
     ]
     
-    private static let stableInjectionsValerate: [OldInjection] = [
+    private static let stableInjectionsValerate: [Injection] = [
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -40, to: today) ?? Date()),
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -30, to: today) ?? Date()),
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: -20, to: today) ?? Date()),
@@ -85,7 +85,7 @@ extension Ester {
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 40, to: today) ?? Date()),
     ]
     
-    private static let firstInjectionsValerate: [OldInjection] = [
+    private static let firstInjectionsValerate: [Injection] = [
         .init(ester: .valerate, dosage: 4.0, date: today),
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 10, to: today) ?? Date()),
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 20, to: today) ?? Date()),
@@ -93,7 +93,7 @@ extension Ester {
         .init(ester: .valerate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 40, to: today) ?? Date()),
     ]
     
-    private static let firstInjectionsEnanthate: [OldInjection] = [
+    private static let firstInjectionsEnanthate: [Injection] = [
         .init(ester: .enanthate, dosage: 4.0, date: today),
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 15, to: today) ?? Date()),
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 30, to: today) ?? Date()),
@@ -101,7 +101,7 @@ extension Ester {
         .init(ester: .enanthate, dosage: 4.0, date: Calendar.current.date(byAdding: .day, value: 60, to: today) ?? Date()),
     ]
     
-    var firstInjections: [OldInjection] {
+    var firstInjections: [Injection] {
         switch self {
         case .valerate:
             return Self.firstInjectionsValerate
@@ -110,7 +110,7 @@ extension Ester {
         }
     }
     
-    var stableInjections: [OldInjection] {
+    var stableInjections: [Injection] {
         switch self {
         case .valerate:
             return Self.stableInjectionsValerate

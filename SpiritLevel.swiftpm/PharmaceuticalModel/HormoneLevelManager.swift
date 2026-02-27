@@ -1,30 +1,31 @@
 import Foundation
 
+protocol HormoneLevelManagable: AnyObject {
+    func levelForDate(_ date: Date) -> Double
+}
+
+@MainActor
 struct HormoneLevelManager {
-    private let injections: [OldInjection]
-    private let lvlFunctions: [OneComponentBateman]
+    private let lvlFunctions: [Ester: OneComponentBateman]
     
-    var lastIterval: Double {
-        let lastTwo = Array(injections.suffix(2))
-        return lastTwo[1].date.timeIntervalSince(lastTwo[0].date) / 86_400
-    }
-    
-    init(injections: [OldInjection]) {
-        self.injections = injections
-        self.lvlFunctions = injections.map { injection in
-            let esterConfiguration = injection.ester.configuration
-            return OneComponentBateman(t_half: esterConfiguration.tHalf,
-                                       t_max: esterConfiguration.tMax,
-                                       c_max: esterConfiguration.cMax)
+    init(injections: [Injection]) {
+        self.lvlFunctions = Ester.allCases.reduce(into: [Ester: OneComponentBateman]()) { dict, ester in
+            let configuraiton = ester.configuration
+            let bateman = OneComponentBateman(t_half: configuraiton.tHalf,
+                                              t_max: configuraiton.tMax,
+                                              c_max: configuraiton.cMax)
+            dict[ester] = bateman
         }
     }
     
-    func levelForDate(_ date: Date) -> Double {
-        injections.enumerated().reduce(0.0) { lvl, element in
-            let (index, injection) = element
-            let day = date.timeIntervalSince(injection.date) / 86_400
-            let lvlFunction = lvlFunctions[index]
-            return lvl + (lvlFunction.getConcentrationAtTime(day) ?? 0)
+    func levelForInjections(_ injections: [Injection], at date: Date) -> Double {
+        return injections.reduce(into: 0.0) { lvl, injection in
+            guard let lvlFunction = lvlFunctions[injection.ester] else { return }
+            let timeInterval = date.timeIntervalSince(injection.date) / .magicNumbers.daysInSeconds
+            let scale = injection.dosage / 5.0
+            let timeNormalizedConcentration = lvlFunction.getConcentrationAtTime(timeInterval) ?? 0.0
+            let scaledConcentration = timeNormalizedConcentration * scale
+            lvl += scaledConcentration
         }
     }
 }
