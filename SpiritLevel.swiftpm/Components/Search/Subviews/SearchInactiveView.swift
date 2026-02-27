@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct SearchInactiveView<AppStateMangerType: AppStateManagable>: View {
+struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
     @Binding var activeSheet: ShortcutFeature?
-    var appStateManager: AppStateMangerType
+    var appStateManager: AppStateManagerType
     
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]
@@ -11,7 +11,7 @@ struct SearchInactiveView<AppStateMangerType: AppStateManagable>: View {
         Group {
             // MARK: Navigation Section
             Section(.navigationTitle) {
-                ForEach(navigationItems, id: \.id) { item in
+                ForEach(navigationItems) { item in
                     NavigationLink(value: item) {
                         SearchSuggestionCellView(configuration: .init(
                             label: item.label,
@@ -54,8 +54,7 @@ struct SearchInactiveView<AppStateMangerType: AppStateManagable>: View {
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let navigationTitle: Self = "Navigation"
     static let actionsTitle: Self = "Quick Actions"
     static let browseTitle: Self = "All Features"

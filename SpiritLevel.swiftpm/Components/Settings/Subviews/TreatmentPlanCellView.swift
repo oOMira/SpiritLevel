@@ -1,24 +1,40 @@
 import SwiftUI
 
-struct TreatmentPlanCellView: View {
+struct TreatmentPlanCellView<TreatmentPlanRepositoryType: TreatmentPlanManageable>: View {
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    
     var body: some View {
-        HStack {
-            Image(systemName: .planIcon)
-                .font(.title2)
-                .padding(.horizontal, .iconHorizontalPadding)
-            VStack {
-                Text(.treatmentPlanTitle)
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(.planDetails)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.footnote)
+        if let treatmentPlan = treatmentPlanRepository.latest {
+            let treatmentPlanDescription = "\(treatmentPlan.dosage.formatted(.number.precision(.fractionLength(1)))) mg \(treatmentPlan.ester.shortName) every \(treatmentPlan.frequency) days"
+            HStack {
+                Image(systemName: .planIcon)
+                    .font(.title2)
+                    .padding(.horizontal, .iconHorizontalPadding)
+                VStack {
+                    Text(.treatmentPlanTitle)
+                        .font(.title3)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(treatmentPlanDescription)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.footnote)
+                }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(.treatmentPlanTitle)
+            .accessibilityValue(treatmentPlanDescription)
+            .accessibilityHint("selected treatment plan, double tap to configure")
+        } else {
+            TreatmentPlanMissingView()
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(.treatmentPlanTitle)
-        .accessibilityValue(.planDetails)
-        .accessibilityHint("selected treatment plan, double tap to configure")
+    }
+    
+}
+
+private extension TreatmentPlanCellView {
+    struct TreatmentPlanMissingView: View {
+        var body: some View {
+            Text("Set up treatment plan")
+        }
     }
 }
 
@@ -28,10 +44,8 @@ private extension String {
     static let planIcon = "list.bullet.rectangle.portrait"
 }
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let treatmentPlanTitle: Self = "Treatment Plan"
-    static let planDetails: Self = "5mg every 10 days"
 }
 
 private extension CGFloat {

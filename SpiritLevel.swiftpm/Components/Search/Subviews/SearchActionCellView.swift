@@ -13,6 +13,7 @@ struct SearchActionCellView: View {
                 .font(.title3)
                 .padding()
         }
+        .frame(maxHeight: .infinity)
         .containerRelativeFrame(.horizontal,
                                 count: .horizontalCount,
                                 spacing: .horizontalSpacing)

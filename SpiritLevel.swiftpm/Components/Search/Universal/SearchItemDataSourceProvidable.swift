@@ -1,17 +1,34 @@
+import Foundation
+
 // MARK: - AppArea+SearchItems
 
 extension AppArea {
     static func getSearchItems(appStateManager: AppStateRepository,
-                               injectionRepository: InjectionRepository) -> [SearchItem] {
+                               appStartRepository: AppStartRepository,
+                               injectionRepository: InjectionRepository,
+                               labResultsRepository: LabResultsRepository,
+                               treatmentPlanRepository: TreatmentPlanRepository,
+                               hormoneManager: HormoneLevelManager) -> [SearchItem] {
         Self.allCases.compactMap { area in
             var configuration: NavigationConfiguration<AppArea> {
                 switch area {
                 case .overview:
-                        .init(feature: area) { Overview(appStateManager: appStateManager, injectionRepository: injectionRepository) }
-                case .statisitcs:
-                        .init(feature: area) { StatisticsView(injectionRepository: injectionRepository) }
+                        .init(feature: area) { Overview(appStateManager: appStateManager,
+                                                        appStartRepository: appStartRepository,
+                                                        injectionRepository: injectionRepository,
+                                                        labResultsRepository: labResultsRepository,
+                                                        treatmentPlanRepository: treatmentPlanRepository,
+                                                        hormoneManager: hormoneManager) }
+                case .statistics:
+                        .init(feature: area) { StatisticsView(injectionRepository: injectionRepository,
+                                                              labResultsRepository: labResultsRepository) }
                 case .settings:
-                        .init(feature: area) { SettingsView() }
+                        .init(feature: area) { SettingsView(appStartRepository: appStartRepository,
+                                                            appStateRepository: appStateManager,
+                                                            injectionRepository: injectionRepository,
+                                                            labResultsRepository: labResultsRepository,
+                                                            treatmentPlanRepository: treatmentPlanRepository,
+                                                            hormoneLevelManager: hormoneManager) }
                 }
             }
             return .navigation(configuration)
@@ -22,24 +39,28 @@ extension AppArea {
 // MARK: - OverviewFeature+SearchItems
 
 extension OverviewFeature {
-    static func getSearchItems() -> [SearchItem] {
+    @MainActor
+    static func getSearchItems(hormoneManager: HormoneLevelManager,
+                               injectionRepository: InjectionRepository,
+                               treatmentPlanRepository: TreatmentPlanRepository) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
             case .mood:
-                return .overview(.init(feature: feature, destination: { MoodCellView() }))
+                return .overview(.init(feature: feature, destination: {
+                    MoodCellView(injectionRepository: injectionRepository,
+                                 hormoneManager: hormoneManager)
+                }))
             case .currentLevel:
-                    return .overview(.init(feature: feature, destination: { CurrentHormoneLevelCellView() }))
+                    return .overview(.init(feature: feature, destination: { 
+                        CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
+                                                   hormoneManager: hormoneManager) 
+                    }))
             case .nextInjection:
-                return .overview(.init(feature: feature, destination: { NextInjectionCellView() }))
-            case .trend:
-                let configuration = NavigationConfiguration.init(feature: feature, destination: {
-                    TrendCellView(configurations: [
-                        .init(name: "Level", trend: .up),
-                        .init(name: "Consistency", trend: .down),
-                    ])
-                })
-                return .overview(configuration)
-            case .achivements: return nil
+                return .overview(.init(feature: feature, destination: { 
+                    NextInjectionCellView(treatmentRepository: treatmentPlanRepository,
+                                        injectionRepository: injectionRepository) 
+                }))
+            case .achievements: return nil
             }
         }
     }
@@ -48,15 +69,16 @@ extension OverviewFeature {
 // MARK: - StatisticsFeature+SearchItems
 
 extension StatisticsFeature {
-    static func getSearchItems(injectionRepository: InjectionRepository) -> [SearchItem] {
+    @MainActor
+    static func getSearchItems(injectionRepository: InjectionRepository, labResultsRepository: LabResultsRepository) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
-            case .graph:
-                return .statistics(.init(feature: feature, destination: { StatisticsCellView() }))
             case .injections:
-                return .statistics(.init(feature: feature, destination: { InjectionsCellView(injections: injectionRepository.allItems) }))
+                return .statistics(.init(feature: feature,
+                                         destination: { InjectionsCellView(injectionRepository: injectionRepository) } ))
             case .labResults:
-                return .statistics(.init(feature: feature, destination: { LabResultsCellView() }))
+                return .statistics(.init(feature: feature,
+                                         destination: { LabResultsCellView(labResultsRepository: labResultsRepository) }))
             }
         }
     }
@@ -65,17 +87,19 @@ extension StatisticsFeature {
 // MARK: - SettingsFeature+SearchItems
 
 extension SettingsFeature {
-    static func getSearchItems() -> [SearchItem] {
+    static func getSearchItems(treatmentPlanRepository: TreatmentPlanRepository) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
             case .deleteData:
                 return nil
             case .plan:
-                return .settings(.init(feature: feature, destination: { TreatmentPlanCellView() }))
+                return .settings(.init(feature: feature, destination: {
+                    TreatmentPlanCellView(treatmentPlanRepository: treatmentPlanRepository)
+                }))
             case .support:
                 return .settings(.init(feature: feature, destination: { SupportCellView() }))
             case .data:
-                return .settings(.init(feature: feature, destination: { UsedDataCellView() }))
+                return .settings(.init(feature: feature, destination: { UsedResourcesView() }))
             }
         }
     }

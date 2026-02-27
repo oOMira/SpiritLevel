@@ -9,6 +9,7 @@ enum SearchItem {
 
 // MARK: - SearchItem+SearchableItem
 
+// TODO: fix raw values
 extension SearchItem: SearchableItem {
     init?(rawValue: String) { nil }
     var rawValue: String { feature.rawValue }

@@ -1,19 +1,20 @@
 import Foundation
 
-protocol HormoneLevelManagable: AnyObject {
-    func levelForDate(_ date: Date) -> Double
+protocol HormoneLevelManageable: AnyObject {
+    func levelForInjections(_ injections: [Injection], at date: Date) -> Double
+    func isLevelFalling(injections: [Injection], date: Date) -> Bool?
 }
 
-@MainActor
-struct HormoneLevelManager {
+// TODO: Better handling for 0
+class HormoneLevelManager: HormoneLevelManageable {
     private let lvlFunctions: [Ester: OneComponentBateman]
     
-    init(injections: [Injection]) {
+    init() {
         self.lvlFunctions = Ester.allCases.reduce(into: [Ester: OneComponentBateman]()) { dict, ester in
-            let configuraiton = ester.configuration
-            let bateman = OneComponentBateman(t_half: configuraiton.tHalf,
-                                              t_max: configuraiton.tMax,
-                                              c_max: configuraiton.cMax)
+            let configuration = ester.configuration
+            let bateman = OneComponentBateman(t_half: configuration.tHalf,
+                                              t_max: configuration.tMax,
+                                              c_max: configuration.cMax)
             dict[ester] = bateman
         }
     }
@@ -27,5 +28,13 @@ struct HormoneLevelManager {
             let scaledConcentration = timeNormalizedConcentration * scale
             lvl += scaledConcentration
         }
+    }
+    
+    func isLevelFalling(injections: [Injection], date: Date) -> Bool? {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: date) ?? date
+        let lvlNow = levelForInjections(injections, at: date)
+        let lvlTomorrow = levelForInjections(injections, at: tomorrow)
+        guard lvlNow != 0 || lvlTomorrow != 0 else { return nil }
+        return lvlNow > lvlTomorrow
     }
 }

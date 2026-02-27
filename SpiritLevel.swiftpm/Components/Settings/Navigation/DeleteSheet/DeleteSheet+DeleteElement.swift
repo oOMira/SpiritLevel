@@ -19,10 +19,11 @@ extension DeleteSheet {
                 Toggle(title, isOn: $isOn)
                 Text(description)
                     .font(.footnote)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(title)
-            .accessibilityAction(named: LocalizedStringKey("Explain consequences")) {
+            .accessibilityAction(named: LocalizedStringResource("Explain consequences")) {
                 UIAccessibility.post(
                     notification: .announcement,
                     argument: String(localized: description)

@@ -1,16 +1,16 @@
 import Foundation
 import SwiftData
 
-protocol InjectionManageable: SwiftDataManageable where ItemType == Injection { }
+protocol LabResultsManageable: SwiftDataManageable where ItemType == LabResult { }
 
 // MARK: - InjectionRepository
 
 @MainActor
 @Observable
-final class InjectionRepository: InjectionManageable {
+final class LabResultsRepository: LabResultsManageable {
     var observationTask: Task<Void, Never>?
     var modelContext: ModelContext
-    var allItems: [Injection] = []
+    var allItems: [LabResult] = []
     
     init(modelContext: ModelContext) {
         self.modelContext = modelContext

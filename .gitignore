@@ -94,3 +94,10 @@ iOSInjectionProject/
 
 # Swift Package Manager build artifacts
 .swiftpm/build/
+
+# SwiftData / User Data
+*.store
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal

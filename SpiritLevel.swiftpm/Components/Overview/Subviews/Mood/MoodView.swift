@@ -1,40 +1,29 @@
 import SwiftUI
 import WebKit
 
+// TODO: Replace with dotlottie (I don't know why but my designer friends love it)
+// Should be there to test out if people like the idea of giving a rough estimate of your mental state based on hormone levels
+// This is not scientific and should be fun. So (based on feedback), this might be a placeholder
 struct MoodView: View {
-    @StateObject private var model: MoodViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    init(mood: Mood) {
-        _model = StateObject(wrappedValue: MoodViewModel(mood: mood))
-    }
+    
+    private(set) var page: WebPage = .init()
+    let mood: Mood
 
     var body: some View {
-        WebView(model.page)
-            .onAppear { model.loadGif(isStatic: reduceMotion) }
-            .onDisappear { model.loadBlank() }
+        WebView(page)
+            .onAppear { loadGif(isStatic: reduceMotion) }
+            .onDisappear { loadBlank() }
             .webViewContentBackground(.hidden)
             .webViewTextSelection(.disabled)
-            .onChange(of: reduceMotion) { model.loadGif(isStatic: reduceMotion) }
+            .onChange(of: reduceMotion) { loadGif(isStatic: reduceMotion) }
+            .onChange(of: mood) { loadGif(isStatic: reduceMotion) }
     }
-}
-
-// MARK: - ViewModel
-
-@MainActor
-final class MoodViewModel: ObservableObject {
-    private(set) var page: WebPage
-    @Published var mood: Mood
-
-    init(mood: Mood) {
-        self.mood = mood
-        self.page = .init()
-    }
-
+    
     func loadGif(isStatic: Bool) {
         let resourceName = mood.getResourceName(isStatic: isStatic)
-        guard let resourceUrl = Bundle.module.url(forResource: resourceName,
-                                                  withExtension: .gifExtension),
+        guard let resourceUrl = Bundle.main.url(forResource: resourceName,
+                                                withExtension: .gifExtension),
               let data = try? Data(contentsOf: resourceUrl) else { return }
         
         let base64 = data.base64EncodedString()
@@ -91,8 +80,9 @@ private extension String {
 private extension Mood {
     func getResourceName(isStatic: Bool = false) -> String {
         switch self {
-        case .happy: return isStatic ? "smilecatstatic" : "smilecat"
-        case .sad: return isStatic ? "sadcatstatic" : "sadsmilecat"
+        case .happy: return isStatic ? "staticsmileycat" : "smileycat"
+        case .sad: return isStatic ? "staticsadcat" : "sadcat"
+        case .unclear: return isStatic ? "staticsmilecat" : "smilecat"
         }
     }
 }

@@ -5,9 +5,9 @@ struct AccessibleDosagePicker: View {
     
     var body: some View {
         HStack {
-            Text("\(LocalizedStringResource.doseageLabel):")
+            Text("\(LocalizedStringResource.dosageLabel):")
             Stepper(label: {
-                Text("\(dosage, specifier: .doseageFormat) mg")
+                Text("\(dosage, specifier: .dosageFormat) mg")
             }, onIncrement: {
                 increase()
             }, onDecrement: {
@@ -15,8 +15,8 @@ struct AccessibleDosagePicker: View {
             })
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(.doseageLabel)
-        .accessibilityValue("\(dosage, specifier: .doseageFormat) mg")
+        .accessibilityLabel(.dosageLabel)
+        .accessibilityValue("\(dosage, specifier: .dosageFormat) mg")
     }
     
     private func increase() {
@@ -26,17 +26,16 @@ struct AccessibleDosagePicker: View {
     private func decrease() {
         dosage -= .doseStep
     }
-
 }
 
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let doseageLabel: Self = "Doseage"
+    static let dosageLabel: Self = "Dosage"
 }
-    
+
 private extension String {
-    static let doseageFormat = "%.1f"
+    static let dosageFormat = "%.1f"
 }
 
 private extension Double {

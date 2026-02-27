@@ -37,21 +37,20 @@ extension SupportCellView.Cell {
         let id = UUID()
         
         let url: URL
-        let title: LocalizedStringKey
+        let title: LocalizedStringResource
     }
 }
 
 // MARK: - Constants
 
 private extension URL {
-    static let githubURL = URL(string: "https://github.com")
+    static let githubURL = URL(string: "https://github.com/oomira")
     static let inspirationURL = URL(string: "https://github.com/tiliaqt/transkit")
-    static let feedbackURL = URL(string: "mailto:feedback@example.com")
+    static let feedbackURL = URL(string: "mailto:feedback@example.email")
     
 }
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let githubTitle: Self = "GitHub"
     static let inspirationTitle: Self = "Inspiration"
     static let feedbackTitle: Self = "Feedback"

@@ -1,24 +1,10 @@
 import SwiftUI
 
-struct SearchActiveView<SearchManagerType: SearchResultsManagable,
-                        AppStateManagerType: AppStateManagable>: View {
+struct SearchActiveView<SearchManagerType: SearchResultsManageable,
+                        AppStateManagerType: AppStateManageable>: View {
 
-    var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
+    var searchHistoryManager: SearchHistoryManager<AppStateManagerType>
     @Bindable var searchManager: SearchManagerType
-    
-    // MARK: - Initializer
-    
-    init(appStateManager: AppStateManagerType,
-         searchManager: SearchManagerType) {
-        self.searchHistoryManager = .init(appStateManager: appStateManager)
-        self.searchManager = searchManager
-    }
-    
-    init(searchManager: SearchManagerType,
-         searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>) {
-        self.searchHistoryManager = searchHistoryManager
-        self.searchManager = searchManager
-    }
     
     // MARK: - View
 

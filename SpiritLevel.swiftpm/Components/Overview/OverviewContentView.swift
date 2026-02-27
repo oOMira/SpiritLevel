@@ -1,20 +1,48 @@
 import SwiftUI
 
-struct OverviewContentView<AppStateMangerType: AppStateManagable,
-                           InjectionRepositoryType: InjectionManagable>: View {
-    @Bindable var appStateManager: AppStateMangerType
-    let injectionRepository: InjectionRepositoryType
+struct OverviewContentView<AppStateManagerType: AppStateManageable,
+                           AppStartManagerType: AppStartManageable,
+                           InjectionRepositoryType: InjectionManageable,
+                           TreatmentPlanRepositoryType: TreatmentPlanManageable,
+                           LabResultsRepositoryType: LabResultsManageable,
+                           HormoneLevelManagerType: HormoneLevelManageable>: View {
+    let now: Date = .now
     
+    @Bindable var appStateManager: AppStateManagerType
+    let injectionRepository: InjectionRepositoryType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let hormoneLevelManager: HormoneLevelManagerType
+    let appStartManager: AppStartManagerType
+    let labResultsRepository: LabResultsRepositoryType
+    let achievementsManager: AchievementsManager<InjectionRepositoryType, TreatmentPlanRepositoryType, LabResultsRepositoryType, AppStartManagerType>
+    
+    init(appStateManager: AppStateManagerType,
+         appStartManager: AppStartManagerType,
+         injectionRepository: InjectionRepositoryType,
+         treatmentPlanRepository: TreatmentPlanRepositoryType,
+         hormoneLevelManager: HormoneLevelManagerType,
+         labResultsRepository: LabResultsRepositoryType) {
+        self.appStateManager = appStateManager
+        self.injectionRepository = injectionRepository
+        self.treatmentPlanRepository = treatmentPlanRepository
+        self.hormoneLevelManager = hormoneLevelManager
+        self.appStartManager = appStartManager
+        self.labResultsRepository = labResultsRepository
+        self.achievementsManager = AchievementsManager(injectionRepository: injectionRepository,
+                                                    treatmentPlanRepository: treatmentPlanRepository,
+                                                    labResultsRepository: labResultsRepository,
+                                                    appStartRepository: appStartManager)
+    }
+    
+    @ViewBuilder
     var body: some View {
-        ForEach(OverviewFeature.allCases) { feature in
+        ForEach(OverviewFeature.allCases, id: \.self) { feature in
             switch feature {
             case .mood:
                 Section {
                     if appStateManager.isMoodExpanded {
-                        MoodCellView()
-                            .accessibilityElement(children: .combine)
-                            .accessibilityAddTraits(.isImage)
-                            .accessibilityLabel(Mood.happy.rawValue)
+                        MoodCellView(injectionRepository: injectionRepository,
+                                     hormoneManager: hormoneLevelManager)
                     }
                 } header: {
                     ExpandableSectionHeader(title: .moodTitle,
@@ -22,26 +50,21 @@ struct OverviewContentView<AppStateMangerType: AppStateManagable,
                 }
             case .currentLevel:
                 Section(feature.label) {
-                    CurrentHormoneLevelCellView()
+                    CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
+                                               hormoneManager: hormoneLevelManager)
                 }
             case .nextInjection:
                 Section(feature.label) {
-                    NextInjectionCellView()
+                    NextInjectionCellView(treatmentRepository: treatmentPlanRepository,
+                                          injectionRepository: injectionRepository)
                 }
-            case .trend:
-                Section(feature.label) {
-                    TrendCellView(configurations: [
-                        .init(name: "Level", trend: .up),
-                        .init(name: "Consistency", trend: .down),
-                    ])
-                }
-            case .achivements:
+            case .achievements:
                 Section {
-                    AchievementsCellView(isDone: false)
+                    AchievementsCellView(achievementManager: achievementsManager)
                         .accessibilityElement(children: .contain)
                 } header: {
                     NavigationLink(destination: {
-                        AchievementsView(isDone: true)
+                        AchievementsView(achievementsManager: achievementsManager)
                     }, label: {
                         HStack {
                             Text(feature.label)
@@ -57,7 +80,6 @@ struct OverviewContentView<AppStateMangerType: AppStateManagable,
     }
 }
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
 }

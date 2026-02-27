@@ -1,7 +1,8 @@
 import SwiftUI
 
+@MainActor
 @Observable
-final class SearchHistoryViewManager<AppStateManagerType: AppStateManagable> {
+final class SearchHistoryManager<AppStateManagerType: AppStateManageable> {
     var appStateManager: AppStateManagerType
     
     init(appStateManager: AppStateManagerType) {

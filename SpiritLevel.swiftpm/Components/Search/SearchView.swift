@@ -1,34 +1,25 @@
 import SwiftUI
 
-struct SearchView<AppStateManagerType: AppStateManagable,
-                  SearchResultsManagerType: SearchResultsManagable,
-                  InjectionReposetoryType: InjectionManagable>: View {
+// TODO: Add animation to serch
+
+struct SearchView<AppStateManagerType: AppStateManageable,
+                  AppStartRepositoryType: AppStartManageable,
+                  SearchResultsManagerType: SearchResultsManageable,
+                  InjectionRepositoryType: InjectionManageable,
+                  LabResultsRepositoryType: LabResultsManageable,
+                  TreatmentPlanRepositoryType: TreatmentPlanManageable,
+                  HormoneLevelManagerType: HormoneLevelManageable>: View {
 
     @State private var navManager = NavigationManager()
     
-    private var appStateManager: AppStateManagerType
-    private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
-    private var injectionReposetory: InjectionReposetoryType
-    @Bindable private var searchResultsManager: SearchResultsManagerType
-    
-    init(appStateManager: AppStateManagerType,
-         searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>,
-         searchResultsManager: SearchResultsManagerType,
-         injectionReposetory: InjectionReposetoryType) {
-        self.appStateManager = appStateManager
-        self.searchHistoryManager = searchHistoryManager
-        self.searchResultsManager = searchResultsManager
-        self.injectionReposetory = injectionReposetory
-    }
-    
-    init(appStateManager: AppStateManagerType,
-         searchResultsManager: SearchResultsManagerType,
-         injectionReposetory: InjectionReposetoryType) {
-        self.appStateManager = appStateManager
-        self.searchHistoryManager = .init(appStateManager: appStateManager)
-        self.searchResultsManager = searchResultsManager
-        self.injectionReposetory = injectionReposetory
-    }
+    let appStateManager: AppStateManagerType
+    let appStartRepository: AppStartRepositoryType
+    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
+    let injectionRepository: InjectionRepositoryType
+    let labResultsRepository: LabResultsRepositoryType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let hormoneLevelManager: HormoneLevelManagerType
+    @Bindable var searchResultsManager: SearchResultsManagerType
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
@@ -37,8 +28,8 @@ struct SearchView<AppStateManagerType: AppStateManagable,
         NavigationStack(path: $navManager.path) {
             List {
                 if isSearching {
-                    SearchActiveView(searchManager: searchResultsManager,
-                                     searchHistoryManager: searchHistoryManager)
+                    SearchActiveView(searchHistoryManager: searchHistoryManager,
+                                     searchManager: searchResultsManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
                                        appStateManager: appStateManager,
@@ -46,8 +37,6 @@ struct SearchView<AppStateManagerType: AppStateManagable,
                                        actionItems: ShortcutFeature.allCases)
                 }
             }
-            .animation(.snappy, value: searchResultsManager.searchText)
-            .animation(.snappy, value: searchHistoryManager.searchHistory.isEmpty)
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(
@@ -60,36 +49,52 @@ struct SearchView<AppStateManagerType: AppStateManagable,
             .onSubmit(of: .search) {
                 searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
-            .activeSheetDestination(activeSheet: $activeSheet, injectionRepository: injectionReposetory)
-            .appAreaNavigationDestinations(appStateManager: appStateManager,
-                                           injectionReposetory: injectionReposetory)
+            .activeSheetDestination(activeSheet: $activeSheet, 
+                                    injectionRepository: injectionRepository,
+                                    labResultsRepository: labResultsRepository)
+            .navigationDestination(for: AppArea.self) { item in
+                switch item {
+                case .overview: Overview(appStateManager: appStateManager,
+                                         appStartRepository: appStartRepository,
+                                         injectionRepository: injectionRepository,
+                                         labResultsRepository: labResultsRepository,
+                                         treatmentPlanRepository: treatmentPlanRepository,
+                                         hormoneManager: hormoneLevelManager)
+                case .statistics: StatisticsView(injectionRepository: injectionRepository,
+                                                 labResultsRepository: labResultsRepository)
+                case .settings: SettingsView(appStartRepository: appStartRepository,
+                                             appStateRepository: appStateManager,
+                                             injectionRepository: injectionRepository,
+                                             labResultsRepository: labResultsRepository,
+                                             treatmentPlanRepository: treatmentPlanRepository,
+                                             hormoneLevelManager: hormoneLevelManager)
+                }
+            }
             .selectedSearchItemDestination()
         }
         .environment(navManager)
     }
 }
 
-// MARK: - View Modifiers
+// MARK: - View Modifier
 
 private extension View {
-    func activeSheetDestination<T: InjectionManagable>(activeSheet: Binding<ShortcutFeature?>, injectionRepository: T) -> some View {
-        modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(injectionRepository: injectionRepository, activeSheet: activeSheet))
-    }
-
-    func appAreaNavigationDestinations<AppStateManagerType: AppStateManagable,
-                                       InjectionReposetoryType: InjectionManagable>(
-                                        appStateManager: AppStateManagerType,
-                                        injectionReposetory: InjectionReposetoryType) -> some View {
-        modifier(SearchInactiveViewModifier.SearchActiveNavigationModifier(appStateManager: appStateManager,
-                                                                           injectionReposetory: injectionReposetory))
+    func activeSheetDestination<T: InjectionManageable, U: LabResultsManageable>(
+        activeSheet: Binding<ShortcutFeature?>, 
+        injectionRepository: T,
+        labResultsRepository: U
+    ) -> some View {
+        modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(
+            injectionRepository: injectionRepository,
+            labResultsRepository: labResultsRepository,
+            activeSheet: activeSheet))
     }
 }
 
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let navigationTitle: Self = "Search"
     static let searchPrompt: Self = "Search"
     static let recentSearchesTitle: Self = "Recent Searches"

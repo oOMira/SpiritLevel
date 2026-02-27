@@ -18,7 +18,9 @@ struct OneComponentBateman {
     
     private var scaleFactor: Double? {
         guard let absorptionRate else { return nil }
-        return c_max / (exp(-eliminationRate * t_max) - exp(-absorptionRate * t_max))
+        let divisor = (exp(-eliminationRate * t_max) - exp(-absorptionRate * t_max))
+        guard divisor != 0 else { return 0 }
+        return c_max / divisor
     }
     
     func getConcentrationAtTime(_ t: Double) -> Double? {
@@ -28,7 +30,11 @@ struct OneComponentBateman {
     }
 }
 
-// AI Generated
+// AI generated version of Brent's method
+// OneComponentBateman was tested in jupyter notebook before (brentq is part of SciPy)
+// Swift version is just copied in the pharma model need fine tuning anyway
+// This should be sufficient for a "Playground"
+// TODO: Replace with own implementation of brentq, need to be async
 private extension OneComponentBateman {
     func brentq(
         f: (Double) -> Double,

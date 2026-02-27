@@ -1,16 +1,17 @@
 import Foundation
 
-// MARK: - AppStartManagable
+// MARK: - AppStartManageable
 
-protocol AppStartManagable: Observable, AnyObject {
+@MainActor
+protocol AppStartManageable: Observable, AnyObject {
     var firstAppStart: Date? { get set }
 }
 
 // MARK: - AppStartManager
 
 @Observable
-final class AppStartRepository: AppStartManagable {
-    @MainActor static let shared = AppStartRepository()
+final class AppStartRepository: AppStartManageable {
+    static let shared = AppStartRepository()
     
     var firstAppStart: Date? = UserDefaults.standard.object(forKey: "firstAppStart") as? Date {
         didSet { UserDefaults.standard.set(firstAppStart, forKey: "firstAppStart") }

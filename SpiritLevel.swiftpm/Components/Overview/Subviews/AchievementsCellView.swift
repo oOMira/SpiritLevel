@@ -1,8 +1,9 @@
 import SwiftUI
 
-struct AchievementsCellView: View {
-    let isDone: Bool
+struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: View {
+    @EnvironmentObject var appData: AppData
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
+    let achievementManager: AchievementsManagerType
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -10,6 +11,7 @@ struct AchievementsCellView: View {
                 let roundedRectangle = RoundedRectangle(cornerRadius: .cornerRadius,
                                                         style: .continuous)
                 ForEach(Achievement.allCases) { achievement in
+                    let isDone = achievementManager.isAchievementDone(achievement, date: appData.appStartDate)
                     achievement.image
                         .resizable()
                         .scaledToFit()
@@ -17,8 +19,8 @@ struct AchievementsCellView: View {
                         .clipShape(roundedRectangle)
                         .shadow(color: .shadowColor,
                                 radius: .shadowRadius,
-                                x: .xShadwoOffset,
-                                y: .yShadwoOffset)
+                                x: .xShadowOffset,
+                                y: .yShadowOffset)
                         .containerRelativeFrame(.horizontal,
                                                 count: 1,
                                                 spacing: .contentSpacing)
@@ -80,8 +82,8 @@ private extension CGFloat {
     static let contentSpacing: Self = 4.0
     static let cornerRadius: Self = 20.0
     static let shadowRadius: Self = 6.0
-    static let xShadwoOffset: Self  = 0.0
-    static let yShadwoOffset: Self  = 3.0
+    static let xShadowOffset: Self  = 0.0
+    static let yShadowOffset: Self  = 3.0
 }
 
 private extension Color {

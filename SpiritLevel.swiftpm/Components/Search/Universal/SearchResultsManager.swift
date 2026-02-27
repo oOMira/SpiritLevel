@@ -1,8 +1,8 @@
 import SwiftUI
 
-// MARK: - SearchResultsManagable
+// MARK: - SearchResultsManageable
 
-protocol SearchResultsManagable: AnyObject, Observable {
+protocol SearchResultsManageable: AnyObject, Observable {
     var items: [SearchItem] { get }
     var searchText: String { get set }
     var filteredItems: [SearchItem] { get }
@@ -11,7 +11,7 @@ protocol SearchResultsManagable: AnyObject, Observable {
 // MARK: - SearchResultsManager
 
 @Observable
-final class SearchResultsManager: SearchResultsManagable {
+final class SearchResultsManager: SearchResultsManageable {
     private(set) var items: [SearchItem]
     
     var searchText: String
@@ -31,14 +31,26 @@ final class SearchResultsManager: SearchResultsManagable {
 }
 
 extension SearchResultsManager {
+    @MainActor
     static func getDefaultItems(appStateManager: AppStateRepository,
-                                injectionRepository: InjectionRepository) -> [SearchItem] {
+                                appStartRepository: AppStartRepository,
+                                injectionRepository: InjectionRepository,
+                                labResultsRepository: LabResultsRepository,
+                                treatmentPlanRepository: TreatmentPlanRepository,
+                                hormoneManager: HormoneLevelManager) -> [SearchItem] {
         [
             AppArea.getSearchItems(appStateManager: appStateManager,
-                                   injectionRepository: injectionRepository),
-            OverviewFeature.getSearchItems(),
-            StatisticsFeature.getSearchItems(injectionRepository: injectionRepository),
-            SettingsFeature.getSearchItems()
+                                   appStartRepository: appStartRepository,
+                                   injectionRepository: injectionRepository,
+                                   labResultsRepository: labResultsRepository,
+                                   treatmentPlanRepository: treatmentPlanRepository,
+                                   hormoneManager: hormoneManager),
+            OverviewFeature.getSearchItems(hormoneManager: hormoneManager,
+                                           injectionRepository: injectionRepository,
+                                           treatmentPlanRepository: treatmentPlanRepository),
+            StatisticsFeature.getSearchItems(injectionRepository: injectionRepository,
+                                             labResultsRepository: labResultsRepository),
+            SettingsFeature.getSearchItems(treatmentPlanRepository: treatmentPlanRepository)
         ].flatMap { $0 }
     }
 }

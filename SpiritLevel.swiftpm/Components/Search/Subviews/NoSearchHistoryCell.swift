@@ -12,8 +12,7 @@ struct NoSearchHistoryCell: View {
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let emptyHistoryMessage: Self = "No search history yet"
 }
 

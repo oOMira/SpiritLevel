@@ -1,30 +1,31 @@
 import SwiftUI
 
-struct SplitViewLayout<AppStateManagerType: AppStateManagable,
-                       SearchResultsMangerType: SearchResultsManagable,
-                       InjectionReposetoryType: InjectionManagable>: View {
+struct SplitViewLayout<AppStateManagerType: AppStateManageable,
+                       AppStartRepositoryType: AppStartManageable,
+                       SearchResultsManagerType: SearchResultsManageable,
+                       InjectionRepositoryType: InjectionManageable,
+                       LabResultsRepositoryType: LabResultsManageable,
+                       TreatmentPlanRepositoryType: TreatmentPlanManageable,
+                       HormoneLevelManagerType: HormoneLevelManageable>: View {
 
     @Bindable var appStateManager: AppStateManagerType
-    var searchResultsManger: SearchResultsMangerType
-    private let injectionReposetory: InjectionReposetoryType
+    let appStartRepository: AppStartRepositoryType
+    let searchResultsManager: SearchResultsManagerType
+    let injectionRepository: InjectionRepositoryType
+    let labResultsRepository: LabResultsRepositoryType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let hormoneLevelManager: HormoneLevelManagerType
+    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
 
     @State private var activeSheet: ShortcutFeature? = nil
     
-    init(appStateManager: AppStateManagerType,
-         searchReultsManger: SearchResultsMangerType,
-         injectionReposetory: InjectionReposetoryType) {
-        self.appStateManager = appStateManager
-        self.searchResultsManger = searchReultsManger
-        self.injectionReposetory = injectionReposetory
-    }
-    
     var body: some View {
-        let enumaratedAppAreas = Array(AppArea.allCases.enumerated())
+        let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
         NavigationSplitView {
             List(selection: $appStateManager.selectedTab.toOptional()) {
                 Label("Search", systemImage: "magnifyingglass")
                     .tag(-1)
-                ForEach(enumaratedAppAreas, id: \.offset) { index, area in
+                ForEach(enumeratedAppAreas, id: \.offset) { index, area in
                     Label(area.label, systemImage: area.systemImageName)
                 }
             }
@@ -54,26 +55,37 @@ struct SplitViewLayout<AppStateManagerType: AppStateManagable,
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
-                case .logInjection: LogInjectionView(injecionRepository: injectionReposetory)
+                case .logInjection: LogInjectionView(injectionRepository: injectionRepository)
                     .presentationDetents([.large])
-                case .logLab: LogLabResultView()
+                case .logLab: LogLabResultView(labResultsRepository: labResultsRepository)
                     .presentationDetents([.large])
                 }
             }
         } detail: {
             if appStateManager.selectedTab == -1 {
                 CompactSearchView(appStateManager: appStateManager,
-                                  searchResultsManager: searchResultsManger)
+                                  searchHistoryManager: searchHistoryManager,
+                                  searchResultsManager: searchResultsManager)
             } else {
-                let selectedAppArea = enumaratedAppAreas[appStateManager.selectedTab].element
+                let selectedAppArea = enumeratedAppAreas[appStateManager.selectedTab].element
                 switch selectedAppArea {
                 case .overview:
                     CompactOverview(appStateManager: appStateManager,
-                                    injectionReposetory: injectionReposetory)
-                case .statisitcs:
-                    StatisticsView(injectionRepository: injectionReposetory)
+                                    appStartRepository: appStartRepository,
+                                    injectionRepository: injectionRepository,
+                                    labResultsRepository: labResultsRepository,
+                                    treatmentPlanRepository: treatmentPlanRepository,
+                                    hormoneManager: hormoneLevelManager)
+                case .statistics:
+                    StatisticsView(injectionRepository: injectionRepository,
+                                   labResultsRepository: labResultsRepository)
                 case .settings:
-                    SettingsView()
+                    SettingsView(appStartRepository: appStartRepository,
+                                 appStateRepository: appStateManager,
+                                 injectionRepository: injectionRepository,
+                                 labResultsRepository: labResultsRepository,
+                                 treatmentPlanRepository: treatmentPlanRepository,
+                                 hormoneLevelManager: hormoneLevelManager)
                 }
             }
         }

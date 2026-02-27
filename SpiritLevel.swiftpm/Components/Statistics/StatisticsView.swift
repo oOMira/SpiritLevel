@@ -1,23 +1,21 @@
 import SwiftUI
 
-struct StatisticsView<InjectionRepositoryType: InjectionManagable>: View {
-    let injectionRepository: InjectionRepositoryType
+struct StatisticsView<InjectionRepositoryType: InjectionManageable,
+                      LabResultsRepositoryType: LabResultsManageable>: View {
     
+    let injectionRepository: InjectionRepositoryType
+    let labResultsRepository: LabResultsRepositoryType
     var body: some View {
         List {
             ForEach(StatisticsFeature.allCases) { feature in
                 switch feature {
-                case .graph:
-                    Section {
-                        StatisticsCellView()
-                    }
                 case .labResults:
-                    Section(.injectionsSectionTitle) {
-                        InjectionsCellView(injections: injectionRepository.allItems)
+                    Section(.labResultsSectionTitle) {
+                        InjectionsCellView(injectionRepository: injectionRepository)
                     }
                 case .injections:
-                    Section(.labResultsSectionTitle) {
-                        LabResultsCellView()
+                    Section(.injectionsSectionTitle) {
+                        LabResultsCellView(labResultsRepository: labResultsRepository)
                     }
                 }
             }

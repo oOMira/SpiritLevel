@@ -1,37 +1,23 @@
 import SwiftUI
 
-struct CompactSearchView<AppStateManagerType: AppStateManagable,
-                         SearchResultsManagerType: SearchResultsManagable>: View {
+struct CompactSearchView<AppStateManagerType: AppStateManageable,
+                         SearchResultsManagerType: SearchResultsManageable>: View {
     
     @State private var navigationManager = NavigationManager()
     
-    private var appStateManager: AppStateManagerType
-    private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
-    @Bindable private var searchResultsManager: SearchResultsManagerType
-    
-    init(appStateManager: AppStateManagerType,
-         searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>,
-         searchResultsManager: SearchResultsManagerType) {
-        self.appStateManager = appStateManager
-        self.searchHistoryManager = searchHistoryManager
-        self.searchResultsManager = searchResultsManager
-    }
-    
-    init(appStateManager: AppStateManagerType,
-         searchResultsManager: SearchResultsManagerType) {
-        self.appStateManager = appStateManager
-        self.searchHistoryManager = .init(appStateManager: appStateManager)
-        self.searchResultsManager = searchResultsManager
-    }
+    let appStateManager: AppStateManagerType
+    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
+    @Bindable var searchResultsManager: SearchResultsManagerType
     
     var body: some View {
         NavigationStack(path: $navigationManager.path) {
             List {
-                SearchActiveView(appStateManager: appStateManager,
+                SearchActiveView(searchHistoryManager: searchHistoryManager,
                                  searchManager: searchResultsManager)
             }
             .animation(.snappy, value: searchResultsManager.searchText)
             .animation(.snappy, value: searchHistoryManager.searchHistory.isEmpty)
+            .animation(.snappy, value: searchResultsManager.filteredItems.isEmpty)
             .listStyle(.plain)
             .autocorrectionDisabled(true)
             .searchable(

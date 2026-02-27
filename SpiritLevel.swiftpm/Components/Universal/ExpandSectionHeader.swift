@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ExpandableSectionHeader: View {
-    let title: LocalizedStringKey
+    let title: LocalizedStringResource
     @Binding var expanded: Bool
     
     var body: some View {
@@ -61,5 +61,3 @@ private extension Double {
     }
     .preferredColorScheme(.dark)
 }
-
-

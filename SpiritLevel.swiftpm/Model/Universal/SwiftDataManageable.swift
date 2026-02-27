@@ -1,21 +1,23 @@
 import SwiftData
 import Foundation
-import Combine
 
-protocol SwiftDataManagable: AnyObject {
+@MainActor
+protocol SwiftDataManageable: AnyObject {
     associatedtype ItemType: PersistentModel
     var modelContext: ModelContext { get }
     var allItems: [ItemType] { get set }
-    var cancellables: Set<AnyCancellable> { get set }
+    // TODO: Check if explicit cancelation is needed
+    var observationTask: Task<Void, Never>? { get set }
     
     func add(item: ItemType) throws
     
     func delete(item: ItemType) throws
+    func deleteAll() throws
     func fetchAll() throws -> [ItemType]
     func observeModelContext()
 }
 
-extension SwiftDataManagable {
+extension SwiftDataManageable {
     var fetchDescriptor: FetchDescriptor<ItemType> { .init() }
     
     func add(item: ItemType) throws {
@@ -33,25 +35,24 @@ extension SwiftDataManagable {
         return try modelContext.fetch(descriptor)
     }
     
-    func observeModelContext() {
-        NotificationCenter.default
-            .publisher(for: ModelContext.didSave)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.refresh()
-            }
-            .store(in: &cancellables)
-        
-        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.refresh()
-            }
-            .store(in: &cancellables)
+    func deleteAll() throws {
+        allItems.forEach { modelContext.delete($0) }
+        try modelContext.save()
     }
     
+    func observeModelContext() {
+        observationTask = Task { [weak self] in
+            let notifications = NotificationCenter.default.notifications(
+                named: ModelContext.didSave
+            )
+            
+            for await _ in notifications {
+                guard let self else { return }
+                self.refresh()
+            }
+        }
+    }
+
     @discardableResult
     func refresh() -> [ItemType] {
         do {

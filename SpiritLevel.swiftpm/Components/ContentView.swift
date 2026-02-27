@@ -1,32 +1,40 @@
 import SwiftUI
-import Charts
 
-struct ContentView<AppStateManagerType: AppStateManagable,
-                   SearchResultsManagerType: SearchResultsManagable,
-                   InjectionRepositoryType: InjectionManagable>: View {
+struct ContentView<AppStateManagerType: AppStateManageable,
+                   AppStartRepositoryType: AppStartManageable,
+                   SearchResultsManagerType: SearchResultsManageable,
+                   InjectionRepositoryType: InjectionManageable,
+                   LabResultsManagerType: LabResultsManageable,
+                   TreatmentPlanRepositoryType: TreatmentPlanManageable,
+                   HormoneLevelManagerType: HormoneLevelManageable>: View {
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    private let appStateManager: AppStateManagerType
-    private let searchResultsManager: SearchResultsManagerType
-    private let injectionRepository: InjectionRepositoryType
-    
-    init(appStateManager: AppStateManagerType,
-         searchResultsManager: SearchResultsManagerType,
-         injectionRepository: InjectionRepositoryType) {
-        self.appStateManager = appStateManager
-        self.searchResultsManager = searchResultsManager
-        self.injectionRepository = injectionRepository
-    }
+    let appStateManager: AppStateManagerType
+    let appStartRepository: AppStartRepositoryType
+    let searchResultsManager: SearchResultsManagerType
+    let injectionRepository: InjectionRepositoryType
+    let labResultsRepository: LabResultsManagerType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let hormoneLevelManager: HormoneLevelManagerType
     
     var body: some View {
         if horizontalSizeClass == .compact {
             TabViewLayout(appStateManager: appStateManager,
+                          appStartRepository: appStartRepository,
                           searchResultsManager: searchResultsManager,
-                          injectionReposetory: injectionRepository)
+                          injectionRepository: injectionRepository,
+                          labResultsRepository: labResultsRepository,
+                          treatmentPlanRepository: treatmentPlanRepository,
+                          hormoneLevelManager: hormoneLevelManager)
         } else {
             SplitViewLayout(appStateManager: appStateManager,
-                            searchReultsManger: searchResultsManager,
-                            injectionReposetory: injectionRepository)
+                            appStartRepository: appStartRepository,
+                            searchResultsManager: searchResultsManager,
+                            injectionRepository: injectionRepository,
+                            labResultsRepository: labResultsRepository,
+                            treatmentPlanRepository: treatmentPlanRepository,
+                            hormoneLevelManager: hormoneLevelManager,
+                            searchHistoryManager: .init(appStateManager: appStateManager))
         }
     }
 }
@@ -34,8 +42,7 @@ struct ContentView<AppStateManagerType: AppStateManagable,
 
 // MARK: - Constants
 
-@MainActor
-extension LocalizedStringKey {
+extension LocalizedStringResource {
     static let searchTitle: Self = "Search"
 }
 

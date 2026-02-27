@@ -1,5 +1,8 @@
 import SwiftUI
 
+// Achievement images are AI generated in Image Playground
+// imageDescription is and matching is AI generated and just fine tuned
+
 enum Achievement: String, Identifiable, CaseIterable {
     var id: String { rawValue }
 
@@ -21,7 +24,12 @@ enum Achievement: String, Identifiable, CaseIterable {
 }
 
 extension Achievement {
-    var image: Image { .init(imageName) }
+    var image: Image {
+        if let uiImage = UIImage(named: imageName, in: .main, with: nil) {
+            return Image(uiImage: uiImage)
+        }
+        return Image(systemName: "photo")
+    }
 
     var imageName: String {
         switch self {

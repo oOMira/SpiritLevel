@@ -1,11 +1,10 @@
 import SwiftUI
 
-enum OverviewFeature: String, CaseIterable, SearchableItem {
+enum OverviewFeature: String, CaseIterable, SearchableItem, Hashable {
     case mood
     case currentLevel
     case nextInjection
-    case trend
-    case achivements
+    case achievements
     
     var itemType: ItemType { .content }
 
@@ -14,8 +13,7 @@ enum OverviewFeature: String, CaseIterable, SearchableItem {
         case .mood:             "Mood"
         case .currentLevel:     "Current Level"
         case .nextInjection:    "Next Injection"
-        case .trend:            "Trend"
-        case .achivements:      "Achievements"
+        case .achievements:     "Achievements"
         }
     }
     
@@ -24,8 +22,7 @@ enum OverviewFeature: String, CaseIterable, SearchableItem {
         case .mood:             "face.smiling"
         case .currentLevel:     "gauge.with.needle"
         case .nextInjection:    "syringe"
-        case .trend:            "arrow.up.right"
-        case .achivements:      "star"
+        case .achievements:     "star"
         }
     }
 }

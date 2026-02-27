@@ -1,10 +1,10 @@
 import SwiftUI
 
-struct SearchHistoryView<AppStateManagerType: AppStateManagable>: View {
-    private var searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>
+struct SearchHistoryView<AppStateManagerType: AppStateManageable>: View {
+    private var searchHistoryManager: SearchHistoryManager<AppStateManagerType>
     @Binding private var searchText: String
     
-    init(searchHistoryManager: SearchHistoryViewManager<AppStateManagerType>, searchText: Binding<String>) {
+    init(searchHistoryManager: SearchHistoryManager<AppStateManagerType>, searchText: Binding<String>) {
         self.searchHistoryManager = searchHistoryManager
         self._searchText = searchText
     }

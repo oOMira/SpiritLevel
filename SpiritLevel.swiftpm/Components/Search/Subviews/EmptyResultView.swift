@@ -19,8 +19,7 @@ struct EmptySearchResultsView: View {
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let noResultsTitle: Self = "No Results"
 }
 

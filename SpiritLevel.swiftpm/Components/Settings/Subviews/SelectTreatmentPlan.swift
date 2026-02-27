@@ -1,34 +1,36 @@
 import SwiftUI
 
-struct SelectTreatmentPlan: View {
-    @State private var activePlan: Ester = .enanthate
-    @State private var selectedDate = Date()
+struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var treatmentPlans: [TreatmentPlan]
+    @State private var activePlan: TreatmentPlan
+    @State private var selectedDate: Date = .now
+    @State private var showsSavingErrorAlert = false
+    
+    let treatmentRepository: TreatmentRepositoryType
+    
+    init(treatmentPlans: [TreatmentPlan],
+         activePlan: TreatmentPlan,
+         treatmentRepository: TreatmentRepositoryType) {
+        self.treatmentPlans = treatmentPlans
+        self.activePlan = activePlan
+        self.treatmentRepository = treatmentRepository
+    }
     
     var body: some View {
         List {
             Section(.choosePlanSectionTitle) {
                 Picker(selection: $activePlan) {
-                    ForEach(Ester.allCases, id: \.self) { ester in
-                        Text(ester.name)
+                    ForEach(treatmentPlans, id: \.self) { plan in
+                        Text(plan.name)
                     }
                 } label: { EmptyView() }
                 .pickerStyle(.inline)
                 NavigationLink(.createOwnPlanLink, destination: {
-                    List {
-                        Section(.configurationSectionTitle) {
-                            CustomTreatmentPlanConfigurationView(ester: .enanthate)
-                        }
-                        Section {
-                            Button(action: {
-                                print("select")
-                            }, label: {
-                                Text(.setSelectedButtonTitle)
-                                    .frame(maxWidth: .infinity)
-                            })
-                        }
-                    }
-                    .navigationTitle(.createOwnPlanNavigationTitle)
-                    .navigationBarTitleDisplayMode(.inline)
+                    CustomTreatmentPlanView(addButtonTitle: "Select", action: { plan in
+                        print("\(plan.name) added")
+                    })
+                    .navigationTitle(.createNewPlanNavigationTitle)
                 })
             }
             Section(.startSectionTitle) {
@@ -38,7 +40,28 @@ struct SelectTreatmentPlan: View {
             }
             Section {
                 Button(action: {
-                    print("set plan")
+                    // TODO: also delete plans in the past without injections
+                    if let latest = treatmentRepository.latest, latest.firstInjectionDate >= Calendar.current.startOfDay(for: .now) {
+                        do {
+                            try treatmentRepository.delete(item: latest)
+                        } catch {
+                            showsSavingErrorAlert.toggle()
+                            print(error)
+                        }
+                    }
+                    do {
+                        let newPlan: TreatmentPlan = .init(name: activePlan.name,
+                                                           ester: activePlan.ester,
+                                                           frequency: activePlan.frequency,
+                                                           dosage: activePlan.dosage,
+                                                           firstInjectionDate: selectedDate)
+                        try treatmentRepository.add(item: newPlan)
+                        activePlan = newPlan
+                    } catch {
+                        print(error)
+                        showsSavingErrorAlert.toggle()
+                    }
+                    dismiss()
                 }, label: {
                     Text(.setPlanButtonTitle)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -47,12 +70,19 @@ struct SelectTreatmentPlan: View {
             }
         }
         .navigationTitle(.navigationTitle)
+        // TODO: Replace with more sophisticated error UI
+        .alert("Error Setting Plan", isPresented: $showsSavingErrorAlert) {
+            Button("OK", role: .cancel) { showsSavingErrorAlert.toggle() }
+        } message: {
+            Text("Error setting treatment plan. Please try again later.")
+        }
     }
 }
 
 // MARK: - Constants
 
 private extension LocalizedStringResource {
+    static let createNewPlanNavigationTitle: Self = "Create New Plan"
     static let navigationTitle: Self = "Select Plan"
     static let choosePlanSectionTitle: Self = "Choose Plan"
     static let createOwnPlanLink: Self = "Create own plan"

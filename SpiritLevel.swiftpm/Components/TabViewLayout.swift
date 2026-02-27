@@ -1,43 +1,57 @@
 import SwiftUI
 
-struct TabViewLayout<AppStateManagerType: AppStateManagable,
-                     SearchResultsManagerType: SearchResultsManagable,
-                     InjectionReposetoryType: InjectionManagable>: View {
+struct TabViewLayout<AppStateManagerType: AppStateManageable,
+                     AppStartRepositoryType: AppStartManageable,
+                     SearchResultsManagerType: SearchResultsManageable,
+                     InjectionRepositoryType: InjectionManageable,
+                     LabResultsRepositoryType: LabResultsManageable,
+                     TreatmentPlanRepositoryType: TreatmentPlanManageable,
+                     HormoneLevelManagerType: HormoneLevelManageable>: View {
     
-    @Bindable private var appStateManager: AppStateManagerType
-    private var searchResultsManager: SearchResultsManagerType
-    private var injectionReposetory: InjectionReposetoryType
-    
-    init(appStateManager: AppStateManagerType,
-         searchResultsManager: SearchResultsManagerType,
-         injectionReposetory: InjectionReposetoryType) {
-        self.appStateManager = appStateManager
-        self.searchResultsManager = searchResultsManager
-        self.injectionReposetory = injectionReposetory
-    }
-    
+    @Bindable var appStateManager: AppStateManagerType
+    let appStartRepository: AppStartRepositoryType
+    let searchResultsManager: SearchResultsManagerType
+    let injectionRepository: InjectionRepositoryType
+    let labResultsRepository: LabResultsRepositoryType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let hormoneLevelManager: HormoneLevelManagerType
     
     var body: some View {
         TabView(selection: $appStateManager.selectedTab) {
-            let enumaratedAppAreas = Array(AppArea.allCases.enumerated())
-            ForEach(enumaratedAppAreas, id: \.offset) { index, area in
+            let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
+            ForEach(enumeratedAppAreas, id: \.offset) { index, area in
                 Tab(area.label,
                     systemImage: area.systemImageName,
                     value: index) {
-                    NavigationView {
+                    NavigationStack {
                         switch area {
                         case .overview: Overview(appStateManager: appStateManager,
-                                                 injectionRepository: injectionReposetory)
-                        case .statisitcs: StatisticsView(injectionRepository: injectionReposetory)
-                        case .settings: SettingsView()
+                                                 appStartRepository: appStartRepository,
+                                                 injectionRepository: injectionRepository,
+                                                 labResultsRepository: labResultsRepository,
+                                                 treatmentPlanRepository: treatmentPlanRepository,
+                                                 hormoneManager: hormoneLevelManager)
+                        case .statistics: StatisticsView(injectionRepository: injectionRepository,
+                                                         labResultsRepository: labResultsRepository)
+                        case .settings: SettingsView(appStartRepository: appStartRepository,
+                                                     appStateRepository: appStateManager,
+                                                     injectionRepository: injectionRepository,
+                                                     labResultsRepository: labResultsRepository,
+                                                     treatmentPlanRepository: treatmentPlanRepository,
+                                                     hormoneLevelManager: hormoneLevelManager)
                         }
                     }
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
                 SearchView(appStateManager: appStateManager,
-                           searchResultsManager: searchResultsManager,
-                           injectionReposetory: injectionReposetory)
+                           appStartRepository: appStartRepository,
+                           searchHistoryManager: .init(appStateManager: appStateManager),
+                           injectionRepository: injectionRepository,
+                           labResultsRepository: labResultsRepository,
+                           treatmentPlanRepository: treatmentPlanRepository,
+                           hormoneLevelManager: hormoneLevelManager,
+                           searchResultsManager: searchResultsManager)
             }
         }
     }

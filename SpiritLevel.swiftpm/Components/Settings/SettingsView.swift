@@ -1,10 +1,21 @@
 import SwiftUI
 
-struct SettingsView: View {
+struct SettingsView<AppStartRepositoryType: AppStartManageable,
+                    AppStateRepositoryType: AppStateManageable,
+                    InjectionRepositoryType: InjectionManageable,
+                    LabResultsRepositoryType: LabResultsManageable,
+                    TreatmentPlanRepositoryType: TreatmentPlanManageable,
+                    HormoneLevelManagerType: HormoneLevelManageable>: View {
     @Environment(\.dismiss) private var dismiss
     
-    @State private var isSyncing: Bool = false
     @State private var isShowingSheet: Bool = false
+    
+    let appStartRepository: AppStartRepositoryType
+    let appStateRepository: AppStateRepositoryType
+    let injectionRepository: InjectionRepositoryType
+    let labResultsRepository: LabResultsRepositoryType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let hormoneLevelManager: HormoneLevelManagerType
     
     var body: some View {
         List {
@@ -13,9 +24,9 @@ struct SettingsView: View {
                 case .plan:
                     Section {
                         NavigationLink {
-                            TreatmentPlanView()
+                            TreatmentPlanView(treatmentPlanRepository: treatmentPlanRepository, hormoneLevelManager: hormoneLevelManager)
                         } label: {
-                            TreatmentPlanCellView()
+                            TreatmentPlanCellView(treatmentPlanRepository: treatmentPlanRepository)
                         }
                     }
                 case .support:
@@ -23,8 +34,10 @@ struct SettingsView: View {
                         SupportCellView()
                     }
                 case .data:
-                    Section {
-                        UsedDataCellView()
+                    Section("Used Resources") {
+                        NavigationLink("Used Resources") {
+                            UsedResourcesView()
+                        }
                     }
                 case .deleteData:
                     Section {
@@ -43,15 +56,18 @@ struct SettingsView: View {
         }
         .navigationTitle(.settingsNavigationTitle)
         .sheet(isPresented: $isShowingSheet) {
-            DeleteSheet(isShowingSheet: $isShowingSheet)
+            DeleteSheet(appStartRepository: appStartRepository,
+                        appStateRepository: appStateRepository,
+                        injectionsRepository: injectionRepository,
+                        treatmentPlanRepository: treatmentPlanRepository,
+                        labResultsReportRepository: labResultsRepository)
         }
     }
 }
 
 // MARK: - Constants
 
-@MainActor
-private extension LocalizedStringKey {
+private extension LocalizedStringResource {
     static let settingsNavigationTitle: Self = "Settings"
     static let supportSectionTitle: Self = "Support"
     static let deleteDataButtonTitle: Self = "Delete Data"
