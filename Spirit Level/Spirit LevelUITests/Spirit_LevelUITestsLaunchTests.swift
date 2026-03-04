@@ -1,10 +1,3 @@
-//
-//  Spirit_LevelUITestsLaunchTests.swift
-//  Spirit LevelUITests
-//
-//  Created by Mira Kim Risse on 03.03.26.
-//
-
 import XCTest
 
 final class Spirit_LevelUITestsLaunchTests: XCTestCase {

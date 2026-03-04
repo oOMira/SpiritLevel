@@ -10,7 +10,7 @@ struct SearchHistoryView<AppStateManagerType: AppStateManageable>: View {
     }
     
     var body: some View {
-        // MARK: - Header
+        let isSearchHistoryEmpty = searchHistoryManager.searchHistory.isEmpty
         
         HStack {
             Text("Recent Searches")
@@ -22,21 +22,29 @@ struct SearchHistoryView<AppStateManagerType: AppStateManageable>: View {
                 }
             }, label: {
                 Text("Clear history")
-                    .font(.footnote.bold())
-                    .foregroundStyle(.red)
             })
+            .buttonStyle(.plain)
+            .foregroundStyle(.accent)
+            .disabled(isSearchHistoryEmpty)
         }
         .listRowSeparator(.hidden)
         
-        // MARK: - Search History
-        
-        ForEach(searchHistoryManager.searchHistory.enumerated(), id: \.offset) { _, query in
-            Button(action: {
-                withAnimation { searchText = query }
-            }, label: {
-                Text(query)
-                    .listRowBackground(Color.clear)
-            })
+        if isSearchHistoryEmpty {
+            Text(.emptyHistoryMessage)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            ForEach(searchHistoryManager.searchHistory.enumerated(), id: \.offset) { _, query in
+                Button(action: {
+                    withAnimation { searchText = query }
+                }, label: {
+                    Text(query)
+                        .listRowBackground(Color.clear)
+                })
+            }
         }
     }
+}
+
+private extension LocalizedStringResource {
+    static let emptyHistoryMessage: Self = "No search history yet"
 }

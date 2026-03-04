@@ -14,29 +14,49 @@ struct CurrentHormoneLevelCellView<InjectionRepositoryType: InjectionManageable,
     var body: some View {
         let injections = injectionRepository.allItems.filter { $0.date.start <= appData.appStartDate.start }
         
-        let values = ClosedRange.xDomain.map {
+        // TODO: finde better default values
+        let maxX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.upperBound, to: appData.appStartDate) ?? .init()
+        let minX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.lowerBound, to: appData.appStartDate) ?? .init()
+        
+        let values: [(x: Date, y: Double)] = ClosedRange.xDomain.compactMap {
+            guard !injections.isEmpty else { return nil }
             let date = Calendar.current.date(byAdding: .day, value: $0, to: appData.appStartDate) ?? appData.appStartDate
             let level = hormoneManager.levelForInjections(injections, at: date)
             return (x: date, y: level)
         }
         
-        if injections.isEmpty {
-            Text("Log injections to see simulated hormone levels")
-                .frame(maxWidth: .infinity, alignment: .leading)
-        } else {
-            Chart(values.enumerated(), id: \.offset) {
-                LineMark(
-                    x: .value("Date", $1.x),
-                    y: .value("Concentration", $1.y)
-                )
-                .interpolationMethod(.catmullRom)
-                .accessibilityLabel("Simulated hormone level")
-                .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram  pr milliliter on \($1.x, format: .dateTime.day().month().year())")
-            }
-            .accessibilityLabel("Chart showing simulated hormone levels based on logged injections")
-            .frame(height: chartHeight)
-            .animation(.easeInOut, value: injections)
+        
+        var yDomain: ClosedRange<Double> {
+            let dataMax = values.map(\.y).max() ?? 100
+            return 0...(dataMax + 100)
         }
+        
+        Chart(values.enumerated(), id: \.offset) {
+            LineMark(
+                x: .value("Date", $1.x),
+                y: .value("Concentration", $1.y)
+            )
+            .interpolationMethod(.catmullRom)
+            .accessibilityLabel("Simulated hormone level")
+            .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram  pr milliliter on \($1.x, format: .dateTime.day().month().year())")
+        }
+        .chartYScale(domain: yDomain)
+        .chartXScale(domain: minX...maxX)
+        .opacity(injections.isEmpty ? 0.6 : 1.0)
+        .accessibilityLabel("Chart showing simulated hormone levels based on logged injections")
+        .frame(height: chartHeight)
+        .overlay {
+            if injections.isEmpty {
+                VStack {
+                    Text(.noInjectionsTitle)
+                        .font(.headline)
+                    Text(.noInjectionsMessage)
+                        .multilineTextAlignment(.center)
+                }
+                .accessibilityElement(children: .combine)
+            }
+        }
+
     }
 }
 
@@ -56,4 +76,9 @@ private extension CGFloat {
 
 private extension ClosedRange where Bound == Int {
     static let xDomain: Self = -14 ... 1
+}
+
+private extension LocalizedStringResource {
+    static let noInjectionsTitle: Self = "No Injections Logged"
+    static let noInjectionsMessage: Self = "Log injections to see simulated hormone levels"
 }

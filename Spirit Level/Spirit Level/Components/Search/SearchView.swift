@@ -1,7 +1,5 @@
 import SwiftUI
 
-// TODO: Add animation to serch
-
 struct SearchView<AppStateManagerType: AppStateManageable,
                   AppStartRepositoryType: AppStartManageable,
                   SearchResultsManagerType: SearchResultsManageable,
@@ -19,7 +17,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
     let labResultsRepository: LabResultsRepositoryType
     let treatmentPlanRepository: TreatmentPlanRepositoryType
     let hormoneLevelManager: HormoneLevelManagerType
-    @Bindable var searchResultsManager: SearchResultsManagerType
+    let searchResultsManager: SearchResultsManagerType
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
@@ -40,7 +38,14 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(
-                text: $searchResultsManager.searchText,
+                text: Binding(
+                    get: { searchResultsManager.searchText },
+                    set: { newValue in
+                        withAnimation(.snappy) {
+                            searchResultsManager.searchText = newValue
+                        }
+                    }
+                ),
                 isPresented: $isSearching,
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: Text(.searchPrompt)
@@ -49,7 +54,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .onSubmit(of: .search) {
                 searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
-            .activeSheetDestination(activeSheet: $activeSheet, 
+            .activeSheetDestination(activeSheet: $activeSheet,
                                     injectionRepository: injectionRepository,
                                     labResultsRepository: labResultsRepository)
             .navigationDestination(for: AppArea.self) { item in
@@ -61,7 +66,8 @@ struct SearchView<AppStateManagerType: AppStateManageable,
                                          treatmentPlanRepository: treatmentPlanRepository,
                                          hormoneManager: hormoneLevelManager)
                 case .statistics: StatisticsView(injectionRepository: injectionRepository,
-                                                 labResultsRepository: labResultsRepository)
+                                                 labResultsRepository: labResultsRepository,
+                                                 hormoneLevelManager: hormoneLevelManager)
                 case .settings: SettingsView(appStartRepository: appStartRepository,
                                              appStateRepository: appStateManager,
                                              injectionRepository: injectionRepository,

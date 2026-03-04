@@ -3,13 +3,6 @@ import SwiftUI
 struct UsedResourcesView: View {
     var body: some View {
         List {
-            VStack {
-                Text("Animated Emojis")
-                    .font(.title2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(.init("Animated emoji by Google, [Noto Emoji Animation](https://googlefonts.github.io/noto-emoji-animation/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)."))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
             
             VStack {
                 Text("Estorgen Ester Data")

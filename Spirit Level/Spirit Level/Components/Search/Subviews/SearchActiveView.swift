@@ -10,24 +10,23 @@ struct SearchActiveView<SearchManagerType: SearchResultsManageable,
 
     var body: some View {
         if searchManager.searchText.isEmpty {
-            if searchHistoryManager.searchHistory.isEmpty {
-                NoSearchHistoryCell()
-                    .listRowSeparator(.hidden)
-                    .padding(.vertical, 32)
-            } else {
-                SearchHistoryView(searchHistoryManager: searchHistoryManager,
-                                  searchText: $searchManager.searchText)
-            }
+            SearchHistoryView(searchHistoryManager: searchHistoryManager,
+                              searchText: $searchManager.searchText)
+            .transition(.opacity)
         } else {
             if searchManager.filteredItems.isEmpty {
-                EmptySearchResultsView()
+                ContentUnavailableView.search(text: searchManager.searchText)
                     .listRowSeparator(.hidden)
+                    .transition(.opacity)
             } else {
-                ForEach(searchManager.filteredItems, id: \.id) { item in
-                    NavigationLink(value: item) {
-                        SearchResultCellView(label: item.label, image: item.image)
+                Group {
+                    ForEach(searchManager.filteredItems, id: \.id) { item in
+                        NavigationLink(value: item) {
+                            SearchResultCellView(label: item.label, image: item.image)
+                        }
                     }
                 }
+                .transition(.opacity)
             }
         }
     }

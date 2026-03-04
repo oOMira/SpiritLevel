@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct QuickActionsControl: View {
-    @State private var expanded: Bool = false
     let actions: [ActionConfiguration]
 
     var body: some View {
@@ -20,7 +19,7 @@ struct QuickActionsControl: View {
         }
         .font(.system(size: .iconSize))
         .padding(.containerPadding)
-        .glassEffect()
+        .glassEffect(.regular.interactive())
     }
 }
 

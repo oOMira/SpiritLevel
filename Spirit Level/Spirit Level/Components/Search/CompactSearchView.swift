@@ -7,7 +7,7 @@ struct CompactSearchView<AppStateManagerType: AppStateManageable,
     
     let appStateManager: AppStateManagerType
     let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
-    @Bindable var searchResultsManager: SearchResultsManagerType
+    let searchResultsManager: SearchResultsManagerType
     
     var body: some View {
         NavigationStack(path: $navigationManager.path) {
@@ -15,13 +15,17 @@ struct CompactSearchView<AppStateManagerType: AppStateManageable,
                 SearchActiveView(searchHistoryManager: searchHistoryManager,
                                  searchManager: searchResultsManager)
             }
-            .animation(.snappy, value: searchResultsManager.searchText)
-            .animation(.snappy, value: searchHistoryManager.searchHistory.isEmpty)
-            .animation(.snappy, value: searchResultsManager.filteredItems.isEmpty)
             .listStyle(.plain)
             .autocorrectionDisabled(true)
             .searchable(
-                text: $searchResultsManager.searchText,
+                text: Binding(
+                    get: { searchResultsManager.searchText },
+                    set: { newValue in
+                        withAnimation(.snappy) {
+                            searchResultsManager.searchText = newValue
+                        }
+                    }
+                ),
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: Text("search")
             )
