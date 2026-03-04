@@ -21,7 +21,8 @@ extension AppArea {
                                                         hormoneManager: hormoneManager) }
                 case .statistics:
                         .init(feature: area) { StatisticsView(injectionRepository: injectionRepository,
-                                                              labResultsRepository: labResultsRepository) }
+                                                              labResultsRepository: labResultsRepository,
+                                                              hormoneLevelManager: hormoneManager) }
                 case .settings:
                         .init(feature: area) { SettingsView(appStartRepository: appStartRepository,
                                                             appStateRepository: appStateManager,
@@ -45,6 +46,7 @@ extension OverviewFeature {
                                treatmentPlanRepository: TreatmentPlanRepository) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
+            case .reminders: return nil
             case .mood:
                 return .overview(.init(feature: feature, destination: {
                     MoodCellView(injectionRepository: injectionRepository,
@@ -70,9 +72,16 @@ extension OverviewFeature {
 
 extension StatisticsFeature {
     @MainActor
-    static func getSearchItems(injectionRepository: InjectionRepository, labResultsRepository: LabResultsRepository) -> [SearchItem] {
+    static func getSearchItems(injectionRepository: InjectionRepository,
+                               labResultsRepository: LabResultsRepository,
+                               hormoneLevelManager: HormoneLevelManager) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
+            case .chart:
+                return .statistics(.init(feature: feature,
+                                         destination: {
+                    CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
+                                                       hormoneManager: hormoneLevelManager) }))
             case .injections:
                 return .statistics(.init(feature: feature,
                                          destination: { InjectionsCellView(injectionRepository: injectionRepository) } ))

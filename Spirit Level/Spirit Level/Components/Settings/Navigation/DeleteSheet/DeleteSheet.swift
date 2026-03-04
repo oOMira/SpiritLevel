@@ -20,7 +20,7 @@ struct DeleteSheet<AppStartRepositoryTyp: AppStartManageable,
     let labResultsReportRepository: LabResultsReportRepositoryType
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20, content: {
                     Group {

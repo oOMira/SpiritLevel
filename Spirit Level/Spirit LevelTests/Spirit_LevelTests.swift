@@ -1,10 +1,3 @@
-//
-//  Spirit_LevelTests.swift
-//  Spirit LevelTests
-//
-//  Created by Mira Kim Risse on 03.03.26.
-//
-
 import Testing
 @testable import Spirit_Level
 

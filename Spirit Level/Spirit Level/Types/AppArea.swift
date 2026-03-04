@@ -27,6 +27,8 @@ enum AppArea: String, CaseIterable, SearchableItem {
         }
     }
     
+    // TODO: move to private extension
+    
     var accentColor: Color {
         switch self {
         case .overview:     .red
