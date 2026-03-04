@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FADF56BF2F568282002578DB /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = FADF56BE2F568282002578DB /* Lottie */; };
+		FADF57922F57C8DC002578DB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FADF57912F57C8DC002578DB /* Settings.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		FA771C2A2F567FE20071AC25 /* Spirit Level.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Spirit Level.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA771C392F567FE30071AC25 /* Spirit LevelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Spirit LevelTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA771C432F567FE30071AC25 /* Spirit LevelUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Spirit LevelUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FADF57912F57C8DC002578DB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +82,7 @@
 		FA771C212F567FE20071AC25 = {
 			isa = PBXGroup;
 			children = (
+				FADF57912F57C8DC002578DB /* Settings.bundle */,
 				FA771C2C2F567FE20071AC25 /* Spirit Level */,
 				FA771C3C2F567FE30071AC25 /* Spirit LevelTests */,
 				FA771C462F567FE30071AC25 /* Spirit LevelUITests */,
@@ -221,6 +224,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FADF57922F57C8DC002578DB /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

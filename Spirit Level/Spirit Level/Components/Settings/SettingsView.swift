@@ -38,6 +38,18 @@ struct SettingsView<AppStartRepositoryType: AppStartManageable,
                         NavigationLink("Used Resources") {
                             UsedResourcesView()
                         }
+                        NavigationLink {
+                            let url = Bundle.main.url(forResource: "lottielicence", withExtension: "txt")!
+                            let text = try! String(contentsOf: url, encoding: .utf8)
+                            ScrollView {
+                                Text(text)
+                                    .padding()
+                            }
+                            .navigationTitle("Lottie License")
+                            .navigationBarTitleDisplayMode(.inline)
+                        } label: {
+                            Text("Lottie")
+                        }
                     }
                 case .deleteData:
                     Section {
@@ -71,4 +83,8 @@ private extension LocalizedStringResource {
     static let settingsNavigationTitle: Self = "Settings"
     static let supportSectionTitle: Self = "Support"
     static let deleteDataButtonTitle: Self = "Delete Data"
+}
+
+private extension String {
+    static let externalLinkSystemImage: Self = "square.and.arrow.up"
 }
