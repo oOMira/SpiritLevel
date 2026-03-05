@@ -2,17 +2,21 @@ import SwiftUI
 
 struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var treatmentPlans: [TreatmentPlan]
+    @State private var predefinedTreatmentPlans: [TreatmentPlan]
     @State private var activePlan: TreatmentPlan
     @State private var selectedDate: Date = .now
     @State private var showsSavingErrorAlert = false
     
     let treatmentRepository: TreatmentRepositoryType
     
-    init(treatmentPlans: [TreatmentPlan],
+    var allTreatmentPlans: [TreatmentPlan] {
+        predefinedTreatmentPlans + treatmentRepository.allItems
+    }
+    
+    init(predefinedTreatmentPlans: [TreatmentPlan],
          activePlan: TreatmentPlan,
          treatmentRepository: TreatmentRepositoryType) {
-        self.treatmentPlans = treatmentPlans
+        self.predefinedTreatmentPlans = predefinedTreatmentPlans
         self.activePlan = activePlan
         self.treatmentRepository = treatmentRepository
     }
@@ -21,14 +25,19 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
         List {
             Section(.choosePlanSectionTitle) {
                 Picker(selection: $activePlan) {
-                    ForEach(treatmentPlans, id: \.self) { plan in
+                    ForEach(allTreatmentPlans, id: \.self) { plan in
                         Text(plan.name)
                     }
                 } label: { EmptyView() }
                 .pickerStyle(.inline)
                 NavigationLink(.createOwnPlanLink, destination: {
                     CustomTreatmentPlanView(addButtonTitle: "Select", action: { plan in
-                        print("\(plan.name) added")
+                        do {
+                            try treatmentRepository.add(item: plan)
+                        } catch {
+                            // TODO: handle error
+                            print("error")
+                        }
                     })
                     .navigationTitle(.createNewPlanNavigationTitle)
                 })

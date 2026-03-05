@@ -82,6 +82,7 @@ struct MyApp: App {
                 treatmentPlanRepository: treatmentPlanRepository,
                 hormoneLevelManager: hormoneLevelManager
             )
+            .tint(.pink)
             .environmentObject(appData)
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in

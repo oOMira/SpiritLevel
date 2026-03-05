@@ -17,7 +17,7 @@ struct TreatmentPlanConfiguration: Hashable {
 }
 
 struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                          HormoneLevelManagerType: HormoneLevelManageable>: View {
+                         HormoneLevelManagerType: HormoneLevelManageable>: View {
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var eeVisible: Bool = true
     @State private var eaVisible: Bool = true
@@ -38,7 +38,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
         List {
             Section {
                 NavigationLink(destination: {
-                    SelectTreatmentPlan(treatmentPlans: store.planConfigurations.plans,
+                    SelectTreatmentPlan(predefinedTreatmentPlans: store.planConfigurations.plans,
                                         activePlan: store.planConfigurations.plans.first ?? Ester.enanthate.predefinedStablePlan(),
                                         treatmentRepository: treatmentPlanRepository)
                 }, label: {
