@@ -2,29 +2,33 @@ import SwiftUI
 
 struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var predefinedTreatmentPlans: [TreatmentPlan]
-    @State private var activePlan: TreatmentPlan
+    private let activePlan: TreatmentPlan
+    @State private var currentActivePlan: TreatmentPlan
     @State private var selectedDate: Date = .now
     @State private var showsSavingErrorAlert = false
+    @Bindable private var treatmentPlanStore: TreatmentPlanStore
     
     let treatmentRepository: TreatmentRepositoryType
     
     var allTreatmentPlans: [TreatmentPlan] {
-        predefinedTreatmentPlans + treatmentRepository.allItems
+        let plans = treatmentPlanStore.planConfigurations.compactMap(\.plan)
+        return plans.contains(activePlan) ? plans : plans + [activePlan]
     }
     
     init(predefinedTreatmentPlans: [TreatmentPlan],
          activePlan: TreatmentPlan,
-         treatmentRepository: TreatmentRepositoryType) {
-        self.predefinedTreatmentPlans = predefinedTreatmentPlans
+         treatmentRepository: TreatmentRepositoryType,
+         treatmentPlanStore: Bindable<TreatmentPlanStore>) {
         self.activePlan = activePlan
+        self.currentActivePlan = activePlan
         self.treatmentRepository = treatmentRepository
+        self._treatmentPlanStore = treatmentPlanStore
     }
     
     var body: some View {
         List {
             Section(.choosePlanSectionTitle) {
-                Picker(selection: $activePlan) {
+                Picker(selection: $currentActivePlan) {
                     ForEach(allTreatmentPlans, id: \.self) { plan in
                         Text(plan.name)
                     }
@@ -32,12 +36,9 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
                 .pickerStyle(.inline)
                 NavigationLink(.createOwnPlanLink, destination: {
                     CustomTreatmentPlanView(addButtonTitle: "Select", action: { plan in
-                        do {
-                            try treatmentRepository.add(item: plan)
-                        } catch {
-                            // TODO: handle error
-                            print("error")
-                        }
+                        treatmentPlanStore.planConfigurations.append(.init(plan: plan,
+                                                                           visible: true))
+                        currentActivePlan = plan
                     })
                     .navigationTitle(.createNewPlanNavigationTitle)
                 })
@@ -65,7 +66,7 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
                                                            dosage: activePlan.dosage,
                                                            firstInjectionDate: selectedDate)
                         try treatmentRepository.add(item: newPlan)
-                        activePlan = newPlan
+                        currentActivePlan = newPlan
                     } catch {
                         print(error)
                         showsSavingErrorAlert.toggle()

@@ -14,9 +14,9 @@ struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageabl
                 .accessibilityElement(children: .combine)
         } else {
             VStack(alignment: .leading) {
-                Text(.nextInjectionTitle)
+                Text(.noTreatmentPlanTitle)
                     .font(.headline)
-                Text(.nextInjectionMessage)
+                Text(.noTreatmentPlanMessage)
             }
             .accessibilityElement(children: .combine)
         }
@@ -40,6 +40,6 @@ private extension NextInjectionCellView {
 // MARK: - Constants
 
 extension LocalizedStringResource {
-        static let nextInjectionTitle: Self = "No Treatment Plan"
-        static let nextInjectionMessage: Self = "Please set up your plan to see your next injection date"
+        static let noTreatmentPlanTitle: Self = "No Treatment Plan"
+        static let noTreatmentPlanMessage: Self = "Please set up your plan to see your next injection date"
 }

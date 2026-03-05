@@ -21,8 +21,12 @@ struct CurrentHormoneLevelCellView<InjectionRepositoryType: InjectionManageable,
         }
         
         if injections.isEmpty {
-            Text("Log injections to see simulated hormone levels")
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading) {
+                Text(.noInjectionsTitle)
+                    .font(.headline)
+                Text(.noInjectionsMessage)
+            }
+            .accessibilityElement(children: .combine)
         } else {
             Chart(values.enumerated(), id: \.offset) {
                 LineMark(
@@ -56,4 +60,9 @@ private extension CGFloat {
 
 private extension ClosedRange where Bound == Int {
     static let xDomain: Self = -14 ... 1
+}
+
+private extension LocalizedStringResource {
+    static let noInjectionsTitle: Self = "No Injections Logged"
+    static let noInjectionsMessage: Self = "Log injections to see simulated hormone levels"
 }

@@ -3,6 +3,8 @@ import SwiftUI
 struct StatisticsView<InjectionRepositoryType: InjectionManageable,
                       LabResultsRepositoryType: LabResultsManageable>: View {
     
+    @State private var editMode: EditMode = .inactive
+    
     let injectionRepository: InjectionRepositoryType
     let labResultsRepository: LabResultsRepositoryType
     var body: some View {
@@ -11,16 +13,26 @@ struct StatisticsView<InjectionRepositoryType: InjectionManageable,
                 switch feature {
                 case .labResults:
                     Section(.labResultsSectionTitle) {
-                        InjectionsCellView(injectionRepository: injectionRepository)
+                        LabResultsCellView(labResultsRepository: labResultsRepository)
                     }
                 case .injections:
                     Section(.injectionsSectionTitle) {
-                        LabResultsCellView(labResultsRepository: labResultsRepository)
+                        InjectionsCellView(injectionRepository: injectionRepository)
                     }
                 }
             }
         }
         .navigationTitle(.navigationTitle)
+        .toolbar {
+            if !injectionRepository.allItems.isEmpty || !labResultsRepository.allItems.isEmpty {
+                ToolbarItem(placement: .navigationBarTrailing) { EditButton() }
+            }
+        }
+        .environment(\.editMode, $editMode)
+        .onChange(of: injectionRepository.allItems.isEmpty && labResultsRepository.allItems.isEmpty) { _, newValue in
+            guard editMode.isEditing == true, newValue else { return }
+            editMode = .inactive
+        }
     }
 }
 
@@ -30,6 +42,5 @@ private extension LocalizedStringResource {
     static let navigationTitle: Self = "Statistics"
     static let injectionsSectionTitle: Self = "Injections"
     static let labResultsSectionTitle: Self = "Lab Results"
-    static let labResultSampleData: Self = "200 pg on 21.01.2025"
     static let showMoreButton: Self = "Show more"
 }

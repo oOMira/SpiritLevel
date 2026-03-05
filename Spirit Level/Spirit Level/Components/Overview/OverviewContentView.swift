@@ -49,10 +49,17 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
                                             expanded: $appStateManager.isMoodExpanded)
                 }
             case .currentLevel:
-                Section(feature.label) {
+                Section(content: {
                     CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
                                                hormoneManager: hormoneLevelManager)
-                }
+                }, header: {
+                    Text(feature.label)
+                }, footer: {
+                    if !injectionRepository.allItems.isEmpty {
+                        Text(.medicalDisclaimer)
+                            .font(.footnote)
+                    }
+                })
             case .nextInjection:
                 Section(feature.label) {
                     NextInjectionCellView(treatmentRepository: treatmentPlanRepository,
@@ -82,4 +89,5 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
 
 private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
+    static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
 }

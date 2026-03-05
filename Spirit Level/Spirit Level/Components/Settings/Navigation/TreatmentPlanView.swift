@@ -18,9 +18,11 @@ struct TreatmentPlanConfiguration: Hashable {
 
 struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                          HormoneLevelManagerType: HormoneLevelManageable>: View {
+    @Namespace private var animationNamespace
+    private let historyAnimation = "historyAnimation"
+
     @State private var simulationStyle: SimulationStyle = .stable
-    @State private var eeVisible: Bool = true
-    @State private var eaVisible: Bool = true
+    @State private var showsTreatmentPlanHistory: Bool = false
     
     let treatmentPlanRepository: TreatmentPlanRepositoryType
     let hormoneLevelManager: HormoneLevelManagerType
@@ -39,8 +41,9 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             Section {
                 NavigationLink(destination: {
                     SelectTreatmentPlan(predefinedTreatmentPlans: store.planConfigurations.plans,
-                                        activePlan: store.planConfigurations.plans.first ?? Ester.enanthate.predefinedStablePlan(),
-                                        treatmentRepository: treatmentPlanRepository)
+                                        activePlan: activeTreatmentPlan ?? Ester.enanthate.predefinedStablePlan(),
+                                        treatmentRepository: treatmentPlanRepository,
+                                        treatmentPlanStore: $store)
                 }, label: {
                     if let activeTreatmentPlan {
                         Text(activeTreatmentPlan.name)
@@ -79,6 +82,19 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             }
         }
         .navigationTitle(.navigationTitle)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing, content: {
+                Button("History", systemImage: "clock", action: {
+                    showsTreatmentPlanHistory.toggle()
+                })
+                .tint(.primary)
+                .matchedTransitionSource(id: historyAnimation, in: animationNamespace)
+            })
+        }
+        .sheet(isPresented: $showsTreatmentPlanHistory, content: {
+            TreatmentPlanHistory()
+                .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
+        })
     }
 }
 
