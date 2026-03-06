@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
-    private let activePlan: TreatmentPlan
+    private let activePlan: TreatmentPlan?
     @State private var currentActivePlan: TreatmentPlan
     @State private var selectedDate: Date = .now
     @State private var showsSavingErrorAlert = false
@@ -11,22 +11,30 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
     let treatmentRepository: TreatmentRepositoryType
     
     var allTreatmentPlans: [TreatmentPlan] {
-        let plans = treatmentPlanStore.planConfigurations.compactMap(\.plan)
-        return plans.contains(activePlan) ? plans : plans + [activePlan]
+        treatmentPlanStore.planConfigurations.compactMap(\.plan)
     }
     
-    init(predefinedTreatmentPlans: [TreatmentPlan],
-         activePlan: TreatmentPlan,
+    init(activePlan: TreatmentPlan?,
          treatmentRepository: TreatmentRepositoryType,
          treatmentPlanStore: Bindable<TreatmentPlanStore>) {
+        let plans = treatmentPlanStore.wrappedValue.planConfigurations.compactMap(\.plan)
+        if let activePlan, let firstPlan = plans.first {
+            self.currentActivePlan = plans.contains(activePlan) ? activePlan : firstPlan
+        } else {
+            self.currentActivePlan = plans.first ?? Ester.enanthate.predefinedStablePlan()
+        }
         self.activePlan = activePlan
-        self.currentActivePlan = activePlan
         self.treatmentRepository = treatmentRepository
         self._treatmentPlanStore = treatmentPlanStore
     }
     
     var body: some View {
         List {
+            if let activePlanName = activePlan?.name {
+                Section(.activePlanTitle) {
+                    Text(activePlanName)
+                }
+            }
             Section(.choosePlanSectionTitle) {
                 Picker(selection: $currentActivePlan) {
                     ForEach(allTreatmentPlans, id: \.self) { plan in
@@ -60,10 +68,10 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
                         }
                     }
                     do {
-                        let newPlan: TreatmentPlan = .init(name: activePlan.name,
-                                                           ester: activePlan.ester,
-                                                           frequency: activePlan.frequency,
-                                                           dosage: activePlan.dosage,
+                        let newPlan: TreatmentPlan = .init(name: currentActivePlan.name,
+                                                           ester: currentActivePlan.ester,
+                                                           frequency: currentActivePlan.frequency,
+                                                           dosage: currentActivePlan.dosage,
                                                            firstInjectionDate: selectedDate)
                         try treatmentRepository.add(item: newPlan)
                         currentActivePlan = newPlan
@@ -93,6 +101,7 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
 
 private extension LocalizedStringResource {
     static let createNewPlanNavigationTitle: Self = "Create New Plan"
+    static let activePlanTitle: Self = "Current Active Plan"
     static let navigationTitle: Self = "Select Plan"
     static let choosePlanSectionTitle: Self = "Choose Plan"
     static let createOwnPlanLink: Self = "Create own plan"

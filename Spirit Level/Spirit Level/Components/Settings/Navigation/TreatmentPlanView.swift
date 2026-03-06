@@ -40,8 +40,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
         List {
             Section {
                 NavigationLink(destination: {
-                    SelectTreatmentPlan(predefinedTreatmentPlans: store.planConfigurations.plans,
-                                        activePlan: activeTreatmentPlan ?? Ester.enanthate.predefinedStablePlan(),
+                    SelectTreatmentPlan(activePlan: activeTreatmentPlan,
                                         treatmentRepository: treatmentPlanRepository,
                                         treatmentPlanStore: $store)
                 }, label: {
@@ -92,7 +91,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             })
         }
         .sheet(isPresented: $showsTreatmentPlanHistory, content: {
-            TreatmentPlanHistory()
+            TreatmentPlanHistory(treatmentPlanRepository: treatmentPlanRepository)
                 .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
         })
     }
