@@ -53,8 +53,8 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                     }
                 })
             }
-            
-            Section(.simulationSectionTitle) {
+
+            Section(content: {
                 Picker(.simulationModeLabel, selection: $simulationStyle) {
                     ForEach(SimulationStyle.allCases) {
                         Text($0.label).tag($0)
@@ -67,7 +67,11 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                 ForEach(store.planConfigurations.enumerated(), id: \.element) { index, element in
                     Toggle(element.plan.name, isOn: $store.planConfigurations[index].visible)
                 }
-            }
+            }, header: {
+                EmptyView()
+            }, footer: {
+                Text(.medicalDisclaimer)
+            })
             
             Section(.addSimulationSectionTitle) {
                 NavigationLink(destination: {
@@ -129,4 +133,5 @@ private extension LocalizedStringResource {
     static let valerateVisibleToggle: Self = "Valerate visible"
     static let addSimulationSectionTitle: Self = "Add Simulation"
     static let addSimulationLabel: Self = "Add new simulation"
+    static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
 }

@@ -20,6 +20,7 @@ struct TreatmentPlanHistory<TreatmentPlanReposetoryType: TreatmentPlanManageable
                             Text(String(format: "%.1f mg %@ every %d days", item.dosage, item.ester.name, item.frequency))
                             Text("First injection on \(item.firstInjectionDate, format: .dateTime.day().month().year())")
                         }
+                        .accessibilityElement(children: .combine)
                     }
                     .onDelete { indexSet in
                         indexSet.forEach { index in
