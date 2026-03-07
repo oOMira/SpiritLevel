@@ -49,7 +49,8 @@ extension SearchResultsManager {
                                            injectionRepository: injectionRepository,
                                            treatmentPlanRepository: treatmentPlanRepository),
             StatisticsFeature.getSearchItems(injectionRepository: injectionRepository,
-                                             labResultsRepository: labResultsRepository),
+                                             labResultsRepository: labResultsRepository,
+                                             hormoneLevelManager: hormoneManager),
             SettingsFeature.getSearchItems(treatmentPlanRepository: treatmentPlanRepository)
         ].flatMap { $0 }
     }

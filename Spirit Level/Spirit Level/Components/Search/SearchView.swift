@@ -61,7 +61,8 @@ struct SearchView<AppStateManagerType: AppStateManageable,
                                          treatmentPlanRepository: treatmentPlanRepository,
                                          hormoneManager: hormoneLevelManager)
                 case .statistics: StatisticsView(injectionRepository: injectionRepository,
-                                                 labResultsRepository: labResultsRepository)
+                                                 labResultsRepository: labResultsRepository,
+                                                 hormoneLevelManager: hormoneLevelManager)
                 case .settings: SettingsView(appStartRepository: appStartRepository,
                                              appStateRepository: appStateManager,
                                              injectionRepository: injectionRepository,

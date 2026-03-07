@@ -51,7 +51,7 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
             case .currentLevel:
                 Section(content: {
                     CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
-                                               hormoneManager: hormoneLevelManager)
+                                                hormoneManager: hormoneLevelManager)
                 }, header: {
                     Text(feature.label)
                 }, footer: {

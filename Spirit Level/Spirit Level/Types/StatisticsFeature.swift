@@ -1,6 +1,7 @@
 import SwiftUI
 
 enum StatisticsFeature: String, CaseIterable, SearchableItem {
+    case chart
     case injections
     case labResults
     
@@ -8,6 +9,7 @@ enum StatisticsFeature: String, CaseIterable, SearchableItem {
     
     var label: String {
         switch self {
+        case .chart:        "Hormone Level Chart"
         case .injections:   "Injections"
         case .labResults:   "Lab Results"
         }
@@ -15,6 +17,7 @@ enum StatisticsFeature: String, CaseIterable, SearchableItem {
     
     var systemImageName: String {
         switch self {
+        case .chart:        "chart.line.uptrend.xyaxis"
         case .injections:   "cross.vial"
         case .labResults:   "flask"
         }
