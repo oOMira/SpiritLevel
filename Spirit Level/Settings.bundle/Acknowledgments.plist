@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>StringsTable</key>
+	<string>Acknowledgments</string>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Lottie for Swift</string>
+			<key>FooterText</key>
+			<string>Copyright 2018 Airbnb, Inc.
+Licensed under the Apache License, Version 2.0
+https://github.com/airbnb/lottie-spm</string>
+		</dict>
+	</array>
+</dict>
+</plist>

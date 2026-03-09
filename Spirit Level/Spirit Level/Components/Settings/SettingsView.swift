@@ -39,14 +39,7 @@ struct SettingsView<AppStartRepositoryType: AppStartManageable,
                             UsedResourcesView()
                         }
                         NavigationLink {
-                            let url = Bundle.main.url(forResource: "lottielicence", withExtension: "txt")!
-                            let text = try! String(contentsOf: url, encoding: .utf8)
-                            ScrollView {
-                                Text(text)
-                                    .padding()
-                            }
-                            .navigationTitle("Lottie License")
-                            .navigationBarTitleDisplayMode(.inline)
+                            AcknowledgementView(configuration: .lottie)
                         } label: {
                             Text("Lottie")
                         }
