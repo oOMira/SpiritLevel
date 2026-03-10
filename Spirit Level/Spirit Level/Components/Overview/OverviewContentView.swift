@@ -14,7 +14,10 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
     let hormoneLevelManager: HormoneLevelManagerType
     let appStartManager: AppStartManagerType
     let labResultsRepository: LabResultsRepositoryType
-    let achievementsManager: AchievementsManager<InjectionRepositoryType, TreatmentPlanRepositoryType, LabResultsRepositoryType, AppStartManagerType>
+    let achievementsManager: AchievementsManager<InjectionRepositoryType,
+                                                 TreatmentPlanRepositoryType,
+                                                 LabResultsRepositoryType,
+                                                 AppStartManagerType>
     
     init(appStateManager: AppStateManagerType,
          appStartManager: AppStartManagerType,

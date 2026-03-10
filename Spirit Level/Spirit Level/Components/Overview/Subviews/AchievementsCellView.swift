@@ -1,11 +1,14 @@
 import SwiftUI
 
 struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: View {
+    @ScaledMetric(relativeTo: .body) private var frameWidth: CGFloat = .baseFrameWidth
     @EnvironmentObject var appData: AppData
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     let achievementManager: AchievementsManagerType
     
     var body: some View {
+        let frameDiff = .baseFrameWidth + .baseContentMargin - frameWidth
+        let contentMargin = frameDiff < 0 ? 0 : frameDiff
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .contentSpacing) {
                 let roundedRectangle = RoundedRectangle(cornerRadius: .cornerRadius,
@@ -15,7 +18,7 @@ struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: Vi
                     achievement.image
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: 300.0)
+                        .frame(maxWidth: frameWidth)
                         .clipShape(roundedRectangle)
                         .shadow(color: .shadowColor,
                                 radius: .shadowRadius,
@@ -73,17 +76,18 @@ struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: Vi
         .padding(.vertical)
         .scrollClipDisabled(true)
         .scrollTargetBehavior(.viewAligned)
-        .contentMargins(.horizontal, .contentMargins, for: .scrollContent)
+        .contentMargins(.horizontal, contentMargin, for: .scrollContent)
     }
 }
 
 private extension CGFloat {
-    static let contentMargins: Self  = 50.0
     static let contentSpacing: Self = 4.0
     static let cornerRadius: Self = 20.0
     static let shadowRadius: Self = 6.0
     static let xShadowOffset: Self  = 0.0
     static let yShadowOffset: Self  = 3.0
+    static let baseFrameWidth: Self = 240.0
+    static let baseContentMargin: Self = 50.0
 }
 
 private extension Color {

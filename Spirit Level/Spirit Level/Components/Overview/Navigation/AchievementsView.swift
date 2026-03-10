@@ -4,6 +4,7 @@ struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     @EnvironmentObject var appData: AppData
     let achievementsManager: AchievementsManagerType
+    @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 50
                                               
     var body: some View {
         List {
@@ -15,7 +16,7 @@ struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
                         .scaledToFit()
                         .clipShape(RoundedRectangle(cornerRadius: .cornerRadius,
                                                     style: .continuous))
-                        .frame(width: .frameWidth)
+                        .frame(width: chartHeight)
                         .grayscale(isDone ? 0.0 : 1.0)
                         .opacity(isDone ? 1.0 : 0.5)
                         .opacity(accessibilityDifferentiateWithoutColor ? 0.5 : 1.0)
@@ -69,7 +70,6 @@ struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
 // MARK: - Constants
 
 private extension CGFloat {
-    static let frameWidth: CGFloat = 50
     static let cornerRadius: CGFloat = 8
 }
 

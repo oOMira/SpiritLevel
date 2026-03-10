@@ -4,6 +4,7 @@ import Lottie
 struct MoodCellView<InjectionRepositoryType: InjectionManageable,
                     HormoneManagerType: HormoneLevelManageable>: View {
     
+    @ScaledMetric(relativeTo: .body) private var moodSize: CGFloat = 200
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     @State private var playing: Bool = false
     
@@ -29,7 +30,8 @@ struct MoodCellView<InjectionRepositoryType: InjectionManageable,
                     guard reduceMotion else { return }
                     playing = true
                 }
-                .frame(width: .moodViewSize, height: .moodViewSize)
+                .aspectRatio(1, contentMode: .fit)
+                .frame(maxWidth: moodSize, maxHeight: moodSize)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
@@ -57,10 +59,4 @@ private extension Mood {
         case .unclear: "smileycat"
         }
     }
-}
-
-// MARK: - Constants
-
-private extension CGFloat {
-    static let moodViewSize: Self = 200
 }
