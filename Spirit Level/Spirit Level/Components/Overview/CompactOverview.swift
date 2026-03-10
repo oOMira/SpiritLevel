@@ -1,7 +1,5 @@
 import SwiftUI
 
-// TODO: Add animation to serch
-
 struct CompactOverview<AppStateManagerType: AppStateManageable,
                        AppStartRepositoryType: AppStartManageable,
                        InjectionRepositoryType: InjectionManageable,

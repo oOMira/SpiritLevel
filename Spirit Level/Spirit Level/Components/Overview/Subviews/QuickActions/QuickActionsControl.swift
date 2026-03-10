@@ -20,7 +20,7 @@ struct QuickActionsControl: View {
         }
         .font(.system(size: .iconSize))
         .padding(.containerPadding)
-        .glassEffect()
+        .glassEffect(.regular.interactive())
     }
 }
 

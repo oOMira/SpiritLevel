@@ -34,7 +34,7 @@ struct Overview<AppStateManagerType: AppStateManageable,
                     .presentationDetents([.medium, .large])
                 }
             }
-            
+
             PhoneQuickActionsView(action: { feature in
                 activeSheet = feature
             })
