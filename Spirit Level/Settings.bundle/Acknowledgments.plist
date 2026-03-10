@@ -16,6 +16,16 @@
 Licensed under the Apache License, Version 2.0
 https://github.com/airbnb/lottie-spm</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Animated Emojis</string>
+			<key>FooterText</key>
+			<string>Copyright Google, Inc.
+Licensed under the Creative Commons Attribution 4.0 International License
+https://github.com/googlefonts/noto-emoji</string>
+		</dict>
 	</array>
 </dict>
 </plist>

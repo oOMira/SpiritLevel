@@ -35,13 +35,15 @@ struct SettingsView<AppStartRepositoryType: AppStartManageable,
                     }
                 case .data:
                     Section("Used Resources") {
-                        NavigationLink("Used Resources") {
-                            UsedResourcesView()
-                        }
                         NavigationLink {
                             AcknowledgementView(configuration: .lottie)
                         } label: {
                             Text("Lottie")
+                        }
+                        NavigationLink {
+                            AcknowledgementView(configuration: .emojis)
+                        } label: {
+                            Text("Animated Noto Emoji")
                         }
                     }
                 case .deleteData:
