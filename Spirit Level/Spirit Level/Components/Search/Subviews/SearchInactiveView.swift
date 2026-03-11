@@ -3,7 +3,6 @@ import SwiftUI
 struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
     @Environment(NavigationManager.self) var navigationManager: NavigationManager
     @Binding var activeSheet: ShortcutFeature?
-    let namespace: Namespace.ID
     var appStateManager: AppStateManagerType
     
     let navigationItems: [AppArea]
@@ -14,11 +13,10 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
         Section(.navigationTitle) {
             VStack(spacing: 12) {
                 ForEach(navigationItems) { item in
-                    SearchSuggestionCellView(appArea: item, namespace: namespace, pressed: {
+                    SearchSuggestionCellView(appArea: item, pressed: {
                         navigationManager.path.append(item)
                     })
                     .buttonStyle(.plain)
-                    .matchedTransitionSource(id: item, in: namespace)
                 }
             }
             .listRowInsets(.vertical, 0)

@@ -37,6 +37,8 @@ struct AcknowledgementView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Acknowledgement")
     }
 }
 

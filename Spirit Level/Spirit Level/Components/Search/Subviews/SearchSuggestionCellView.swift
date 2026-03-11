@@ -4,7 +4,6 @@ struct SearchSuggestionCellView: View {
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     
     let appArea: AppArea
-    let namespace: Namespace.ID
     let pressed: () -> Void
     
     var body: some View {
@@ -27,10 +26,8 @@ struct SearchSuggestionCellView: View {
                     .fill(appArea.accentColor.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))
             )
         })
-        .matchedTransitionSource(id: appArea, in: namespace)
     }
 }
-
 
 // MARK: - Constants
 

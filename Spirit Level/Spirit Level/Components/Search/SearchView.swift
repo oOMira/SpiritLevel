@@ -1,7 +1,5 @@
 import SwiftUI
 
-// TODO: Add animation to serch
-
 struct SearchView<AppStateManagerType: AppStateManageable,
                   AppStartRepositoryType: AppStartManageable,
                   SearchResultsManagerType: SearchResultsManageable,
@@ -11,7 +9,6 @@ struct SearchView<AppStateManagerType: AppStateManageable,
                   HormoneLevelManagerType: HormoneLevelManageable>: View {
 
     @State private var navManager = NavigationManager()
-    @Namespace var namespace
     
     let appStateManager: AppStateManagerType
     let appStartRepository: AppStartRepositoryType
@@ -20,7 +17,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
     let labResultsRepository: LabResultsRepositoryType
     let treatmentPlanRepository: TreatmentPlanRepositoryType
     let hormoneLevelManager: HormoneLevelManagerType
-    @Bindable var searchResultsManager: SearchResultsManagerType
+    let searchResultsManager: SearchResultsManagerType
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
@@ -33,7 +30,6 @@ struct SearchView<AppStateManagerType: AppStateManageable,
                                      searchManager: searchResultsManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
-                                       namespace: namespace,
                                        appStateManager: appStateManager,
                                        navigationItems: AppArea.allCases,
                                        actionItems: ShortcutFeature.allCases)
@@ -42,7 +38,14 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .listStyle(.plain)
             .navigationTitle(.navigationTitle)
             .searchable(
-                text: $searchResultsManager.searchText,
+                text: Binding(
+                    get: { searchResultsManager.searchText },
+                    set: { newValue in
+                        withAnimation(.snappy) {
+                            searchResultsManager.searchText = newValue
+                        }
+                    }
+                ),
                 isPresented: $isSearching,
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: Text(.searchPrompt)
@@ -62,18 +65,15 @@ struct SearchView<AppStateManagerType: AppStateManageable,
                                          labResultsRepository: labResultsRepository,
                                          treatmentPlanRepository: treatmentPlanRepository,
                                          hormoneManager: hormoneLevelManager)
-                .navigationTransition(.zoom(sourceID: item, in: namespace))
                 case .statistics: StatisticsView(injectionRepository: injectionRepository,
                                                  labResultsRepository: labResultsRepository,
                                                  hormoneLevelManager: hormoneLevelManager)
-                .navigationTransition(.zoom(sourceID: item, in: namespace))
                 case .settings: SettingsView(appStartRepository: appStartRepository,
                                              appStateRepository: appStateManager,
                                              injectionRepository: injectionRepository,
                                              labResultsRepository: labResultsRepository,
                                              treatmentPlanRepository: treatmentPlanRepository,
                                              hormoneLevelManager: hormoneLevelManager)
-                .navigationTransition(.zoom(sourceID: item, in: namespace))
                 }
             }
             .selectedSearchItemDestination()

@@ -18,7 +18,6 @@ struct TreatmentPlanConfiguration: Hashable {
 
 struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                          HormoneLevelManagerType: HormoneLevelManageable>: View {
-    @Namespace private var animationNamespace
     private let historyAnimation = "historyAnimation"
 
     @State private var simulationStyle: SimulationStyle = .stable
@@ -91,13 +90,12 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                     showsTreatmentPlanHistory.toggle()
                 })
                 .tint(.primary)
-                .matchedTransitionSource(id: historyAnimation, in: animationNamespace)
+                .contentShape(.circle)
                 .contentShape(.accessibility, RoundedRectangle(cornerRadius: 2).inset(by: -4))
             })
         }
         .sheet(isPresented: $showsTreatmentPlanHistory, content: {
             TreatmentPlanHistory(treatmentPlanRepository: treatmentPlanRepository)
-                .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
         })
     }
 }
