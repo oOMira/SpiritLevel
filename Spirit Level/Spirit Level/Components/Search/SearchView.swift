@@ -49,7 +49,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .onSubmit(of: .search) {
                 searchHistoryManager.addToHistory(searchResultsManager.searchText)
             }
-            .activeSheetDestination(activeSheet: $activeSheet, 
+            .activeSheetDestination(activeSheet: $activeSheet,
                                     injectionRepository: injectionRepository,
                                     labResultsRepository: labResultsRepository)
             .navigationDestination(for: AppArea.self) { item in

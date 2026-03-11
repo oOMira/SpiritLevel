@@ -19,45 +19,36 @@ struct SettingsView<AppStartRepositoryType: AppStartManageable,
     
     var body: some View {
         List {
-            ForEach(SettingsFeature.allCases) { feature in
-                switch feature {
-                case .plan:
-                    Section {
-                        NavigationLink {
-                            TreatmentPlanView(treatmentPlanRepository: treatmentPlanRepository, hormoneLevelManager: hormoneLevelManager)
-                        } label: {
-                            TreatmentPlanCellView(treatmentPlanRepository: treatmentPlanRepository)
-                        }
+            Section {
+                NavigationLink {
+                    TreatmentPlanView(treatmentPlanRepository: treatmentPlanRepository, hormoneLevelManager: hormoneLevelManager)
+                } label: {
+                    TreatmentPlanCellView(treatmentPlanRepository: treatmentPlanRepository)
+                }
+            }
+            
+            Section(.supportSectionTitle) {
+                SupportCellView()
+            }
+            
+            Section("Used Resources") {
+                ForEach(Acknowledgment.allCases) { acknowledgment in
+                    NavigationLink {
+                        AcknowledgementView(acknowledgment: acknowledgment)
+                    } label: {
+                        Text(acknowledgment.navigationTitle)
                     }
-                case .support:
-                    Section(.supportSectionTitle) {
-                        SupportCellView()
-                    }
-                case .data:
-                    Section("Used Resources") {
-                        NavigationLink {
-                            AcknowledgementView(configuration: .lottie)
-                        } label: {
-                            Text("Lottie")
-                        }
-                        NavigationLink {
-                            AcknowledgementView(configuration: .emojis)
-                        } label: {
-                            Text("Animated Noto Emoji")
-                        }
-                    }
-                case .deleteData:
-                    Section {
-                        Button {
-                            isShowingSheet.toggle()
-                        } label: {
-                            Text(.deleteDataButtonTitle)
-                                .font(.title3)
-                                .foregroundStyle(.red)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                    }
-                    
+                }
+            }
+            
+            Section {
+                Button {
+                    isShowingSheet.toggle()
+                } label: {
+                    Text(.deleteDataButtonTitle)
+                        .font(.title3)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
         }
@@ -82,4 +73,13 @@ private extension LocalizedStringResource {
 
 private extension String {
     static let externalLinkSystemImage: Self = "square.and.arrow.up"
+}
+
+private extension Acknowledgment {
+    var navigationTitle: LocalizedStringResource {
+        switch self {
+        case .lottie: return "Lottie"
+        case .animtadEmojis: return "Animated Noto Emoji"
+        }
+    }
 }

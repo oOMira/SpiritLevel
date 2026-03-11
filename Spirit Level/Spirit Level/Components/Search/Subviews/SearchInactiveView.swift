@@ -8,45 +8,43 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
     let actionItems: [ShortcutFeature]
     
     var body: some View {
-        Group {
-            // MARK: Navigation Section
-            Section(.navigationTitle) {
-                ForEach(navigationItems) { item in
-                    NavigationLink(value: item) {
-                        SearchSuggestionCellView(configuration: .init(
-                            label: item.label,
-                            image: item.image,
-                            color: item.accentColor
-                        ))
-                    }
-                    .navigationLinkIndicatorVisibility(.hidden)
-                    .listRowInsets(.vertical, 8)
+        // MARK: Navigation Section
+        Section(.navigationTitle) {
+            ForEach(navigationItems) { item in
+                NavigationLink(value: item) {
+                    SearchSuggestionCellView(configuration: .init(
+                        label: item.label,
+                        image: item.image,
+                        color: item.accentColor
+                    ))
                 }
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
+                .navigationLinkIndicatorVisibility(.hidden)
+                .listRowInsets(.vertical, 8)
             }
-            
-            // MARK: Quick Action Section
-            Section(.actionsTitle) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: .horizontalSpacing) {
-                        ForEach(actionItems, id: \.id) { item in
-                            Button(action: {
-                                activeSheet = item
-                            }, label: {
-                                SearchActionCellView(configuration:
-                                        .init(label: item.label,
-                                              image: item.image))
-                            })
-                            .foregroundStyle(.primary)
-                        }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+        }
+        
+        // MARK: Quick Action Section
+        Section(.actionsTitle) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: .horizontalSpacing) {
+                    ForEach(actionItems, id: \.id) { item in
+                        Button(action: {
+                            activeSheet = item
+                        }, label: {
+                            SearchActionCellView(configuration:
+                                    .init(label: item.label,
+                                          image: item.image))
+                        })
+                        .foregroundStyle(.primary)
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .scrollTargetLayout()
-                .listRowSeparator(.hidden)
-                .listRowInsets(.vertical, 0)
             }
+            .frame(maxWidth: .infinity)
+            .scrollTargetLayout()
+            .listRowSeparator(.hidden)
+            .listRowInsets(.vertical, 0)
         }
     }
 }

@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct QuickActionsControl: View {
-    @State private var expanded: Bool = false
     let actions: [ActionConfiguration]
 
     var body: some View {

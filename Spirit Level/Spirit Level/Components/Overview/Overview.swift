@@ -50,5 +50,3 @@ private extension LocalizedStringResource {
     static let navigationTitle: Self = "Overview"
     static let moodTitle: Self = "Mood"
 }
-
-
