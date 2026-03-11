@@ -2,36 +2,35 @@ import SwiftUI
 
 struct SearchSuggestionCellView: View {
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-    let configuration: Configuration
+    
+    let appArea: AppArea
+    let namespace: Namespace.ID
+    let pressed: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                configuration.image
-                    .font(.title2)
-                Spacer()
-                Text(configuration.label)
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        Button(action: {
+            pressed()
+        }, label: {
+            VStack(alignment: .leading) {
+                HStack {
+                    appArea.image
+                        .font(.title2)
+                    Spacer()
+                    Text(appArea.label)
+                        .font(.title3)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding()
             }
-            .padding()
-        }
-        .background(
-            RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
-                .fill(configuration.color.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))
-        )
+            .background(
+                RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
+                    .fill(appArea.accentColor.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))
+            )
+        })
+        .matchedTransitionSource(id: appArea, in: namespace)
     }
 }
 
-// MARK: - SearchSuggestionCellView+Configuration
-
-extension SearchSuggestionCellView {
-    struct Configuration {
-        let label: String
-        let image: Image
-        let color: Color
-    }
-}
 
 // MARK: - Constants
 

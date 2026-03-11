@@ -18,6 +18,7 @@ struct LogInjectionView<InjectionRepositoryType: InjectionManageable>: View {
                             Text(ester.name).tag(ester)
                         }
                     }
+                    .accessibilityElement(children: .combine)
                     
                     AccessibleDosagePicker(dosage: $dose)
                     AccessibleDatePicker(title: "Injection Date", selectedDate: $injectionDate)

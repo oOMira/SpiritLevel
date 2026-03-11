@@ -92,6 +92,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                 })
                 .tint(.primary)
                 .matchedTransitionSource(id: historyAnimation, in: animationNamespace)
+                .contentShape(.accessibility, RoundedRectangle(cornerRadius: 2).inset(by: -4))
             })
         }
         .sheet(isPresented: $showsTreatmentPlanHistory, content: {

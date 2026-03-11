@@ -39,9 +39,10 @@ struct CustomTreatmentPlanView: View {
                     }
                 }
                 .pickerStyle(.menu)
+                .accessibilityElement(children: .combine)
 
                 AccessibleDosagePicker(dosage: $dose)
-                Stepper("Repeat every \(rhythm) days", value: $rhythm, in: .rhythmRange)
+                AccessibleRythmPicker(rhythm: $rhythm)
             }
             
             Section {
@@ -79,10 +80,6 @@ private extension LocalizedStringResource {
 
 private extension Double {
     static let doseStep: Self = 0.1
-}
-
-private extension ClosedRange where Bound == Int {
-    static let rhythmRange: Self = 1...31
 }
 
 private extension CGFloat {

@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
+    @Environment(NavigationManager.self) var navigationManager: NavigationManager
     @Binding var activeSheet: ShortcutFeature?
+    let namespace: Namespace.ID
     var appStateManager: AppStateManagerType
     
     let navigationItems: [AppArea]
@@ -10,19 +12,17 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
     var body: some View {
         // MARK: Navigation Section
         Section(.navigationTitle) {
-            ForEach(navigationItems) { item in
-                NavigationLink(value: item) {
-                    SearchSuggestionCellView(configuration: .init(
-                        label: item.label,
-                        image: item.image,
-                        color: item.accentColor
-                    ))
+            VStack(spacing: 12) {
+                ForEach(navigationItems) { item in
+                    SearchSuggestionCellView(appArea: item, namespace: namespace, pressed: {
+                        navigationManager.path.append(item)
+                    })
+                    .buttonStyle(.plain)
+                    .matchedTransitionSource(id: item, in: namespace)
                 }
-                .navigationLinkIndicatorVisibility(.hidden)
-                .listRowInsets(.vertical, 8)
             }
+            .listRowInsets(.vertical, 0)
             .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
         }
         
         // MARK: Quick Action Section
