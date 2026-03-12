@@ -8,6 +8,7 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
     @Bindable var store: TreatmentPlanStore
     @EnvironmentObject var appData: AppData
     var simulationStyle: SimulationStyle
+    @State private var scrollPosition: Date = .now.addingTimeInterval(TimeInterval.interval)
     
     var body: some View {
         let visibleItems = store.planConfigurations.filter(\.visible)
@@ -43,7 +44,7 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
                 .interpolationMethod(.catmullRom)
                 .foregroundStyle(by: .value("Plan", item.name))
                 .accessibilityLabel(item.name)
-                .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram  pr milliliter on \($1.x, format: .dateTime.day().month().year())")
+                .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram per milliliter on \($1.x, format: .dateTime.day().month().year())")
                 
                 if accessibilityDifferentiateWithoutColor, $0.isMultiple(of: 3) {
                     PointMark(x: .value("Date", $1.x), y: .value("Concentration", $1.y))
@@ -54,6 +55,10 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
             }
         }
         .accessibilityLabel("Chart showing simulated hormone levels for different treatment plans")
+        .chartScrollableAxes(.horizontal)
+        .chartScrollPosition(x: $scrollPosition)
+        .chartXVisibleDomain(length: TimeInterval.interval * (250 / chartHeight))
+        .scrollBounceBehavior(.basedOnSize)
         .frame(height: chartHeight)
         .animation(.easeInOut, value: visibleItems)
         .animation(.easeOut, value: simulationStyle)
@@ -61,7 +66,6 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
 }
 
 // MARK: - Constants
-
 
 private extension CGFloat {
     static let chartHeight: Self = 200
@@ -71,6 +75,10 @@ private extension ClosedRange where Bound == Int {
     static let xDomain: Self = 0 ... 45
 }
 
-extension Int {
+private extension Int {
     static let numberOfCalculatedDatesInThePast = 90
+}
+
+private extension TimeInterval {
+    static let interval = Double(ClosedRange.xDomain.upperBound) * Numbers.daysInSeconds
 }

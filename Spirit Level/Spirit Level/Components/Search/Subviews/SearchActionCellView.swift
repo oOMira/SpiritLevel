@@ -13,10 +13,7 @@ struct SearchActionCellView: View {
                 .font(.title3)
                 .padding()
         }
-        .frame(maxHeight: .infinity)
-        .containerRelativeFrame(.horizontal,
-                                count: .horizontalCount,
-                                spacing: .horizontalSpacing)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
                 .fill(.gray.opacity(.backgroundOpacity(increasedContrast: colorSchemeContrast == .increased)))
@@ -32,10 +29,6 @@ extension SearchActionCellView {
 }
 
 // MARK: - Constants
-
-private extension Int {
-    static let horizontalCount: Self = 2
-}
 
 private extension CGFloat {
     static let horizontalSpacing: Self = 16

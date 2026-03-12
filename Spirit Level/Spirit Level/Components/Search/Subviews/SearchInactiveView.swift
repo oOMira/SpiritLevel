@@ -17,6 +17,7 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
                         navigationManager.path.append(item)
                     })
                     .buttonStyle(.plain)
+                    .contentShape(.accessibility, .rect)
                 }
             }
             .listRowInsets(.vertical, 0)
@@ -27,18 +28,21 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
         Section(.actionsTitle) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .horizontalSpacing) {
-                    ForEach(actionItems, id: \.id) { item in
+                    ForEach(actionItems) { item in
                         Button(action: {
                             activeSheet = item
                         }, label: {
-                            SearchActionCellView(configuration:
-                                    .init(label: item.label,
-                                          image: item.image))
+                            SearchActionCellView(configuration: .init(label: item.label,
+                                                                      image: item.image))
                         })
                         .foregroundStyle(.primary)
+                        .containerRelativeFrame(.horizontal,
+                                                count: .horizontalCount,
+                                                spacing: .horizontalSpacing)
                     }
                 }
             }
+            .scrollDisabled(Int.horizontalCount <= actionItems.count)
             .frame(maxWidth: .infinity)
             .scrollTargetLayout()
             .listRowSeparator(.hidden)
@@ -55,8 +59,13 @@ private extension LocalizedStringResource {
     static let actionsTitle: Self = "Quick Actions"
     static let browseTitle: Self = "All Features"
 }
+
 private extension CGFloat {
     static let horizontalSpacing: Self = 16
     static let listRowInsetVertical: Self = 0
     static let listRowInsetBottom: Self = 0
+}
+
+private extension Int {
+    static let horizontalCount: Self = 2
 }
