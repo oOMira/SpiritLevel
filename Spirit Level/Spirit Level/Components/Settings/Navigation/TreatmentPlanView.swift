@@ -20,6 +20,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                          HormoneLevelManagerType: HormoneLevelManageable>: View {
     private let historyAnimation = "historyAnimation"
 
+    @Namespace var animationNamespace
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var showsTreatmentPlanHistory: Bool = false
     
@@ -89,6 +90,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                 Button("History", systemImage: "clock", action: {
                     showsTreatmentPlanHistory.toggle()
                 })
+                .matchedTransitionSource(id: historyAnimation, in: animationNamespace)
                 .tint(.primary)
                 .contentShape(.circle)
                 .contentShape(.accessibility, RoundedRectangle(cornerRadius: 2).inset(by: -4))
@@ -96,6 +98,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
         }
         .sheet(isPresented: $showsTreatmentPlanHistory, content: {
             TreatmentPlanHistory(treatmentPlanRepository: treatmentPlanRepository)
+                .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
         })
     }
 }
