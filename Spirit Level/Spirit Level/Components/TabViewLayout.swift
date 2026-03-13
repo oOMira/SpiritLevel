@@ -8,16 +8,17 @@ struct TabViewLayout<AppStateManagerType: AppStateManageable,
                      TreatmentPlanRepositoryType: TreatmentPlanManageable,
                      HormoneLevelManagerType: HormoneLevelManageable>: View {
     
-    @Bindable var appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
+    @Bindable var dependencies: AppDependencies<AppStateManagerType,
+                                                AppStartRepositoryType,
+                                                InjectionRepositoryType,
+                                                LabResultsRepositoryType,
+                                                TreatmentPlanRepositoryType,
+                                                HormoneLevelManagerType>
+    
     let searchResultsManager: SearchResultsManagerType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
     
     var body: some View {
-        TabView(selection: $appStateManager.selectedTab) {
+        TabView(selection: $dependencies.appStateManager.selectedTab) {
             let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
             ForEach(enumeratedAppAreas, id: \.offset) { index, area in
                 Tab(area.label,
@@ -25,34 +26,23 @@ struct TabViewLayout<AppStateManagerType: AppStateManageable,
                     value: index) {
                     NavigationStack {
                         switch area {
-                        case .overview: Overview(appStateManager: appStateManager,
-                                                 appStartRepository: appStartRepository,
-                                                 injectionRepository: injectionRepository,
-                                                 labResultsRepository: labResultsRepository,
-                                                 treatmentPlanRepository: treatmentPlanRepository,
-                                                 hormoneManager: hormoneLevelManager)
-                        case .statistics: StatisticsView(injectionRepository: injectionRepository,
-                                                         labResultsRepository: labResultsRepository,
-                                                         hormoneLevelManager: hormoneLevelManager)
-                        case .settings: SettingsView(appStartRepository: appStartRepository,
-                                                     appStateRepository: appStateManager,
-                                                     injectionRepository: injectionRepository,
-                                                     labResultsRepository: labResultsRepository,
-                                                     treatmentPlanRepository: treatmentPlanRepository,
-                                                     hormoneLevelManager: hormoneLevelManager)
+                        case .overview: Overview(dependencies: dependencies)
+                        case .statistics: StatisticsView(injectionRepository: dependencies.injectionRepository,
+                                                         labResultsRepository: dependencies.labResultsRepository,
+                                                         hormoneLevelManager: dependencies.hormoneLevelManager)
+                        case .settings: SettingsView(appStartRepository: dependencies.appStartManger,
+                                                     appStateRepository: dependencies.appStateManager,
+                                                     injectionRepository: dependencies.injectionRepository,
+                                                     labResultsRepository: dependencies.labResultsRepository,
+                                                     treatmentPlanRepository: dependencies.treatmentPlanRepository,
+                                                     hormoneLevelManager: dependencies.hormoneLevelManager)
                         }
                     }
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
-                SearchView(appStateManager: appStateManager,
-                           appStartRepository: appStartRepository,
-                           searchHistoryManager: .init(appStateManager: appStateManager),
-                           injectionRepository: injectionRepository,
-                           labResultsRepository: labResultsRepository,
-                           treatmentPlanRepository: treatmentPlanRepository,
-                           hormoneLevelManager: hormoneLevelManager,
-                           searchResultsManager: searchResultsManager)
+                SearchView(dependencies: dependencies,
+                           searchManager: searchResultsManager)
             }
         }
     }

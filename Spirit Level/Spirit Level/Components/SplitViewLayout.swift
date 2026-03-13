@@ -8,21 +8,21 @@ struct SplitViewLayout<AppStateManagerType: AppStateManageable,
                        TreatmentPlanRepositoryType: TreatmentPlanManageable,
                        HormoneLevelManagerType: HormoneLevelManageable>: View {
 
-    @Bindable var appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
+    @Bindable var dependencies: AppDependencies<AppStateManagerType,
+                                                AppStartRepositoryType,
+                                                InjectionRepositoryType,
+                                                LabResultsRepositoryType,
+                                                TreatmentPlanRepositoryType,
+                                                HormoneLevelManagerType>
+    
     let searchResultsManager: SearchResultsManagerType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
-    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
 
     @State private var activeSheet: ShortcutFeature? = nil
     
     var body: some View {
         let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
         NavigationSplitView {
-            List(selection: $appStateManager.selectedTab.toOptional()) {
+            List(selection: $dependencies.appStateManager.selectedTab.toOptional()) {
                 Label("Search", systemImage: "magnifyingglass")
                     .tag(-1)
                 ForEach(enumeratedAppAreas, id: \.offset) { index, area in
@@ -55,38 +55,38 @@ struct SplitViewLayout<AppStateManagerType: AppStateManageable,
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
-                case .logInjection: LogInjectionView(injectionRepository: injectionRepository)
+                case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
                     .presentationDetents([.large])
-                case .logLab: LogLabResultView(labResultsRepository: labResultsRepository)
+                case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
                     .presentationDetents([.large])
                 }
             }
         } detail: {
-            if appStateManager.selectedTab == -1 {
-                CompactSearchView(appStateManager: appStateManager,
-                                  searchHistoryManager: searchHistoryManager,
+            if dependencies.appStateManager.selectedTab == -1 {
+                CompactSearchView(appStateManager: dependencies.appStateManager,
+                                  searchHistoryManager: .init(appStateManager: dependencies.appStateManager),
                                   searchResultsManager: searchResultsManager)
             } else {
-                let selectedAppArea = enumeratedAppAreas[appStateManager.selectedTab].element
+                let selectedAppArea = enumeratedAppAreas[dependencies.appStateManager.selectedTab].element
                 switch selectedAppArea {
                 case .overview:
-                    CompactOverview(appStateManager: appStateManager,
-                                    appStartRepository: appStartRepository,
-                                    injectionRepository: injectionRepository,
-                                    labResultsRepository: labResultsRepository,
-                                    treatmentPlanRepository: treatmentPlanRepository,
-                                    hormoneManager: hormoneLevelManager)
+                    CompactOverview(appStateManager: dependencies.appStateManager,
+                                    appStartRepository: dependencies.appStartManger,
+                                    injectionRepository: dependencies.injectionRepository,
+                                    labResultsRepository: dependencies.labResultsRepository,
+                                    treatmentPlanRepository: dependencies.treatmentPlanRepository,
+                                    hormoneManager: dependencies.hormoneLevelManager)
                 case .statistics:
-                    StatisticsView(injectionRepository: injectionRepository,
-                                   labResultsRepository: labResultsRepository,
-                                   hormoneLevelManager: hormoneLevelManager)
+                    StatisticsView(injectionRepository: dependencies.injectionRepository,
+                                   labResultsRepository: dependencies.labResultsRepository,
+                                   hormoneLevelManager: dependencies.hormoneLevelManager)
                 case .settings:
-                    SettingsView(appStartRepository: appStartRepository,
-                                 appStateRepository: appStateManager,
-                                 injectionRepository: injectionRepository,
-                                 labResultsRepository: labResultsRepository,
-                                 treatmentPlanRepository: treatmentPlanRepository,
-                                 hormoneLevelManager: hormoneLevelManager)
+                    SettingsView(appStartRepository: dependencies.appStartManger,
+                                 appStateRepository: dependencies.appStateManager,
+                                 injectionRepository: dependencies.injectionRepository,
+                                 labResultsRepository: dependencies.labResultsRepository,
+                                 treatmentPlanRepository: dependencies.treatmentPlanRepository,
+                                 hormoneLevelManager: dependencies.hormoneLevelManager)
                 }
             }
         }

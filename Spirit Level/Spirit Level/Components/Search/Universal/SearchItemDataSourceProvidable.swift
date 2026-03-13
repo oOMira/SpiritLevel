@@ -9,16 +9,19 @@ extension AppArea {
                                labResultsRepository: LabResultsRepository,
                                treatmentPlanRepository: TreatmentPlanRepository,
                                hormoneManager: HormoneLevelManager) -> [SearchItem] {
-        Self.allCases.compactMap { area in
+        
+        let appDependencies = AppDependencies(appStateManager: appStateManager,
+                                              appStartManger: appStartRepository,
+                                              injectionRepository: injectionRepository,
+                                              treatmentPlanRepository: treatmentPlanRepository,
+                                              hormoneLevelManager: hormoneManager,
+                                              labResultsRepository: labResultsRepository)
+
+        return Self.allCases.compactMap { area in
             var configuration: NavigationConfiguration<AppArea> {
                 switch area {
                 case .overview:
-                        .init(feature: area) { Overview(appStateManager: appStateManager,
-                                                        appStartRepository: appStartRepository,
-                                                        injectionRepository: injectionRepository,
-                                                        labResultsRepository: labResultsRepository,
-                                                        treatmentPlanRepository: treatmentPlanRepository,
-                                                        hormoneManager: hormoneManager) }
+                        .init(feature: area) { Overview(dependencies: appDependencies) }
                 case .statistics:
                         .init(feature: area) { StatisticsView(injectionRepository: injectionRepository,
                                                               labResultsRepository: labResultsRepository,

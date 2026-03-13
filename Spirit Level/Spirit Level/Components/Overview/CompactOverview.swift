@@ -29,14 +29,13 @@ struct CompactOverview<AppStateManagerType: AppStateManageable,
     }
     
     var body: some View {
-        List {
-            OverviewContentView(appStateManager: appStateManager,
-                                appStartManager: appStartRepository,
-                                injectionRepository: injectionRepository,
-                                treatmentPlanRepository: treatmentPlanRepository,
-                                hormoneLevelManager: hormoneManager,
-                                labResultsRepository: labResultsRepository)
-        }
+        let dependencie = AppDependencies(appStateManager: appStateManager,
+                                          appStartManger: appStartRepository,
+                                          injectionRepository: injectionRepository,
+                                          treatmentPlanRepository: treatmentPlanRepository,
+                                          hormoneLevelManager: hormoneManager,
+                                          labResultsRepository: labResultsRepository)
+        OverviewContentView(viewModel: dependencie)
         .navigationTitle(.navigationTitle)
     }
 }

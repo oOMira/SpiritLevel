@@ -8,45 +8,25 @@ struct Overview<AppStateManagerType: AppStateManageable,
                 HormoneManagerType: HormoneLevelManageable>: View {
 
     @State private var activeSheet: ShortcutFeature?
-
-    private let appStateManager: AppStateManagerType
-    private let appStartRepository: AppStartRepositoryType
-    private let injectionRepository: InjectionRepositoryType
-    private let labResultsRepository: LabResultsRepositoryType
-    private let treatmentPlanRepository: TreatmentPlanRepositoryType
-    private let hormoneManager: HormoneManagerType
     
-    init(appStateManager: AppStateManagerType,
-         appStartRepository: AppStartRepositoryType,
-         injectionRepository: InjectionRepositoryType,
-         labResultsRepository: LabResultsRepositoryType,
-         treatmentPlanRepository: TreatmentPlanRepositoryType,
-         hormoneManager: HormoneManagerType) {
-        self.appStateManager = appStateManager
-        self.appStartRepository = appStartRepository
-        self.injectionRepository = injectionRepository
-        self.labResultsRepository = labResultsRepository
-        self.treatmentPlanRepository = treatmentPlanRepository
-        self.hormoneManager = hormoneManager
-    }
+    let dependencies: AppDependencies<AppStateManagerType,
+                                      AppStartRepositoryType,
+                                      InjectionRepositoryType,
+                                      LabResultsRepositoryType,
+                                      TreatmentPlanRepositoryType,
+                                      HormoneManagerType>
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            List {
-                OverviewContentView(appStateManager: appStateManager,
-                                    appStartManager: appStartRepository,
-                                    injectionRepository: injectionRepository,
-                                    treatmentPlanRepository: treatmentPlanRepository,
-                                    hormoneLevelManager: hormoneManager,
-                                    labResultsRepository: labResultsRepository)
-            }
+            let dependencie = dependencies
+            OverviewContentView(viewModel: dependencie)
             .navigationTitle(.navigationTitle)
             // MARK: - Quick Actions
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
-                case .logInjection: LogInjectionView(injectionRepository: injectionRepository)
+                case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
                     .presentationDetents([.medium, .large])
-                case .logLab: LogLabResultView(labResultsRepository: labResultsRepository)
+                case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
                     .presentationDetents([.medium, .large])
                 }
             }
@@ -68,23 +48,6 @@ private extension LocalizedStringResource {
     static let accessibilityLabel: Self = "Quick Actions"
 }
 
-
-struct SetupCellView: View {
-    let title: LocalizedStringResource
-    let setupAction: () -> Void
-    let dismissAction: () -> Void
-
-    var body: some View {
-        HStack {
-            Image(systemName: "exclamationmark.triangle.fill")
-            Text(title)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Button(action: setupAction, label: {
-                Text("setup")
-            })
-            Button(action: dismissAction, label: {
-                Text("dismiss")
-            })
-        }
-    }
+struct Reminder: Identifiable, Hashable {
+    let id = UUID()
 }

@@ -10,14 +10,14 @@ struct SearchView<AppStateManagerType: AppStateManageable,
 
     @State private var navManager = NavigationManager()
     
-    let appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
-    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
-    let searchResultsManager: SearchResultsManagerType
+    let dependencies: AppDependencies<AppStateManagerType,
+                                      AppStartRepositoryType,
+                                      InjectionRepositoryType,
+                                      LabResultsRepositoryType,
+                                      TreatmentPlanRepositoryType,
+                                      HormoneLevelManagerType>
+    
+    let searchManager: SearchResultsManagerType
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
@@ -26,11 +26,11 @@ struct SearchView<AppStateManagerType: AppStateManageable,
         NavigationStack(path: $navManager.path) {
             List {
                 if isSearching {
-                    SearchActiveView(searchHistoryManager: searchHistoryManager,
-                                     searchManager: searchResultsManager)
+                    SearchActiveView(searchHistoryManager: .init(appStateManager: dependencies.appStateManager),
+                                     searchManager: searchManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
-                                       appStateManager: appStateManager,
+                                       appStateManager: dependencies.appStateManager,
                                        navigationItems: AppArea.allCases,
                                        actionItems: ShortcutFeature.allCases)
                 }
@@ -39,10 +39,10 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .navigationTitle(.navigationTitle)
             .searchable(
                 text: Binding(
-                    get: { searchResultsManager.searchText },
+                    get: { searchManager.searchText },
                     set: { newValue in
                         withAnimation(.snappy) {
-                            searchResultsManager.searchText = newValue
+                            searchManager.searchText = newValue
                         }
                     }
                 ),
@@ -52,28 +52,23 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             )
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
-                searchHistoryManager.addToHistory(searchResultsManager.searchText)
+                SearchHistoryManager(appStateManager: dependencies.appStateManager).addToHistory(searchManager.searchText)
             }
             .activeSheetDestination(activeSheet: $activeSheet,
-                                    injectionRepository: injectionRepository,
-                                    labResultsRepository: labResultsRepository)
+                                    injectionRepository: dependencies.injectionRepository,
+                                    labResultsRepository: dependencies.labResultsRepository)
             .navigationDestination(for: AppArea.self) { item in
                 switch item {
-                case .overview: Overview(appStateManager: appStateManager,
-                                         appStartRepository: appStartRepository,
-                                         injectionRepository: injectionRepository,
-                                         labResultsRepository: labResultsRepository,
-                                         treatmentPlanRepository: treatmentPlanRepository,
-                                         hormoneManager: hormoneLevelManager)
-                case .statistics: StatisticsView(injectionRepository: injectionRepository,
-                                                 labResultsRepository: labResultsRepository,
-                                                 hormoneLevelManager: hormoneLevelManager)
-                case .settings: SettingsView(appStartRepository: appStartRepository,
-                                             appStateRepository: appStateManager,
-                                             injectionRepository: injectionRepository,
-                                             labResultsRepository: labResultsRepository,
-                                             treatmentPlanRepository: treatmentPlanRepository,
-                                             hormoneLevelManager: hormoneLevelManager)
+                case .overview: Overview(dependencies: dependencies)
+                case .statistics: StatisticsView(injectionRepository: dependencies.injectionRepository,
+                                                 labResultsRepository: dependencies.labResultsRepository,
+                                                 hormoneLevelManager: dependencies.hormoneLevelManager)
+                case .settings: SettingsView(appStartRepository: dependencies.appStartManger,
+                                             appStateRepository: dependencies.appStateManager,
+                                             injectionRepository: dependencies.injectionRepository,
+                                             labResultsRepository: dependencies.labResultsRepository,
+                                             treatmentPlanRepository: dependencies.treatmentPlanRepository,
+                                             hormoneLevelManager: dependencies.hormoneLevelManager)
                 }
             }
             .selectedSearchItemDestination()

@@ -15,29 +15,30 @@ struct MyApp: App {
     @StateObject private var appData = AppData()
     @Environment(\.scenePhase) private var scenePhase
     
-    let injectionRepository: InjectionRepository
-    let labResultsRepository: LabResultsRepository
-    let treatmentPlanRepository: TreatmentPlanRepository
+    let appDependencies: AppDependencies<AppStateRepository,
+                                         AppStartRepository,
+                                         InjectionRepository,
+                                         LabResultsRepository,
+                                         TreatmentPlanRepository,
+                                         HormoneLevelManager>
+    
     let searchResultsManager: SearchResultsManager
-    let appStartRepository: AppStartRepository
-    let appStateRepository: AppStateRepository
     let modelContainer: ModelContainer
-    let hormoneLevelManager: HormoneLevelManager
     
     init() {
-        appStartRepository = AppStartRepository.shared
-        appStateRepository = AppStateRepository.shared
+        let appStartRepository = AppStartRepository.shared
+        let appStateRepository = AppStateRepository.shared
         
         let config = ModelConfiguration()
         
         // TODO: - Handle Error UI
         modelContainer = try! ModelContainer(for: Injection.self, LabResult.self, TreatmentPlan.self, configurations: config)
         
-        injectionRepository = InjectionRepository(modelContext: modelContainer.mainContext)
-        labResultsRepository = LabResultsRepository(modelContext: modelContainer.mainContext)
-        treatmentPlanRepository = TreatmentPlanRepository(modelContext: modelContainer.mainContext)
+        let injectionRepository = InjectionRepository(modelContext: modelContainer.mainContext)
+        let labResultsRepository = LabResultsRepository(modelContext: modelContainer.mainContext)
+        let treatmentPlanRepository = TreatmentPlanRepository(modelContext: modelContainer.mainContext)
         
-        hormoneLevelManager = .init()
+        let hormoneLevelManager: HormoneLevelManager = .init()
         
         let defaultItems = SearchResultsManager.getDefaultItems(
             appStateManager: appStateRepository,
@@ -47,8 +48,14 @@ struct MyApp: App {
             treatmentPlanRepository: treatmentPlanRepository,
             hormoneManager: hormoneLevelManager
         )
-        searchResultsManager = SearchResultsManager(items: defaultItems)
+        self.searchResultsManager = SearchResultsManager(items: defaultItems)
         Self.logFirstAppStart(in: appStartRepository)
+        self.appDependencies = .init(appStateManager: appStateRepository,
+                                     appStartManger: appStartRepository,
+                                     injectionRepository: injectionRepository,
+                                     treatmentPlanRepository: treatmentPlanRepository,
+                                     hormoneLevelManager: hormoneLevelManager,
+                                     labResultsRepository: labResultsRepository)
     }
     
     static func logFirstAppStart(in repository: AppStartManageable) {
@@ -59,15 +66,8 @@ struct MyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                appStateManager: appStateRepository,
-                appStartRepository: appStartRepository,
-                searchResultsManager: searchResultsManager,
-                injectionRepository: injectionRepository,
-                labResultsRepository: labResultsRepository,
-                treatmentPlanRepository: treatmentPlanRepository,
-                hormoneLevelManager: hormoneLevelManager
-            )
+            ContentView(dependencies: appDependencies,
+                        searchResultsManager: searchResultsManager)
             .environmentObject(appData)
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in

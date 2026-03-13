@@ -9,32 +9,23 @@ struct ContentView<AppStateManagerType: AppStateManageable,
                    HormoneLevelManagerType: HormoneLevelManageable>: View {
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    let appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
+
+    let dependencies: AppDependencies<AppStateManagerType,
+                                      AppStartRepositoryType,
+                                      InjectionRepositoryType,
+                                      LabResultsManagerType,
+                                      TreatmentPlanRepositoryType,
+                                      HormoneLevelManagerType>
+    
     let searchResultsManager: SearchResultsManagerType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsManagerType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
     
     var body: some View {
         if horizontalSizeClass == .compact {
-            TabViewLayout(appStateManager: appStateManager,
-                          appStartRepository: appStartRepository,
-                          searchResultsManager: searchResultsManager,
-                          injectionRepository: injectionRepository,
-                          labResultsRepository: labResultsRepository,
-                          treatmentPlanRepository: treatmentPlanRepository,
-                          hormoneLevelManager: hormoneLevelManager)
+            TabViewLayout(dependencies: dependencies,
+                          searchResultsManager: searchResultsManager)
         } else {
-            SplitViewLayout(appStateManager: appStateManager,
-                            appStartRepository: appStartRepository,
-                            searchResultsManager: searchResultsManager,
-                            injectionRepository: injectionRepository,
-                            labResultsRepository: labResultsRepository,
-                            treatmentPlanRepository: treatmentPlanRepository,
-                            hormoneLevelManager: hormoneLevelManager,
-                            searchHistoryManager: .init(appStateManager: appStateManager))
+            SplitViewLayout(dependencies: dependencies,
+                            searchResultsManager: searchResultsManager)
         }
     }
 }

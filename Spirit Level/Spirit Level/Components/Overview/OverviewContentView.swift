@@ -1,84 +1,93 @@
 import SwiftUI
 
-struct OverviewContentView<AppStateManagerType: AppStateManageable,
-                           AppStartManagerType: AppStartManageable,
-                           InjectionRepositoryType: InjectionManageable,
-                           TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                           LabResultsRepositoryType: LabResultsManageable,
-                           HormoneLevelManagerType: HormoneLevelManageable>: View {
-    
-    @Bindable private var appStateManager: AppStateManagerType
-    private let injectionRepository: InjectionRepositoryType
-    private let treatmentPlanRepository: TreatmentPlanRepositoryType
-    private let hormoneLevelManager: HormoneLevelManagerType
-    private let appStartManager: AppStartManagerType
-    private let labResultsRepository: LabResultsRepositoryType
-    private let achievementsManager: AchievementsManager<InjectionRepositoryType,
-                                                         TreatmentPlanRepositoryType,
-                                                         LabResultsRepositoryType,
-                                                         AppStartManagerType>
-    
-    init(appStateManager: AppStateManagerType,
-         appStartManager: AppStartManagerType,
-         injectionRepository: InjectionRepositoryType,
-         treatmentPlanRepository: TreatmentPlanRepositoryType,
-         hormoneLevelManager: HormoneLevelManagerType,
-         labResultsRepository: LabResultsRepositoryType) {
 
-        self.appStateManager = appStateManager
-        self.injectionRepository = injectionRepository
-        self.treatmentPlanRepository = treatmentPlanRepository
-        self.hormoneLevelManager = hormoneLevelManager
-        self.appStartManager = appStartManager
-        self.labResultsRepository = labResultsRepository
-        self.achievementsManager = AchievementsManager(injectionRepository: injectionRepository,
-                                                    treatmentPlanRepository: treatmentPlanRepository,
-                                                    labResultsRepository: labResultsRepository,
-                                                    appStartRepository: appStartManager)
+protocol OverviewContentViewDependencies: AnyObject, Observable {
+    associatedtype AppStateManagerType: AppStateManageable
+    associatedtype AppStartManagerType: AppStartManageable
+    associatedtype InjectionRepositoryType: InjectionManageable
+    associatedtype TreatmentPlanRepositoryType: TreatmentPlanManageable
+    associatedtype LabResultsRepositoryType: LabResultsManageable
+    associatedtype HormoneLevelManagerType: HormoneLevelManageable
+    
+    var appStateManager: AppStateManagerType { get set }
+    var appStartManger: AppStartManagerType { get set }
+    var injectionRepository: InjectionRepositoryType { get set }
+    var treatmentPlanRepository: TreatmentPlanRepositoryType { get set }
+    var hormoneLevelManager: HormoneLevelManagerType { get set }
+    var labResultsRepository: LabResultsRepositoryType { get set }
+}
+
+struct OverviewContentViewModel<DependencyType: OverviewContentViewDependencies> {
+    let dependencies: DependencyType
+}
+
+struct OverviewContentView<ViewModel: OverviewContentViewDependencies>: View {
+    
+    @Bindable var viewModel: ViewModel
+    
+    @Namespace var animationNamespace
+    
+    @State private var showsSetupPlanCell: Bool = true
+    @State private var showsSetupPlanSheet: Bool = false
+    
+    
+    private let achievementsManager: AchievementsManager<ViewModel.InjectionRepositoryType,
+                                                         ViewModel.TreatmentPlanRepositoryType,
+                                                         ViewModel.LabResultsRepositoryType,
+                                                         ViewModel.AppStartManagerType>
+    
+    init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+        self.achievementsManager = .init(injectionRepository: viewModel.injectionRepository,
+                                         treatmentPlanRepository: viewModel.treatmentPlanRepository,
+                                         labResultsRepository: viewModel.labResultsRepository,
+                                         appStartRepository: viewModel.appStartManger)
     }
     
     var body: some View {
-        ForEach(OverviewFeature.allCases) { feature in
+        List(OverviewFeature.allCases) { feature in
             switch feature {
             case .reminders:
-                Section("Reminders", content: {
-                    SetupCellView(title: "Setup Plan", setupAction: {
-                        print("setup")
-                    }, dismissAction: {
-                        print("dismiss")
+                if [showsSetupPlanCell].contains(true) {
+                    Section("Reminders", content: {
+                        if showsSetupPlanCell {
+                            SetupCellView(systemImage: .chevronForward,
+                                          title: "Setup Plan",
+                                          setupAction: {
+                                print("setup")
+                                showsSetupPlanSheet.toggle()
+                            }, dismissAction: {
+                                withAnimation { showsSetupPlanCell.toggle() }
+                            })
+                        }
                     })
-                    SetupCellView(title: "Setup Plan", setupAction: {
-                        print("setup")
-                    }, dismissAction: {
-                        print("dismiss")
-                    })
-                })
+                }
             case .mood:
                 Section {
-                    if appStateManager.isMoodExpanded {
-                        MoodCellView(injectionRepository: injectionRepository,
-                                     hormoneManager: hormoneLevelManager)
+                    if viewModel.appStateManager.isMoodExpanded {
+                        MoodCellView(injectionRepository: viewModel.injectionRepository,
+                                     hormoneManager: viewModel.hormoneLevelManager)
                     }
                 } header: {
                     ExpandableSectionHeader(title: .moodTitle,
-                                            expanded: $appStateManager.isMoodExpanded)
+                                            expanded: $viewModel.appStateManager.isMoodExpanded)
                 }
             case .currentLevel:
                 Section(content: {
-                    CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
-                                                hormoneManager: hormoneLevelManager)
+                    CurrentHormoneLevelCellView(injectionRepository: viewModel.injectionRepository,
+                                                hormoneManager: viewModel.hormoneLevelManager)
                 }, header: {
                     Text(feature.label)
                 }, footer: {
-                    if !injectionRepository.allItems.isEmpty {
+                    if !viewModel.injectionRepository.allItems.isEmpty {
                         Text(.medicalDisclaimer)
                             .font(.footnote)
                     }
                 })
             case .nextInjection:
                 Section(feature.label) {
-                    NextInjectionCellView(treatmentRepository: treatmentPlanRepository,
-                                          injectionRepository: injectionRepository)
+                    NextInjectionCellView(treatmentRepository: viewModel.treatmentPlanRepository,
+                                          injectionRepository: viewModel.injectionRepository)
                 }
             case .achievements:
                 Section {
@@ -91,6 +100,13 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
                 }
             }
         }
+        .sheet(isPresented: $showsSetupPlanSheet, content: {
+            NavigationStack {
+                TreatmentPlanView(treatmentPlanRepository: viewModel.treatmentPlanRepository,
+                                  hormoneLevelManager: viewModel.hormoneLevelManager)
+                .navigationTitle("Setup Plan")
+            }
+        })
     }
 }
 
