@@ -7,19 +7,19 @@ enum StatisticsFeature: String, CaseIterable, SearchableItem {
     
     var itemType: ItemType { .content }
     
-    var label: String {
+    var label: LocalizedStringResource {
         switch self {
-        case .chart:        "Hormone Level Chart"
-        case .injections:   "Injections"
-        case .labResults:   "Lab Results"
+        case .chart: "Hormone Level Chart"
+        case .injections: "Injections"
+        case .labResults: "Lab Results"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .chart:        "chart.line.uptrend.xyaxis"
-        case .injections:   "cross.vial"
-        case .labResults:   "flask"
+        case .chart: "chart.line.uptrend.xyaxis"
+        case .injections: "cross.vial"
+        case .labResults: "flask"
         }
     }
 }

@@ -1,58 +1,78 @@
 import SwiftUI
 
-struct StatisticsView<InjectionRepositoryType: InjectionManageable,
-                      LabResultsRepositoryType: LabResultsManageable,
-                      HormoneManagerType: HormoneLevelManageable>: View {
-    
-    @State private var editMode: EditMode = .inactive
-    
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let hormoneLevelManager: HormoneManagerType
+// MARK: - View
 
+struct StatisticsView<Dependencies: StatisticsDependencies>: View {
+    
+    @Bindable private var viewModel: StatisticsContentViewModel<Dependencies>
+    
+    init(dependencies: Dependencies) {
+        self.viewModel = .init(dependencies: dependencies)
+    }
+    
     var body: some View {
         List {
             ForEach(StatisticsFeature.allCases) { feature in
                 switch feature {
                 case .chart:
                     Section(content: {
-                        HormoneLevelChartCell(injectionRepository: injectionRepository,
-                                              hormoneManager: hormoneLevelManager)
+                        HormoneLevelHistoryView(viewModel: .init(dependencies: viewModel.dependencies))
                     }, header: {
                         Text(.visualizationTitle)
                     }, footer: {
-                        if !injectionRepository.allItems.isEmpty {
+                        if !viewModel.dependencies.injectionRepository.allItems.isEmpty {
                             Text(.medicalDisclaimer)
                         }
                     })
-                case .labResults:
-                    Section(.labResultsSectionTitle) {
-                        LabResultsCellView(labResultsRepository: labResultsRepository)
-                    }
                 case .injections:
-                    Section(.injectionsSectionTitle) {
-                        InjectionsCellView(injectionRepository: injectionRepository)
-                    }
+                    Section(content: {
+                        var displayedInjections: [Injection] {
+                            let injections = viewModel.dependencies.injectionRepository.allItems
+                            return Array(injections.prefix(.maxElementsToShow))
+                        }
+                        
+                        if displayedInjections.isEmpty {
+                            Text("No injections logged yet")
+                        } else {
+                            ForEach(displayedInjections) { injection in
+                                Text("\(injection.dosage, specifier: .dosageFormat) mg \(injection.ester.shortName) on \(injection.date, format: .dateTime.day().month().year())")
+                            }
+                        }
+                    }, header: {
+                        NavigationSectionHeaderView(title: .injectionsSectionTitle, destination: {
+                            InjectionsView(injectionRepository: viewModel.dependencies.injectionRepository)
+                        })
+                    })
+                case .labResults:
+                    Section(content: {
+                        var displayedLabResults: [LabResult] {
+                            let labResults = viewModel.dependencies.labResultsRepository.allItems
+                            return Array(labResults.prefix(.maxElementsToShow))
+                        }
+
+                        if displayedLabResults.isEmpty {
+                            Text("No results logged yet")
+                        } else {
+                            ForEach(displayedLabResults) { labResult in
+                                Text("\(labResult.concentration.formatted(.number.precision(.fractionLength(0)))) pg on \(labResult.date, format: .dateTime.day().month().year())")
+                            }
+                        }
+                    }, header: {
+                        NavigationSectionHeaderView(title: .labResultsSectionTitle, destination: {
+                            LabResultsView(labResultsRepository: viewModel.dependencies.labResultsRepository)
+                        })
+                    })
                 }
             }
         }
         .navigationTitle(.navigationTitle)
-        .toolbar {
-            if !injectionRepository.allItems.isEmpty || !labResultsRepository.allItems.isEmpty {
-                ToolbarItem(placement: .navigationBarTrailing) { EditButton() }
-            }
-        }
-        .environment(\.editMode, $editMode)
-        .onChange(of: injectionRepository.allItems.isEmpty && labResultsRepository.allItems.isEmpty) { _, newValue in
-            guard editMode.isEditing == true, newValue else { return }
-            editMode = .inactive
-        }
     }
 }
 
 // MARK: - Constants
 
 private extension LocalizedStringResource {
+    static let trendsSectionTitle: Self = "Trends"
     static let navigationTitle: Self = "Statistics"
     static let injectionsSectionTitle: Self = "Injections"
     static let labResultsSectionTitle: Self = "Lab Results"
@@ -61,3 +81,32 @@ private extension LocalizedStringResource {
     static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
     static let visualizationTitle: Self = "Visualization"
 }
+
+private extension Int {
+    static let maxElementsToShow: Self = 3
+}
+
+private extension String {
+    static let dosageFormat: Self = "%.1f"
+}
+
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Light Mode") {
+    NavigationStack {
+        StatisticsView(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        StatisticsView(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.dark)
+}
+#endif
+

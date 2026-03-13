@@ -4,9 +4,15 @@ import Foundation
 
 @MainActor
 protocol AppStateManageable: Observable, AnyObject {
+    var selectedAchievement: String? { get set }
     var selectedTab: Int { get set }
     var isMoodExpanded: Bool { get set }
     var searchHistoryData: String { get set }
+}
+
+protocol HasAppStateManager: AnyObject, Observable {
+    associatedtype AppStateManagerType: AppStateManageable
+    var appStateManager: AppStateManagerType { get set }
 }
 
 // MARK: - AppStateManager
@@ -14,18 +20,40 @@ protocol AppStateManageable: Observable, AnyObject {
 @Observable
 final class AppStateRepository: AppStateManageable {
     static let shared = AppStateRepository()
-
-    var selectedTab: Int = UserDefaults.standard.integer(forKey: "selectedTab") {
-        didSet { UserDefaults.standard.set(selectedTab, forKey: "selectedTab") }
+    
+    private let userDefaults: UserDefaults
+    
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+        selectedAchievement = userDefaults.string(forKey: "selectedAchievement")
+        selectedTab = userDefaults.integer(forKey: "selectedTab")
+        isMoodExpanded = userDefaults.bool(forKey: "moodExpanded")
+        searchHistoryData = userDefaults.string(forKey: "searchHistory") ?? "[]"
+    }
+    
+    var selectedAchievement: String? {
+        didSet { userDefaults.set(selectedAchievement, forKey: "selectedAchievement") }
     }
 
-    var isMoodExpanded: Bool = UserDefaults.standard.bool(forKey: "moodExpanded") {
-        didSet { UserDefaults.standard.set(isMoodExpanded, forKey: "moodExpanded") }
+    var selectedTab: Int {
+        didSet { userDefaults.set(selectedTab, forKey: "selectedTab") }
     }
 
-    var searchHistoryData: String = UserDefaults.standard.string(forKey: "searchHistory") ?? "[]" {
-        didSet { UserDefaults.standard.set(searchHistoryData, forKey: "searchHistory") }
+    var isMoodExpanded: Bool {
+        didSet { userDefaults.set(isMoodExpanded, forKey: "moodExpanded") }
     }
 
-    private init() {}
+    var searchHistoryData: String {
+        didSet { userDefaults.set(searchHistoryData, forKey: "searchHistory") }
+    }
 }
+
+#if DEBUG
+extension Mocks {
+    static var appState: AppStateRepository {
+        let userDefaults = UserDefaults(suiteName: #file)
+        userDefaults?.removePersistentDomain(forName: #file)
+        return AppStateRepository(userDefaults: userDefaults!)
+    }
+}
+#endif

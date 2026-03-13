@@ -1,13 +1,17 @@
 import Foundation
 import SwiftData
 
-protocol LabResultsManageable: SwiftDataManageable where ItemType == LabResult { }
+protocol LabResultsManageable: Repository where ItemType == LabResult { }
+
+protocol HasLabResultsRepository: AnyObject, Observable {
+    associatedtype LabResultsRepositoryType: LabResultsManageable
+    var labResultsRepository: LabResultsRepositoryType { get set }
+}
 
 // MARK: - InjectionRepository
 
-@MainActor
 @Observable
-final class LabResultsRepository: LabResultsManageable {
+final class LabResultsRepository: LabResultsManageable, SwiftDataManageable {
     var observationTask: Task<Void, Never>?
     var modelContext: ModelContext
     var allItems: [LabResult] = []
@@ -17,4 +21,14 @@ final class LabResultsRepository: LabResultsManageable {
         observeModelContext()
         refresh()
     }
+    
+    @MainActor deinit { observationTask?.cancel() }
 }
+
+#if DEBUG
+extension Mocks {
+    static var labResultsRepository: LabResultsRepository {
+        return LabResultsRepository(modelContext: modelContainer.mainContext)
+    }
+}
+#endif

@@ -1,12 +1,14 @@
 import SwiftUI
 
+typealias TreatmentPlanDependencies = HasTreatmentPlanRepository & HasHormoneLevelManager
+
 @Observable
 class TreatmentPlanStore {
     static let shared = TreatmentPlanStore()
     var planConfigurations: [TreatmentPlanConfiguration] = {
         Ester.allCases.map {
             let plan = $0.predefinedStablePlan()
-            return .init(plan: plan, visible: true)
+            return .init(plan: plan, visible: true, editable: false)
         }
     }()
 }
@@ -14,25 +16,23 @@ class TreatmentPlanStore {
 struct TreatmentPlanConfiguration: Hashable {
     let plan: TreatmentPlan
     var visible: Bool
+    var editable: Bool
 }
 
-struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                         HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     private let historyAnimation = "historyAnimation"
 
     @Namespace var animationNamespace
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var showsTreatmentPlanHistory: Bool = false
     
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
+    let dependencies: Dependencies
     
     @Bindable private var store: TreatmentPlanStore
-    var activeTreatmentPlan: TreatmentPlan? { treatmentPlanRepository.latest }
+    var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.latest }
     
-    init(treatmentPlanRepository: TreatmentPlanRepositoryType, hormoneLevelManager: HormoneLevelManagerType, store: TreatmentPlanStore = .shared) {
-        self.treatmentPlanRepository = treatmentPlanRepository
-        self.hormoneLevelManager = hormoneLevelManager
+    init(dependencies: Dependencies, store: TreatmentPlanStore = .shared) {
+        self.dependencies = dependencies
         self.store = store
     }
     
@@ -41,7 +41,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             Section {
                 NavigationLink(destination: {
                     SelectTreatmentPlan(activePlan: activeTreatmentPlan,
-                                        treatmentRepository: treatmentPlanRepository,
+                                        treatmentRepository: dependencies.treatmentPlanRepository,
                                         treatmentPlanStore: $store)
                 }, label: {
                     if let activeTreatmentPlan {
@@ -61,14 +61,23 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                     }
                 }
                 .pickerStyle(.segmented)
-                TreatmentPlanCellSimulationView(hormoneManager: hormoneLevelManager,
+                TreatmentPlanCellSimulationView(hormoneManager: dependencies.hormoneLevelManager,
                                                 store: store,
                                                 simulationStyle: simulationStyle)
                 ForEach(store.planConfigurations.enumerated(), id: \.element) { index, element in
-                    Toggle(element.plan.name, isOn: $store.planConfigurations[index].visible)
+                    HStack {
+                        if element.editable {
+                            Button(action: {
+                                store.planConfigurations.removeAll { element == $0 }
+                            }, label: {
+                                SystemImage.xCircle.image
+                            })
+                        }
+                        Toggle(element.plan.name, isOn: $store.planConfigurations[index].visible)
+                    }
                 }
             }, header: {
-                EmptyView()
+                Text("Estimated E2 in pg/ml")
             }, footer: {
                 Text(.medicalDisclaimer)
             })
@@ -76,7 +85,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             Section(.addSimulationSectionTitle) {
                 NavigationLink(destination: {
                     CustomTreatmentPlanView(addButtonTitle: "Add", action: { plan in
-                        store.planConfigurations.append(.init(plan: plan, visible: true))
+                        store.planConfigurations.append(.init(plan: plan, visible: true, editable: true))
                     })
                     .navigationTitle(.addNewSimulationNavigationBar)
                 }, label: {
@@ -97,7 +106,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             })
         }
         .sheet(isPresented: $showsTreatmentPlanHistory, content: {
-            TreatmentPlanHistory(treatmentPlanRepository: treatmentPlanRepository)
+            TreatmentPlanHistory(treatmentPlanRepository: dependencies.treatmentPlanRepository)
                 .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
         })
     }
@@ -136,4 +145,22 @@ private extension LocalizedStringResource {
     static let addSimulationSectionTitle: Self = "Add Simulation"
     static let addSimulationLabel: Self = "Add new simulation"
     static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    NavigationStack {
+        TreatmentPlanView(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        TreatmentPlanView(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.dark)
 }

@@ -7,15 +7,35 @@ protocol AppStartManageable: Observable, AnyObject {
     var firstAppStart: Date? { get set }
 }
 
+protocol HasAppStartRepository: AnyObject, Observable {
+    associatedtype AppStartRepositoryType: AppStartManageable
+    var appStartRepository: AppStartRepositoryType { get set }
+}
+
 // MARK: - AppStartManager
 
 @Observable
 final class AppStartRepository: AppStartManageable {
     static let shared = AppStartRepository()
     
-    var firstAppStart: Date? = UserDefaults.standard.object(forKey: "firstAppStart") as? Date {
-        didSet { UserDefaults.standard.set(firstAppStart, forKey: "firstAppStart") }
+    private let userDefaults: UserDefaults
+    
+    var firstAppStart: Date? {
+        didSet { userDefaults.set(firstAppStart, forKey: "firstAppStart") }
     }
-
-    private init() {}
+    
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+        self.firstAppStart = userDefaults.object(forKey: "firstAppStart") as? Date
+    }
 }
+
+#if DEBUG
+extension Mocks {
+    static var appStart: AppStartRepository {
+        let userDefaults = UserDefaults(suiteName: #file)
+        userDefaults?.removePersistentDomain(forName: #file)
+        return AppStartRepository(userDefaults: userDefaults!)
+    }
+}
+#endif

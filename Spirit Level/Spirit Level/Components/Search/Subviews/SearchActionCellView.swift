@@ -23,7 +23,7 @@ struct SearchActionCellView: View {
 
 extension SearchActionCellView {
     struct Configuration {
-        let label: String
+        let label: LocalizedStringResource
         let image: Image
     }
 }
@@ -41,3 +41,22 @@ private extension Double {
     }
 }
 
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    SearchActionCellView(configuration: .init(
+        label: "Log Injection",
+        image: Image(systemName: "syringe")
+    ))
+    .frame(width: 160, height: 120)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    SearchActionCellView(configuration: .init(
+        label: "Log Injection",
+        image: Image(systemName: "syringe")
+    ))
+    .frame(width: 160, height: 120)
+    .preferredColorScheme(.dark)
+}

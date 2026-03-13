@@ -6,7 +6,7 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 250
     let hormoneManager: HormoneLevelManager
     @Bindable var store: TreatmentPlanStore
-    @EnvironmentObject var appData: AppData
+    @Environment(AppData.self) var appData: AppData
     var simulationStyle: SimulationStyle
     @State private var scrollPosition: Date = .now.addingTimeInterval(TimeInterval.interval)
     
@@ -61,7 +61,6 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
         .scrollBounceBehavior(.basedOnSize)
         .frame(height: chartHeight)
         .overlay {
-            // TODO: - Fix animation / test when chart is not rebuild every time
             if visibleItems.isEmpty {
                 VStack {
                     Text("No Plan Selected")
@@ -93,5 +92,23 @@ private extension Int {
 }
 
 private extension TimeInterval {
-    static let interval = Double(ClosedRange.xDomain.upperBound) * Numbers.daysInSeconds
+    static let interval = Double(ClosedRange.xDomain.upperBound) * 24 * 60  * 60
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    TreatmentPlanCellSimulationView(hormoneManager: Mocks.hormoneLevelManager,
+                                     store: .shared,
+                                     simulationStyle: .stable)
+    .environment(AppData())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    TreatmentPlanCellSimulationView(hormoneManager: Mocks.hormoneLevelManager,
+                                     store: .shared,
+                                     simulationStyle: .stable)
+    .environment(AppData())
+    .preferredColorScheme(.dark)
 }

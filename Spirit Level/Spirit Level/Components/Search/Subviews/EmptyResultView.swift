@@ -31,3 +31,15 @@ private extension CGFloat {
     static let iconTextSpacing: Self = 8
     static let topPadding: Self = 50
 }
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    EmptySearchResultsView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    EmptySearchResultsView()
+        .preferredColorScheme(.dark)
+}

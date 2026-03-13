@@ -34,7 +34,7 @@ private extension Double {
 
 // MARK: - Preview
 
-#Preview("Expanded - Light Mode") {
+#Preview("Light Mode") {
     @Previewable @State var expanded = true
     List {
         Section {
@@ -48,8 +48,8 @@ private extension Double {
     .preferredColorScheme(.light)
 }
 
-#Preview("Collapsed - Light Mode") {
-    @Previewable @State var expanded = false
+#Preview("Dark Mode") {
+    @Previewable @State var expanded = true
     List {
         Section {
             if expanded {

@@ -1,16 +1,19 @@
 import Foundation
 import SwiftData
 
-@MainActor
-protocol TreatmentPlanManageable: SwiftDataManageable where ItemType == TreatmentPlan {
+protocol TreatmentPlanManageable: Repository where ItemType == TreatmentPlan {
     var latest: ItemType? { get }
 }
 
-// MARK: - InjectionRepository
+protocol HasTreatmentPlanRepository: AnyObject, Observable {
+    associatedtype TreatmentPlanRepositoryType: TreatmentPlanManageable
+    var treatmentPlanRepository: TreatmentPlanRepositoryType { get set }
+}
 
-@MainActor
+// MARK: - TreatmentPlanRepository
+
 @Observable
-final class TreatmentPlanRepository: TreatmentPlanManageable {
+final class TreatmentPlanRepository: TreatmentPlanManageable, SwiftDataManageable {
     var observationTask: Task<Void, Never>?
     var modelContext: ModelContext
     var allItems: [TreatmentPlan] = []
@@ -24,4 +27,14 @@ final class TreatmentPlanRepository: TreatmentPlanManageable {
         observeModelContext()
         refresh()
     }
+    
+    @MainActor deinit { observationTask?.cancel() }
 }
+
+#if DEBUG
+extension Mocks {
+    static var treatmentPlanRepository: TreatmentPlanRepository {
+        return TreatmentPlanRepository(modelContext: modelContainer.mainContext)
+    }
+}
+#endif

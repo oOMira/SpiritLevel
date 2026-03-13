@@ -1,11 +1,18 @@
 import SwiftUI
 
+// TODO: Refactor and test
+
 // MARK: - SearchResultsManageable
 
 protocol SearchResultsManageable: AnyObject, Observable {
     var items: [SearchItem] { get }
     var searchText: String { get set }
     var filteredItems: [SearchItem] { get }
+}
+
+protocol HasSearchResultsManager: AnyObject, Observable {
+    associatedtype SearchResultsManagerType: SearchResultsManageable
+    var searchResultsManager: SearchResultsManagerType { get set }
 }
 
 // MARK: - SearchResultsManager
@@ -20,7 +27,7 @@ final class SearchResultsManager: SearchResultsManageable {
         guard !searchText.isEmpty else { return items }
         
         return items.filter {
-            $0.label.localizedCaseInsensitiveContains(searchText)
+            String(localized: $0.label).localizedCaseInsensitiveContains(searchText)
         }
     }
     
@@ -31,27 +38,15 @@ final class SearchResultsManager: SearchResultsManageable {
 }
 
 extension SearchResultsManager {
+    typealias SearchResultsDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
+    
     @MainActor
-    static func getDefaultItems(appStateManager: AppStateRepository,
-                                appStartRepository: AppStartRepository,
-                                injectionRepository: InjectionRepository,
-                                labResultsRepository: LabResultsRepository,
-                                treatmentPlanRepository: TreatmentPlanRepository,
-                                hormoneManager: HormoneLevelManager) -> [SearchItem] {
+    static func getDefaultItems<Dependencies: SearchResultsDependencies>(dependencies: Dependencies) -> [SearchItem] {
         [
-            AppArea.getSearchItems(appStateManager: appStateManager,
-                                   appStartRepository: appStartRepository,
-                                   injectionRepository: injectionRepository,
-                                   labResultsRepository: labResultsRepository,
-                                   treatmentPlanRepository: treatmentPlanRepository,
-                                   hormoneManager: hormoneManager),
-            OverviewFeature.getSearchItems(hormoneManager: hormoneManager,
-                                           injectionRepository: injectionRepository,
-                                           treatmentPlanRepository: treatmentPlanRepository),
-            StatisticsFeature.getSearchItems(injectionRepository: injectionRepository,
-                                             labResultsRepository: labResultsRepository,
-                                             hormoneLevelManager: hormoneManager),
-            SettingsFeature.getSearchItems(treatmentPlanRepository: treatmentPlanRepository)
+            OverviewFeature.getSearchItems(dependencies: dependencies),
+            AppArea.getSearchItems(dependencies: dependencies),
+            StatisticsFeature.getSearchItems(dependencies: dependencies),
+            SettingsFeature.getSearchItems(dependencies: dependencies)
         ].flatMap { $0 }
     }
 }

@@ -42,7 +42,7 @@ struct CustomTreatmentPlanView: View {
                 .accessibilityElement(children: .combine)
 
                 AccessibleDosagePicker(dosage: $dose)
-                AccessibleRythmPicker(rhythm: $rhythm)
+                AccessibleRhythmPicker(rhythm: $rhythm)
             }
             
             Section {
@@ -85,4 +85,22 @@ private extension Double {
 private extension CGFloat {
     static let nameLabelTrailingPadding: Self = 8
     static let textFieldTrailingPadding: Self = 2
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    NavigationStack {
+        CustomTreatmentPlanView(addButtonTitle: "Add", action: { _ in })
+            .navigationTitle("Add new simulation")
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        CustomTreatmentPlanView(addButtonTitle: "Add", action: { _ in })
+            .navigationTitle("Add new simulation")
+    }
+    .preferredColorScheme(.dark)
 }

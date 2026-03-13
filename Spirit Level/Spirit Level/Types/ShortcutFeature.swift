@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 enum ShortcutFeature: String, SearchableItem, CaseIterable {
     case logLab
@@ -6,16 +6,16 @@ enum ShortcutFeature: String, SearchableItem, CaseIterable {
     
     var itemType: ItemType { .navigation }
     
-    var label: String {
+    var label: LocalizedStringResource {
         switch self {
-        case .logLab:       "Log Lab Result"
+        case .logLab: "Log Lab Result"
         case .logInjection: "Log Injection"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .logLab:       "heart.text.clipboard"
+        case .logLab: "heart.text.clipboard"
         case .logInjection: "syringe"
         }
     }

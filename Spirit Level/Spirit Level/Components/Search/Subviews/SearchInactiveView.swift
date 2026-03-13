@@ -1,9 +1,13 @@
 import SwiftUI
 
-struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
+struct SearchInactiveView<AppStateManagerType: AppStateManageable,
+                          SearchManagerType: SearchResultsManageable>: View {
+    @State var expanded: Bool = true
+    
     @Environment(NavigationManager.self) var navigationManager: NavigationManager
     @Binding var activeSheet: ShortcutFeature?
     var appStateManager: AppStateManagerType
+    var searchManager: SearchManagerType
     
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]
@@ -48,9 +52,23 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
             .listRowSeparator(.hidden)
             .listRowInsets(.vertical, 0)
         }
+        
+        // MARK: All Features
+        Section(isExpanded: $expanded, content: {
+            ForEach(searchManager.items) { item in
+                NavigationLink(value: item) {
+                    SearchResultCellView(label: item.label, image: item.image)
+                }
+                .listRowInsets(.leading, 16)
+            }
+        }, header: {
+            HStack {
+                ExpandableSectionHeader(title: "All Features",
+                                        expanded: $expanded)
+            }
+        })
     }
 }
-
 
 // MARK: - Constants
 
@@ -68,4 +86,38 @@ private extension CGFloat {
 
 private extension Int {
     static let horizontalCount: Self = 2
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    @Previewable @State var activeSheet: ShortcutFeature?
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    List {
+        SearchInactiveView(activeSheet: $activeSheet,
+                           appStateManager: deps.appStateManager,
+                           searchManager: searchManager,
+                           navigationItems: AppArea.allCases,
+                           actionItems: ShortcutFeature.allCases)
+    }
+    .listStyle(.plain)
+    .environment(NavigationManager())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    @Previewable @State var activeSheet: ShortcutFeature?
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    List {
+        SearchInactiveView(activeSheet: $activeSheet,
+                           appStateManager: deps.appStateManager,
+                           searchManager: searchManager,
+                           navigationItems: AppArea.allCases,
+                           actionItems: ShortcutFeature.allCases)
+    }
+    .listStyle(.plain)
+    .environment(NavigationManager())
+    .preferredColorScheme(.dark)
 }

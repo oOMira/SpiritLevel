@@ -1,105 +1,135 @@
 import SwiftUI
 
-struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
+typealias AchievementsViewDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
+
+@Observable
+final class AchievementsViewModel<Dependencies: AchievementsViewDependencies>: AchievementsManageable {
+    var dependencies: Dependencies
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
-    @EnvironmentObject var appData: AppData
-    let achievementsManager: AchievementsManagerType
-    @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 50
+    @Environment(AppData.self) var appData: AppData
+    @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = .baseChartHeight
+    
+    let viewModel: AchievementsViewModel<Dependencies>
+    
+    init(viewModel: AchievementsViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
                                               
     var body: some View {
         List {
             ForEach(Achievement.allCases) { achievement in
-                let isDone = achievementsManager.isAchievementDone(achievement, date: appData.appStartDate)
+                let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
                 HStack {
                     achievement.image
                         .resizable()
                         .scaledToFit()
-                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadius,
-                                                    style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous))
                         .frame(width: chartHeight)
-                        .grayscale(isDone ? 0.0 : 1.0)
-                        .opacity(isDone ? 1.0 : 0.5)
-                        .opacity(accessibilityDifferentiateWithoutColor ? 0.5 : 1.0)
+                        .grayscale(isDone ? .color : .gray)
+                        .opacity(getImageOpacity(isDone: isDone))
                         .accessibilityIgnoresInvertColors()
                         .overlay {
                             if accessibilityDifferentiateWithoutColor {
-                                Image(systemName: isDone
-                                      ? "checkmark.circle"
-                                      : "x.circle")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .frame(maxHeight: .infinity, alignment: .center)
-                                .padding(4)
-                                .accessibilityHidden(true)
+                                getAccessibilityOverlay(isDone: isDone)
                             }
                         }
-                    VStack {
+                    VStack(spacing: .textSpacing) {
                         Text(achievement.name)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 2)
                         Text(achievement.description)
                             .font(.footnote)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .fontWeight(isDone ? .bold : .regular)
                 }
+                .animation(.easeInOut, value: isDone)
                 .accessibilityElement(children: .combine)
-                .accessibilityValue(isDone ? "Completed" : "Not completed")
+                .accessibilityValue(isDone ? .completed : .incompleted)
             }
         }
         .listStyle(.plain)
         .navigationTitle(.navigationTitle)
-        .accessibilityRotor("Completed Achievements") {
-            ForEach(Achievement.allCases) { achievement in
-                if achievementsManager.isAchievementDone(achievement, date: appData.appStartDate) {
-                    AccessibilityRotorEntry(achievement.name, id: achievement.id)
-                }
+        .accessibilityRotor(.completedAccessibilityRotor) { achievementRotor(done: true) }
+        .accessibilityRotor(.incompletedAccessibilityRotor) { achievementRotor(done: false) }
+    }
+}
+
+// MARK: - Helper
+
+extension AchievementsView {
+    func getImageOpacity(isDone: Bool) ->  Double {
+        if accessibilityDifferentiateWithoutColor {
+            return .mediumOpacity
+        } else {
+            return isDone ? .highOpacity : .mediumOpacity
+        }
+    }
+    
+    func achievementRotor(done: Bool) -> some AccessibilityRotorContent {
+        ForEach(Achievement.allCases) { achievement in
+            if viewModel.isAchievementDone(achievement, date: appData.appStartDate) == done {
+                AccessibilityRotorEntry(achievement.name, id: achievement.id)
             }
         }
-        .accessibilityRotor("Incomplete Achievements") {
-            ForEach(Achievement.allCases) { achievement in
-                if !achievementsManager.isAchievementDone(achievement, date: appData.appStartDate) {
-                    AccessibilityRotorEntry(achievement.name, id: achievement.id)
-                }
-            }
-        }
+    }
+    
+    func getAccessibilityOverlay(isDone: Bool) -> some View {
+        Image(systemName: isDone ? .systemImage.checkmarkCircle.name : .systemImage.xCircle.name)
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxHeight: .infinity, alignment: .center)
+            .padding(.overlayPadding)
+            .accessibilityHidden(true)
     }
 }
 
 // MARK: - Constants
 
 private extension CGFloat {
-    static let cornerRadius: CGFloat = 8
+    static let cornerRadius: Self = 8
+    static let overlayPadding: Self = 4.0
+    static let baseChartHeight: Self = 50.0
+    static let textSpacing: Self = 2.0
+}
+
+extension Double {
+    static let hiddenOpacity: Self = 0.0
+    static let highOpacity: Self = 1.0
+    static let mediumOpacity: Self = 0.5
+    static let color: Self = 0.0
+    static let gray: Self = 1.0
 }
 
 private extension LocalizedStringResource {
     static let navigationTitle: Self = "Achievements"
+    static let completedAccessibilityRotor: Self = "Completed achievements"
+    static let incompletedAccessibilityRotor: Self = "Not completed achievements"
+    static let completed: Self = "Completed"
+    static let incompleted: Self = "Not completed"
 }
 
-extension Array where Element: TreatmentPlan {
-    // TODO: Test performance and provide optimization or async verison if needed
-    func getPlannedInjectionsList(till date: Date) -> [(date: Date, plan: TreatmentPlan)] {
-        let sortedSelf = self.sorted { $0.firstInjectionDate.start < $1.firstInjectionDate.start }
-        return (0..<count).compactMap { index -> [(date: Date, plan: TreatmentPlan)]? in
-            var currentArray = [(date: Date, plan: TreatmentPlan)]()
-            let currentPlan = sortedSelf[index]
-            let startDate = currentPlan.firstInjectionDate.start
-            let endDate = sortedSelf.element(at: index + 1)?.firstInjectionDate.start ?? date.start
-            var currentDate = startDate
-            while currentDate <= endDate && currentDate <= date.start {
-                currentArray.append((currentDate, currentPlan))
-                currentDate = Calendar.current.date(byAdding: .day, value: currentPlan.frequency, to: currentDate) ?? .distantFuture
-            }
-            return currentArray
-        }
-        .flatMap { $0 }
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    NavigationStack {
+        AchievementsView(viewModel: .init(dependencies: Mocks.appDependencies))
+            .environment(AppData())
+            .preferredColorScheme(.light)
     }
 }
 
-extension Array {
-    func element(at index: Int) -> Element? {
-        guard index >= 0 && index < count else { return nil }
-        return self[index]
+#Preview("Dark Mode") {
+    NavigationStack {
+        AchievementsView(viewModel: .init(dependencies: Mocks.appDependencies))
+            .environment(AppData())
+            .preferredColorScheme(.dark)
     }
 }

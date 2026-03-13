@@ -1,28 +1,17 @@
 import SwiftUI
 
-struct SplitViewLayout<AppStateManagerType: AppStateManageable,
-                       AppStartRepositoryType: AppStartManageable,
-                       SearchResultsManagerType: SearchResultsManageable,
-                       InjectionRepositoryType: InjectionManageable,
-                       LabResultsRepositoryType: LabResultsManageable,
-                       TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                       HormoneLevelManagerType: HormoneLevelManageable>: View {
-
-    @Bindable var appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
-    let searchResultsManager: SearchResultsManagerType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
-    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
-
+struct SplitViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
+    
+    @Bindable var dependencies: DependenciesType
+    
+    var searchManager: SearchManagerType
+    
     @State private var activeSheet: ShortcutFeature? = nil
     
     var body: some View {
         let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
         NavigationSplitView {
-            List(selection: $appStateManager.selectedTab.toOptional()) {
+            List(selection: $dependencies.appStateManager.selectedTab.toOptional()) {
                 Label("Search", systemImage: "magnifyingglass")
                     .tag(-1)
                 ForEach(enumeratedAppAreas, id: \.offset) { index, area in
@@ -30,66 +19,70 @@ struct SplitViewLayout<AppStateManagerType: AppStateManageable,
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 8) {
-                    ForEach(ShortcutFeature.allCases, id: \.id) { feature in
-                        let button = Button(action: {
-                            activeSheet = feature
-                        }, label: {
-                            Text(feature.label)
-                                .padding(.vertical, 8)
-                                .frame(maxWidth: .infinity)
-                        })
-                        .buttonBorderShape(.roundedRectangle)
-                        .tint(feature.buttonColor)
-                        .padding(.horizontal, 16)
-                        
-                        switch feature {
-                        case .logLab:
-                            button.buttonStyle(.bordered)
-                        case .logInjection:
-                            button.buttonStyle(.borderedProminent)
-                        }
-                    }
-                }
-                .accessibilityElement(children: .contain)
+                ShortcutFeatureView(allFeatures: ShortcutFeature.allCases,
+                                    activeSheet: $activeSheet)
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
-                case .logInjection: LogInjectionView(injectionRepository: injectionRepository)
-                    .presentationDetents([.large])
-                case .logLab: LogLabResultView(labResultsRepository: labResultsRepository)
-                    .presentationDetents([.large])
+                case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
+                        .presentationDetents([.large])
+                case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
+                        .presentationDetents([.large])
                 }
             }
         } detail: {
-            if appStateManager.selectedTab == -1 {
-                CompactSearchView(appStateManager: appStateManager,
-                                  searchHistoryManager: searchHistoryManager,
-                                  searchResultsManager: searchResultsManager)
+            if dependencies.appStateManager.selectedTab == -1 {
+                CompactSearchView(dependencies: dependencies,
+                                  searchResultsManager: searchManager)
             } else {
-                let selectedAppArea = enumeratedAppAreas[appStateManager.selectedTab].element
+                let selectedAppArea = enumeratedAppAreas[dependencies.appStateManager.selectedTab].element
                 switch selectedAppArea {
                 case .overview:
-                    CompactOverview(appStateManager: appStateManager,
-                                    appStartRepository: appStartRepository,
-                                    injectionRepository: injectionRepository,
-                                    labResultsRepository: labResultsRepository,
-                                    treatmentPlanRepository: treatmentPlanRepository,
-                                    hormoneManager: hormoneLevelManager)
+                    OverviewContentView(dependencies: dependencies)
                 case .statistics:
-                    StatisticsView(injectionRepository: injectionRepository,
-                                   labResultsRepository: labResultsRepository,
-                                   hormoneLevelManager: hormoneLevelManager)
+                    StatisticsView(dependencies: dependencies)
                 case .settings:
-                    SettingsView(appStartRepository: appStartRepository,
-                                 appStateRepository: appStateManager,
-                                 injectionRepository: injectionRepository,
-                                 labResultsRepository: labResultsRepository,
-                                 treatmentPlanRepository: treatmentPlanRepository,
-                                 hormoneLevelManager: hormoneLevelManager)
+                    SettingsView(dependencies: dependencies)
                 }
             }
         }
+    }
+}
+
+// MARK: - ShortcutFeatureView
+
+private struct ShortcutFeatureView: View {
+    private let allFeatures: [ShortcutFeature]
+    @Binding private var activeSheet: ShortcutFeature?
+    
+    init(allFeatures: [ShortcutFeature], activeSheet: Binding<ShortcutFeature?>) {
+        self.allFeatures = allFeatures
+        self._activeSheet = activeSheet
+    }
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(ShortcutFeature.allCases) { feature in
+                let button = Button(action: {
+                    activeSheet = feature
+                }, label: {
+                    Text(feature.label)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity)
+                })
+                .buttonBorderShape(.roundedRectangle)
+                .tint(feature.buttonColor)
+                .padding(.horizontal, 16)
+                
+                switch feature {
+                case .logLab:
+                    button.buttonStyle(.bordered)
+                case .logInjection:
+                    button.buttonStyle(.borderedProminent)
+                }
+            }
+        }
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -111,5 +104,22 @@ private extension ShortcutFeature {
         case .logLab: return .primary
         }
     }
+}
 
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    SplitViewLayout(dependencies: deps, searchManager: searchManager)
+        .environment(AppData())
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    SplitViewLayout(dependencies: deps, searchManager: searchManager)
+        .environment(AppData())
+        .preferredColorScheme(.dark)
 }
