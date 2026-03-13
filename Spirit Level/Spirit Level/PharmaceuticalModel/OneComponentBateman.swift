@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 struct OneComponentBateman {
     let t_half: Double
@@ -32,7 +33,7 @@ struct OneComponentBateman {
 
 // AI generated version of Brent's method
 // OneComponentBateman was tested in jupyter notebook before (brentq is part of SciPy)
-// Swift version is just copied in the pharma model need fine tuning anyway
+// the pharma model needs fine tuning anyway
 // This should be sufficient for a "Playground"
 // TODO: Replace with own implementation of brentq, need to be async
 private extension OneComponentBateman {
@@ -47,7 +48,6 @@ private extension OneComponentBateman {
         var fa = f(a), fb = f(b)
 
         guard fa * fb < 0 else {
-            print("Root not bracketed: f(a) and f(b) must have opposite signs")
             return nil
         }
 

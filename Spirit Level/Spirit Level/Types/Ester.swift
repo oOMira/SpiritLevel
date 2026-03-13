@@ -37,8 +37,6 @@ extension Ester {
     }
 }
 
-
-
 extension Ester {
     var defaultDose: Double {
         switch self {

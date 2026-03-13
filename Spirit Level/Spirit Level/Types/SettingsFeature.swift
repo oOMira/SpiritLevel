@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 enum SettingsFeature: String, CaseIterable, SearchableItem {
     case plan
@@ -8,21 +8,21 @@ enum SettingsFeature: String, CaseIterable, SearchableItem {
     
     var itemType: ItemType { .content }
     
-    var label: String {
+    var label: LocalizedStringResource {
         switch self {
-        case .plan:         "Plan"
-        case .support:      "Support"
-        case .data:         "Data"
-        case .deleteData:   "Delete Data"
+        case .plan: "Plan"
+        case .support: "Support"
+        case .data: "Data"
+        case .deleteData: "Delete Data"
         }
     }
     
     var systemImageName: String {
         switch self {
-        case .plan:         "calendar"
-        case .support:      "questionmark.circle"
-        case .data:         "externaldrive"
-        case .deleteData:   "trash"
+        case .plan: "calendar"
+        case .support: "questionmark.circle"
+        case .data: "externaldrive"
+        case .deleteData: "trash"
         }
     }
 }

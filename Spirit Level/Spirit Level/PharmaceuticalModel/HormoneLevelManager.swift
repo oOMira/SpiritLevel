@@ -1,11 +1,17 @@
 import Foundation
 
+// TODO: - Find better solution!!!!
+
 protocol HormoneLevelManageable: AnyObject {
     func levelForInjections(_ injections: [Injection], at date: Date) -> Double
-    func isLevelFalling(injections: [Injection], date: Date) -> Bool?
+    func isLevelFallingForInjections(_ injections: [Injection], at date: Date) -> Bool
 }
 
-// TODO: Better handling for 0
+protocol HasHormoneLevelManager: AnyObject, Observable {
+    associatedtype HormoneLevelManagerType: HormoneLevelManageable
+    var hormoneLevelManager: HormoneLevelManagerType { get set }
+}
+
 class HormoneLevelManager: HormoneLevelManageable {
     private let lvlFunctions: [Ester: OneComponentBateman]
     
@@ -22,7 +28,7 @@ class HormoneLevelManager: HormoneLevelManageable {
     func levelForInjections(_ injections: [Injection], at date: Date) -> Double {
         return injections.reduce(into: 0.0) { lvl, injection in
             guard let lvlFunction = lvlFunctions[injection.ester] else { return }
-            let timeInterval = date.timeIntervalSince(injection.date) / .magicNumbers.daysInSeconds
+            let timeInterval = date.timeIntervalSince(injection.date) / (24 * 60  * 60)
             let scale = injection.dosage / 5.0
             let timeNormalizedConcentration = lvlFunction.getConcentrationAtTime(timeInterval) ?? 0.0
             let scaledConcentration = timeNormalizedConcentration * scale
@@ -30,11 +36,16 @@ class HormoneLevelManager: HormoneLevelManageable {
         }
     }
     
-    func isLevelFalling(injections: [Injection], date: Date) -> Bool? {
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: date) ?? date
-        let lvlNow = levelForInjections(injections, at: date)
-        let lvlTomorrow = levelForInjections(injections, at: tomorrow)
-        guard lvlNow != 0 || lvlTomorrow != 0 else { return nil }
-        return lvlNow > lvlTomorrow
+    func isLevelFallingForInjections(_ injections: [Injection], at date: Date) -> Bool {
+        let currentLevel = levelForInjections(injections, at: date)
+        let pastLevel = levelForInjections(injections, at: date.addingTimeInterval(-60 * 60)) // Check 1 hour earlier
+        return pastLevel > currentLevel
     }
 }
+
+#if DEBUG
+extension Mocks {
+    static let hormoneLevelManager = HormoneLevelManager()
+    
+}
+#endif

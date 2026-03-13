@@ -1,23 +1,12 @@
 import SwiftUI
 
-struct TabViewLayout<AppStateManagerType: AppStateManageable,
-                     AppStartRepositoryType: AppStartManageable,
-                     SearchResultsManagerType: SearchResultsManageable,
-                     InjectionRepositoryType: InjectionManageable,
-                     LabResultsRepositoryType: LabResultsManageable,
-                     TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                     HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct TabViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
     
-    @Bindable var appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
-    let searchResultsManager: SearchResultsManagerType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
+    @Bindable var dependencies: DependenciesType
+    var searchResultsManager: SearchManagerType
     
     var body: some View {
-        TabView(selection: $appStateManager.selectedTab) {
+        TabView(selection: $dependencies.appStateManager.selectedTab) {
             let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
             ForEach(enumeratedAppAreas, id: \.offset) { index, area in
                 Tab(area.label,
@@ -25,36 +14,34 @@ struct TabViewLayout<AppStateManagerType: AppStateManageable,
                     value: index) {
                     NavigationStack {
                         switch area {
-                        case .overview: Overview(appStateManager: appStateManager,
-                                                 appStartRepository: appStartRepository,
-                                                 injectionRepository: injectionRepository,
-                                                 labResultsRepository: labResultsRepository,
-                                                 treatmentPlanRepository: treatmentPlanRepository,
-                                                 hormoneManager: hormoneLevelManager)
-                        case .statistics: StatisticsView(injectionRepository: injectionRepository,
-                                                         labResultsRepository: labResultsRepository,
-                                                         hormoneLevelManager: hormoneLevelManager)
-                        case .settings: SettingsView(appStartRepository: appStartRepository,
-                                                     appStateRepository: appStateManager,
-                                                     injectionRepository: injectionRepository,
-                                                     labResultsRepository: labResultsRepository,
-                                                     treatmentPlanRepository: treatmentPlanRepository,
-                                                     hormoneLevelManager: hormoneLevelManager)
+                        case .overview: Overview(dependencies: dependencies)
+                        case .statistics: StatisticsView(dependencies: dependencies)
+                        case .settings: SettingsView(dependencies: dependencies)
                         }
                     }
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
-                SearchView(appStateManager: appStateManager,
-                           appStartRepository: appStartRepository,
-                           searchHistoryManager: .init(appStateManager: appStateManager),
-                           injectionRepository: injectionRepository,
-                           labResultsRepository: labResultsRepository,
-                           treatmentPlanRepository: treatmentPlanRepository,
-                           hormoneLevelManager: hormoneLevelManager,
-                           searchResultsManager: searchResultsManager)
+                SearchView(dependencies: dependencies, searchManager: searchResultsManager)
             }
         }
     }
 }
 
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    TabViewLayout(dependencies: deps, searchResultsManager: searchManager)
+        .environment(AppData())
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    TabViewLayout(dependencies: deps, searchResultsManager: searchManager)
+        .environment(AppData())
+        .preferredColorScheme(.dark)
+}

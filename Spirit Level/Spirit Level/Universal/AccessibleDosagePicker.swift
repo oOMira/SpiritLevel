@@ -1,6 +1,11 @@
 import SwiftUI
 
+/// A stepper-based picker for adjusting hormone dosage values in 0.1 mg increments.
+///
+/// Displays the current dosage formatted to one decimal place and provides
+/// combined VoiceOver accessibility for the label and value.
 struct AccessibleDosagePicker: View {
+    /// The current dosage in milligrams.
     @Binding var dosage: Double
     
     var body: some View {
@@ -19,10 +24,12 @@ struct AccessibleDosagePicker: View {
         .accessibilityValue("\(dosage, specifier: .dosageFormat) mg")
     }
     
+    /// Increases the dosage by one step (0.1 mg).
     private func increase() {
         dosage += .doseStep
     }
     
+    /// Decreases the dosage by one step (0.1 mg).
     private func decrease() {
         dosage -= .doseStep
     }

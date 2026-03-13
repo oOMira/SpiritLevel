@@ -1,10 +1,9 @@
 import SwiftUI
+import OSLog
 
-struct DeleteSheet<AppStartRepositoryTyp: AppStartManageable,
-                   AppStateRepositoryTyp: AppStateManageable,
-                   InjectionsRepositoryType: InjectionManageable,
-                   TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                   LabResultsReportRepositoryType: LabResultsManageable>: View {
+typealias DeleteSheetDependencies = HasAppStartRepository & HasAppStateManager & HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository
+
+struct DeleteSheet<Dependencies: DeleteSheetDependencies>: View {
     
     @Environment(\.dismiss) private var dismiss
     @State private var showsDeleteErrorAlert: Bool = false
@@ -13,11 +12,7 @@ struct DeleteSheet<AppStartRepositoryTyp: AppStartManageable,
     @State private var deleteAppConfiguration: Bool = false
     @State private var deleteAppLogData: Bool = false
     
-    let appStartRepository: AppStartRepositoryTyp
-    let appStateRepository: AppStateRepositoryTyp
-    let injectionsRepository: InjectionsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let labResultsReportRepository: LabResultsReportRepositoryType
+    let dependencies: Dependencies
     
     var body: some View {
         NavigationStack {
@@ -49,10 +44,9 @@ struct DeleteSheet<AppStartRepositoryTyp: AppStartManageable,
                     .padding(.vertical)
                 })
                 .padding()
-                // TODO: Add better error view alert on top of sheet untested
                 .alert(.deleteErrorTitle, isPresented: $showsDeleteErrorAlert) {
                     Button(.okButtonTitle, role: .cancel) {
-                        print("Error deleting injection from injectionRepository")
+                        Logger.data.error("Failed to delete data")
                     }
                 } message: {
                     Text(.deleteErrorMessage)
@@ -69,28 +63,26 @@ struct DeleteSheet<AppStartRepositoryTyp: AppStartManageable,
                 }
             }
         }
-        .presentationDetents([.large])
     }
     
     private func deleteButtonPressed() {
         var shouldDismiss = true
-        if deleteFirstStart { appStartRepository.firstAppStart = nil }
+        if deleteFirstStart { dependencies.appStartRepository.firstAppStart = nil }
         if deleteAppConfiguration {
-            appStateRepository.searchHistoryData = ""
-            appStateRepository.isMoodExpanded = true
-            appStateRepository.selectedTab = 0
+            dependencies.appStateManager.searchHistoryData = ""
+            dependencies.appStateManager.isMoodExpanded = true
+            dependencies.appStateManager.selectedTab = 0
         }
         if deleteAppLogData {
             do {
                 // deleteAll() called in single lines to enable better debugging
-                // TODO: potentially saves context 3 times might be a problem in the future
-                try injectionsRepository.deleteAll()
-                try treatmentPlanRepository.deleteAll()
-                try labResultsReportRepository.deleteAll()
+                try dependencies.injectionRepository.deleteAll()
+                try dependencies.treatmentPlanRepository.deleteAll()
+                try dependencies.labResultsRepository.deleteAll()
             } catch {
                 showsDeleteErrorAlert.toggle()
                 shouldDismiss = false
-                print("error deleting all data")
+                Logger.data.error("Failed to delete all data: \(error)")
                 return
             }
         }
@@ -117,4 +109,16 @@ private extension LocalizedStringResource {
 
 private extension String {
     static let xMark = "xmark"
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    DeleteSheet(dependencies: Mocks.appDependencies)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    DeleteSheet(dependencies: Mocks.appDependencies)
+        .preferredColorScheme(.dark)
 }

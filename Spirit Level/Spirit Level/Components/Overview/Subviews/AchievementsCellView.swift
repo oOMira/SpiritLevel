@@ -1,19 +1,35 @@
 import SwiftUI
 
-struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: View {
+typealias AchievementsCellDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository & HasAppStateManager
+
+@Observable
+final class AchievementsCellViewModel<Dependencies: AchievementsCellDependencies>: AchievementsManageable {
+    var dependencies: Dependencies
+    let achievements = Achievement.allCases
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
     @State var size: CGSize = .zero
-    @ScaledMetric(relativeTo: .body) private var frameWidth: CGFloat = .baseFrameWidth
-    @EnvironmentObject var appData: AppData
+    @ScaledMetric(relativeTo: .body) private var imageEdgeSize: CGFloat = .baseImageEdgeSize
+    @Environment(AppData.self) var appData: AppData
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
-    let achievementManager: AchievementsManagerType
+    let viewModel: AchievementsCellViewModel<Dependencies>
+    
+    init(viewModel: AchievementsCellViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
     
     private let roundedRectangle = RoundedRectangle(cornerRadius: .cornerRadius,
                                             style: .continuous)
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: .contentSpacing) {
-                ForEach(Achievement.allCases) { achievement in
+            LazyHStack(spacing: .contentSpacing) {
+                ForEach(viewModel.achievements) { achievement in
                     achievementCell(achievement)
                 }
             }
@@ -32,51 +48,52 @@ struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: Vi
         .scrollClipDisabled(true)
     }
     
-    @ViewBuilder
     private func achievementCell(_ achievement: Achievement) -> some View {
-        let isDone = achievementManager.isAchievementDone(achievement, date: appData.appStartDate)
+        let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
         
-        achievement.image
+        return achievement.image
             .resizable()
             .scaledToFit()
-            .containerRelativeFrame(.horizontal) { size, _ in
-                frameWidth > size ? size : frameWidth
+            .containerRelativeFrame(.horizontal) { containerSize, _ in
+                min(imageEdgeSize, containerSize)
             }
+            .aspectRatio(1, contentMode: .fit)
             .clipShape(roundedRectangle)
-            .shadow(color: .shadowColor,
-                    radius: .shadowRadius,
-                    x: .xShadowOffset,
-                    y: .yShadowOffset)
+            .shadow(color: .shadowColor, radius: .shadowRadius, x: .xShadowOffset, y: .yShadowOffset)
             .accessibilityIgnoresInvertColors()
             .accessibilityRemoveTraits([.isImage, .isButton])
             .accessibilityLabel(achievement.name)
             .accessibilityValue(isDone ? "Completed" : "Not completed")
             .accessibilityAction(named: "Describe Image") {
-                let imageDescription = isDone
-                    ? achievement.imageDescription
-                    : "\(achievement.imageDescription) - grayedOut"
-                UIAccessibility.post(
-                    notification: .announcement,
-                    argument: imageDescription
-                )
+                accessibilityDescriptionAction(achievement: achievement, isDone: isDone)
             }
             .overlay(alignment: .bottomTrailing) {
                 if accessibilityDifferentiateWithoutColor {
                     accessibilityOverlay(isDone: isDone)
                 }
             }
-            .scrollTransition(.interactive,
-                              axis: .horizontal) { effect, phase in
+            .scrollTransition(.interactive, axis: .horizontal) { effect, phase in
                 let scale = 1.0 - (abs(phase.value) * 0.15)
                 return effect.scaleEffect(CGFloat(max(0.85, scale)))
             }
             .grayscale(isDone ? 0.0 : 1.0)
             .contentShape(.accessibility, roundedRectangle)
+            .animation(.easeInOut(duration: 0.5), value: isDone)
+    }
+    
+    private func accessibilityDescriptionAction(achievement: Achievement, isDone: Bool) {
+        let imageDescription = isDone
+            ? achievement.imageDescription
+            : "\(achievement.imageDescription) - grayedOut"
+        UIAccessibility.post(
+            notification: .announcement,
+            argument: imageDescription
+        )
     }
     
     private func accessibilityOverlay(isDone: Bool) -> some View {
         GeometryReader { proxy in
-            Image(systemName: isDone ? "checkmark.circle" : "x.circle")
+            Image(systemName: isDone ? .systemImage.checkmarkCircle.name : .systemImage.xCircle.name)
                 .resizable()
                 .scaledToFit()
                 .frame(width: proxy.size.width / 4.0,
@@ -92,8 +109,8 @@ struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: Vi
     }
     
     private func contentMargin(for scrollViewWidth: CGFloat) -> CGFloat {
-        let diff = scrollViewWidth - frameWidth
-        return diff > frameWidth ? 0 : max(0, diff / 2)
+        let diff = scrollViewWidth - imageEdgeSize
+        return diff > imageEdgeSize ? 0 : max(0, diff / 2)
     }
 }
 
@@ -103,9 +120,23 @@ private extension CGFloat {
     static let shadowRadius: Self = 6.0
     static let xShadowOffset: Self  = 0.0
     static let yShadowOffset: Self  = 3.0
-    static let baseFrameWidth: Self = 200.0
+    static let baseImageEdgeSize: Self = 200.0
 }
 
 private extension Color {
     static let shadowColor: Self = .black.opacity(0.2)
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    AchievementsCellView(viewModel: .init(dependencies: Mocks.appDependencies))
+        .environment(AppData())
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    AchievementsCellView(viewModel: .init(dependencies: Mocks.appDependencies))
+        .environment(AppData())
+        .preferredColorScheme(.dark)
 }

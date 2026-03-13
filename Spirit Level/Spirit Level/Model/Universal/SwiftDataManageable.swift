@@ -1,12 +1,20 @@
 import SwiftData
 import Foundation
+import OSLog
+
+protocol Repository {
+    associatedtype ItemType: PersistentModel
+    var allItems: [ItemType] { get set }
+    func add(item: ItemType) throws
+    func delete(item: ItemType) throws
+    func deleteAll() throws
+}
 
 @MainActor
 protocol SwiftDataManageable: AnyObject {
     associatedtype ItemType: PersistentModel
     var modelContext: ModelContext { get }
     var allItems: [ItemType] { get set }
-    // TODO: Check if explicit cancelation is needed
     var observationTask: Task<Void, Never>? { get set }
     
     func add(item: ItemType) throws
@@ -22,12 +30,12 @@ extension SwiftDataManageable {
     
     func add(item: ItemType) throws {
         modelContext.insert(item)
-        try modelContext.save()
+        refresh()
     }
     
     func delete(item: ItemType) throws {
         modelContext.delete(item)
-        try modelContext.save()
+        refresh()
     }
     
     func fetchAll() throws -> [ItemType] {
@@ -37,6 +45,11 @@ extension SwiftDataManageable {
     
     func deleteAll() throws {
         allItems.forEach { modelContext.delete($0) }
+        refresh()
+    }
+    
+    func saveIfNeeded() throws {
+        guard modelContext.hasChanges else { return }
         try modelContext.save()
     }
     
@@ -53,13 +66,14 @@ extension SwiftDataManageable {
         }
     }
 
+    // TODO: add error
     @discardableResult
     func refresh() -> [ItemType] {
         do {
             allItems = try modelContext.fetch(fetchDescriptor)
             return allItems
         } catch {
-            print("Failed to refresh data: \(error)")
+            Logger.data.error("Failed to refresh data: \(error)")
             return []
         }
     }

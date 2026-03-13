@@ -1,4 +1,5 @@
 import SwiftUI
+import OSLog
 
 struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
@@ -44,8 +45,9 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
                 .pickerStyle(.inline)
                 NavigationLink(.createOwnPlanLink, destination: {
                     CustomTreatmentPlanView(addButtonTitle: "Select", action: { plan in
-                        treatmentPlanStore.planConfigurations.append(.init(plan: plan,
-                                                                           visible: true))
+                        treatmentPlanStore.planConfigurations.append(
+                            .init(plan: plan, visible: true, editable: true)
+                        )
                         currentActivePlan = plan
                     })
                     .navigationTitle(.createNewPlanNavigationTitle)
@@ -58,13 +60,12 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
             }
             Section {
                 Button(action: {
-                    // TODO: also delete plans in the past without injections
                     if let latest = treatmentRepository.latest, latest.firstInjectionDate >= Calendar.current.startOfDay(for: .now) {
                         do {
                             try treatmentRepository.delete(item: latest)
                         } catch {
                             showsSavingErrorAlert.toggle()
-                            print(error)
+                            Logger.data.error("Failed to delete previous treatment plan: \(error)")
                         }
                     }
                     do {
@@ -76,7 +77,7 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
                         try treatmentRepository.add(item: newPlan)
                         currentActivePlan = newPlan
                     } catch {
-                        print(error)
+                        Logger.data.error("Failed to save treatment plan: \(error)")
                         showsSavingErrorAlert.toggle()
                     }
                     dismiss()
@@ -88,7 +89,6 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
             }
         }
         .navigationTitle(.navigationTitle)
-        // TODO: Replace with more sophisticated error UI
         .alert("Error Setting Plan", isPresented: $showsSavingErrorAlert) {
             Button("OK", role: .cancel) { showsSavingErrorAlert.toggle() }
         } message: {
@@ -111,4 +111,24 @@ private extension LocalizedStringResource {
     static let startSectionTitle: Self = "Start"
     static let firstInjectionDateLabel: Self = "First Injection Date"
     static let setPlanButtonTitle: Self = "Set Plan"
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    NavigationStack {
+        SelectTreatmentPlan(activePlan: nil,
+                            treatmentRepository: Mocks.treatmentPlanRepository,
+                            treatmentPlanStore: .init(wrappedValue: .shared))
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        SelectTreatmentPlan(activePlan: nil,
+                            treatmentRepository: Mocks.treatmentPlanRepository,
+                            treatmentPlanStore: .init(wrappedValue: .shared))
+    }
+    .preferredColorScheme(.dark)
 }

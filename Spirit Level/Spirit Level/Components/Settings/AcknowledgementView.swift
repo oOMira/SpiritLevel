@@ -70,3 +70,21 @@ extension AcknowledgementView {
         }
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+#Preview("Light Mode") {
+    NavigationStack {
+        AcknowledgementView(acknowledgment: .lottie)
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        AcknowledgementView(acknowledgment: .lottie)
+    }
+    .preferredColorScheme(.dark)
+}
+#endif

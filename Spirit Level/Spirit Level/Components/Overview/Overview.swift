@@ -1,61 +1,33 @@
 import SwiftUI
 
-struct Overview<AppStateManagerType: AppStateManageable,
-                AppStartRepositoryType: AppStartManageable,
-                InjectionRepositoryType: InjectionManageable,
-                LabResultsRepositoryType: LabResultsManageable,
-                TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                HormoneManagerType: HormoneLevelManageable>: View {
-
-    @State private var activeSheet: ShortcutFeature?
-
-    private let appStateManager: AppStateManagerType
-    private let appStartRepository: AppStartRepositoryType
-    private let injectionRepository: InjectionRepositoryType
-    private let labResultsRepository: LabResultsRepositoryType
-    private let treatmentPlanRepository: TreatmentPlanRepositoryType
-    private let hormoneManager: HormoneManagerType
+struct Overview<Dependencies: OverviewDependencies>: View {
     
-    init(appStateManager: AppStateManagerType,
-         appStartRepository: AppStartRepositoryType,
-         injectionRepository: InjectionRepositoryType,
-         labResultsRepository: LabResultsRepositoryType,
-         treatmentPlanRepository: TreatmentPlanRepositoryType,
-         hormoneManager: HormoneManagerType) {
-        self.appStateManager = appStateManager
-        self.appStartRepository = appStartRepository
-        self.injectionRepository = injectionRepository
-        self.labResultsRepository = labResultsRepository
-        self.treatmentPlanRepository = treatmentPlanRepository
-        self.hormoneManager = hormoneManager
-    }
+    @State private var activeSheet: ShortcutFeature?
+    
+    let dependencies: Dependencies
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            List {
-                OverviewContentView(appStateManager: appStateManager,
-                                    appStartManager: appStartRepository,
-                                    injectionRepository: injectionRepository,
-                                    treatmentPlanRepository: treatmentPlanRepository,
-                                    hormoneLevelManager: hormoneManager,
-                                    labResultsRepository: labResultsRepository)
-            }
-            .navigationTitle(.navigationTitle)
-            // MARK: - Quick Actions
-            .sheet(item: $activeSheet) { sheet in
-                switch sheet {
-                case .logInjection: LogInjectionView(injectionRepository: injectionRepository)
-                    .presentationDetents([.medium, .large])
-                case .logLab: LogLabResultView(labResultsRepository: labResultsRepository)
-                    .presentationDetents([.medium, .large])
+            let dependency = dependencies
+            OverviewContentView(dependencies: dependency)
+                .sheet(item: $activeSheet) { sheet in
+                    switch sheet {
+                    case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
+                            .presentationDetents([.medium, .large])
+                    case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
+                            .presentationDetents([.medium, .large])
+                    }
                 }
+
+            let quickActions: [CompactQuickActionsControl.ActionConfiguration] = ShortcutFeature.allCases.map { feature in
+                .init(feature: feature, action: {
+                    activeSheet = feature
+                })
             }
 
-            PhoneQuickActionsView(action: { feature in
-                activeSheet = feature
-            })
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel(.accessibilityLabel)
+            CompactQuickActionsControl(actions: quickActions)
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(.accessibilityLabel)
         }
     }
 }
@@ -63,28 +35,26 @@ struct Overview<AppStateManagerType: AppStateManageable,
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let navigationTitle: Self = "Overview"
     static let moodTitle: Self = "Mood"
     static let accessibilityLabel: Self = "Quick Actions"
 }
 
+// MARK: - Previews
 
-struct SetupCellView: View {
-    let title: LocalizedStringResource
-    let setupAction: () -> Void
-    let dismissAction: () -> Void
-
-    var body: some View {
-        HStack {
-            Image(systemName: "exclamationmark.triangle.fill")
-            Text(title)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Button(action: setupAction, label: {
-                Text("setup")
-            })
-            Button(action: dismissAction, label: {
-                Text("dismiss")
-            })
-        }
+#Preview("Light Mode") {
+    NavigationStack {
+        Overview(dependencies: Mocks.appDependencies)
     }
+    .environment(AppData())
+    .preferredColorScheme(.light)
 }
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        Overview(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.dark)
+}
+
+

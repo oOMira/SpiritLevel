@@ -1,122 +1,127 @@
 import SwiftUI
 
-struct OverviewContentView<AppStateManagerType: AppStateManageable,
-                           AppStartManagerType: AppStartManageable,
-                           InjectionRepositoryType: InjectionManageable,
-                           TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                           LabResultsRepositoryType: LabResultsManageable,
-                           HormoneLevelManagerType: HormoneLevelManageable>: View {
-    
-    @Bindable private var appStateManager: AppStateManagerType
-    private let injectionRepository: InjectionRepositoryType
-    private let treatmentPlanRepository: TreatmentPlanRepositoryType
-    private let hormoneLevelManager: HormoneLevelManagerType
-    private let appStartManager: AppStartManagerType
-    private let labResultsRepository: LabResultsRepositoryType
-    private let achievementsManager: AchievementsManager<InjectionRepositoryType,
-                                                         TreatmentPlanRepositoryType,
-                                                         LabResultsRepositoryType,
-                                                         AppStartManagerType>
-    
-    init(appStateManager: AppStateManagerType,
-         appStartManager: AppStartManagerType,
-         injectionRepository: InjectionRepositoryType,
-         treatmentPlanRepository: TreatmentPlanRepositoryType,
-         hormoneLevelManager: HormoneLevelManagerType,
-         labResultsRepository: LabResultsRepositoryType) {
+// MARK: - View
 
-        self.appStateManager = appStateManager
-        self.injectionRepository = injectionRepository
-        self.treatmentPlanRepository = treatmentPlanRepository
-        self.hormoneLevelManager = hormoneLevelManager
-        self.appStartManager = appStartManager
-        self.labResultsRepository = labResultsRepository
-        self.achievementsManager = AchievementsManager(injectionRepository: injectionRepository,
-                                                    treatmentPlanRepository: treatmentPlanRepository,
-                                                    labResultsRepository: labResultsRepository,
-                                                    appStartRepository: appStartManager)
+struct OverviewContentView<Dependencies: OverviewDependencies>: View {
+    @Namespace var animationNamespace
+    @Bindable private var viewModel: OverviewContentViewModel<Dependencies>
+    
+    init(dependencies: Dependencies) {
+        self.viewModel = .init(dependencies: dependencies)
     }
     
     var body: some View {
-        ForEach(OverviewFeature.allCases) { feature in
+        List(OverviewFeature.allCases) { feature in
+            // MARK: Content
             switch feature {
             case .reminders:
-                Section("Reminders", content: {
-                    SetupCellView(title: "Setup Plan", setupAction: {
-                        print("setup")
-                    }, dismissAction: {
-                        print("dismiss")
-                    })
-                    SetupCellView(title: "Setup Plan", setupAction: {
-                        print("setup")
-                    }, dismissAction: {
-                        print("dismiss")
-                    })
+                Section(content: {
+                    ForEach(viewModel.reminders.filter(\.showsCell)) {
+                        RemindersCell(configuration: $0.cellConfiguration)
+                            .matchedTransitionSource(id: $0.id, in: animationNamespace)
+                    }
+                }, header: {
+                    if viewModel.reminders.contains(where: { $0.showsCell }) {
+                        RemindersSectionHeader(title: .remindersSectionTitle, clearAction: {
+                            viewModel.clearAllReminders()
+                        })
+                    }
                 })
             case .mood:
-                Section {
-                    if appStateManager.isMoodExpanded {
-                        MoodCellView(injectionRepository: injectionRepository,
-                                     hormoneManager: hormoneLevelManager)
+                Section(content: {
+                    if viewModel.dependencies.appStateManager.isMoodExpanded {
+                        MoodCellView(dependencies: viewModel.dependencies)
                     }
-                } header: {
+                }, header: {
                     ExpandableSectionHeader(title: .moodTitle,
-                                            expanded: $appStateManager.isMoodExpanded)
-                }
+                                            expanded: $viewModel.dependencies.appStateManager.isMoodExpanded)
+                })
             case .currentLevel:
                 Section(content: {
-                    CurrentHormoneLevelCellView(injectionRepository: injectionRepository,
-                                                hormoneManager: hormoneLevelManager)
+                    CurrentHormoneLevelCellView(viewModel: .init(dependencies: viewModel.dependencies))
                 }, header: {
                     Text(feature.label)
                 }, footer: {
-                    if !injectionRepository.allItems.isEmpty {
+                    if !viewModel.dependencies.injectionRepository.allItems.isEmpty {
                         Text(.medicalDisclaimer)
                             .font(.footnote)
                     }
                 })
             case .nextInjection:
                 Section(feature.label) {
-                    NextInjectionCellView(treatmentRepository: treatmentPlanRepository,
-                                          injectionRepository: injectionRepository)
+                    NextInjectionCellView(viewModel: .init(dependencies: viewModel.dependencies))
                 }
             case .achievements:
                 Section {
-                    AchievementsCellView(achievementManager: achievementsManager)
+                    AchievementsCellView(viewModel: .init(dependencies: viewModel.dependencies))
                         .accessibilityElement(children: .contain)
                 } header: {
-                    AchievementsHeader(title: feature.label, destination: {
-                        AchievementsView(achievementsManager: achievementsManager)
+                    NavigationSectionHeaderView(title: feature.label, destination: {
+                        AchievementsView(viewModel: .init(dependencies: viewModel.dependencies))
                     })
                 }
             }
         }
+        // MARK: Navigation
+        .sheet(item: $viewModel.visibleReminder, content: { reminder in
+            NavigationStack {
+                SelectTreatmentPlan(activePlan: nil,
+                                    treatmentRepository: viewModel.dependencies.treatmentPlanRepository,
+                                    treatmentPlanStore: .init(wrappedValue: .shared))
+                .toolbar {
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button {
+                            viewModel.visibleReminder = nil
+                        } label: {
+                            Label("close", systemImage: "xmark")
+                        }
+                    }
+                }
+            }
+            .navigationTransition(.zoom(sourceID: reminder.id, in: animationNamespace))
+        })
+        .navigationTitle(.navigationTitle)
     }
 }
 
-// MARK: OverviewContentView+AchievementsHeader
+// MARK: - UIComponents
 
-private extension OverviewContentView {
-    struct AchievementsHeader<Destination: View>: View {
-        private let title: String
-        private let destination: Destination
-        
-        init(title: String, @ViewBuilder destination: () -> Destination) {
-            self.title = title
-            self.destination = destination()
+private struct RemindersSectionHeader: View {
+    private let title: LocalizedStringResource
+    private let clearAction: () -> Void
+    
+    init(title: LocalizedStringResource, clearAction: @escaping () -> Void) {
+        self.title = title
+        self.clearAction = clearAction
+    }
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
+            Button("Clear all", action: clearAction)
+                .buttonStyle(.plain)
+                .foregroundStyle(.accent)
+        }
+        .accessibilityElement(children: .contain)
+    }
+}
+
+// MARK: - Helper
+
+private extension OverviewContentViewModel.ReminderConfiguration {
+    var cellConfiguration: RemindersCell.Configuration {
+        let action: () -> Void = { [weak self] in
+            guard let self else { return }
+            self.action(self)
         }
         
-        var body: some View {
-            NavigationLink(destination: destination, label: {
-                HStack {
-                    Text(title)
-                    SystemImage.chevronForward.image
-                        .font(.caption.weight(.semibold))
-                }
-            })
-            .buttonStyle(.plain)
-            .accessibilityHint(.accessibilityHint)
-        }
+        return .init(systemImageName: systemImageName,
+                     title: title,
+                     description: description,
+                     action: action,
+                     dismissAction: dismissAction)
     }
 }
 
@@ -124,6 +129,25 @@ private extension OverviewContentView {
 
 private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
-    static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
-    static let accessibilityHint: Self = "Double tap for details"
+    static let medicalDisclaimer: Self = "This is no medical advice"
+    static let accessibilityHint: Self = "Double tap to open details"
+    static let navigationTitle: Self = "Overview"
+    static let remindersSectionTitle: Self = "Reminders"
+}
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    NavigationStack {
+        OverviewContentView(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    NavigationStack {
+        OverviewContentView(dependencies: Mocks.appDependencies)
+    }
+    .environment(AppData())
+    .preferredColorScheme(.dark)
 }

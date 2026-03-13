@@ -1,5 +1,7 @@
 import SwiftUI
 
+// TODO: Refactor
+
 @MainActor
 @Observable
 final class SearchHistoryManager<AppStateManagerType: AppStateManageable> {

@@ -1,23 +1,11 @@
 import SwiftUI
 
-struct SearchView<AppStateManagerType: AppStateManageable,
-                  AppStartRepositoryType: AppStartManageable,
-                  SearchResultsManagerType: SearchResultsManageable,
-                  InjectionRepositoryType: InjectionManageable,
-                  LabResultsRepositoryType: LabResultsManageable,
-                  TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                  HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
 
     @State private var navManager = NavigationManager()
     
-    let appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
-    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
-    let searchResultsManager: SearchResultsManagerType
+    let dependencies: DependenciesType
+    var searchManager: SearchManagerType
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
@@ -26,11 +14,12 @@ struct SearchView<AppStateManagerType: AppStateManageable,
         NavigationStack(path: $navManager.path) {
             List {
                 if isSearching {
-                    SearchActiveView(searchHistoryManager: searchHistoryManager,
-                                     searchManager: searchResultsManager)
+                    SearchActiveView(searchHistoryManager: .init(appStateManager: dependencies.appStateManager),
+                                     searchManager: searchManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
-                                       appStateManager: appStateManager,
+                                       appStateManager: dependencies.appStateManager,
+                                       searchManager: searchManager,
                                        navigationItems: AppArea.allCases,
                                        actionItems: ShortcutFeature.allCases)
                 }
@@ -39,10 +28,10 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .navigationTitle(.navigationTitle)
             .searchable(
                 text: Binding(
-                    get: { searchResultsManager.searchText },
+                    get: { searchManager.searchText },
                     set: { newValue in
                         withAnimation(.snappy) {
-                            searchResultsManager.searchText = newValue
+                            searchManager.searchText = newValue
                         }
                     }
                 ),
@@ -52,28 +41,16 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             )
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
-                searchHistoryManager.addToHistory(searchResultsManager.searchText)
+                SearchHistoryManager(appStateManager: dependencies.appStateManager).addToHistory(searchManager.searchText)
             }
             .activeSheetDestination(activeSheet: $activeSheet,
-                                    injectionRepository: injectionRepository,
-                                    labResultsRepository: labResultsRepository)
+                                    injectionRepository: dependencies.injectionRepository,
+                                    labResultsRepository: dependencies.labResultsRepository)
             .navigationDestination(for: AppArea.self) { item in
                 switch item {
-                case .overview: Overview(appStateManager: appStateManager,
-                                         appStartRepository: appStartRepository,
-                                         injectionRepository: injectionRepository,
-                                         labResultsRepository: labResultsRepository,
-                                         treatmentPlanRepository: treatmentPlanRepository,
-                                         hormoneManager: hormoneLevelManager)
-                case .statistics: StatisticsView(injectionRepository: injectionRepository,
-                                                 labResultsRepository: labResultsRepository,
-                                                 hormoneLevelManager: hormoneLevelManager)
-                case .settings: SettingsView(appStartRepository: appStartRepository,
-                                             appStateRepository: appStateManager,
-                                             injectionRepository: injectionRepository,
-                                             labResultsRepository: labResultsRepository,
-                                             treatmentPlanRepository: treatmentPlanRepository,
-                                             hormoneLevelManager: hormoneLevelManager)
+                case .overview: Overview(dependencies: dependencies)
+                case .statistics: StatisticsView(dependencies: dependencies)
+                case .settings: SettingsView(dependencies: dependencies)
                 }
             }
             .selectedSearchItemDestination()
@@ -109,4 +86,20 @@ private extension LocalizedStringResource {
 
 private extension Int {
     static let maxHistoryItems: Self = 10
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    SearchView(dependencies: deps, searchManager: searchManager)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    let deps = Mocks.appDependencies
+    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
+    SearchView(dependencies: deps, searchManager: searchManager)
+        .preferredColorScheme(.dark)
 }

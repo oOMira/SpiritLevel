@@ -60,6 +60,16 @@ private extension String {
     static let externalLinkSystemImage: Self = "square.and.arrow.up"
 }
 
-#Preview {
-    SupportCellView()
+#Preview("Light Mode") {
+    List {
+        SupportCellView()
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        SupportCellView()
+    }
+    .preferredColorScheme(.dark)
 }

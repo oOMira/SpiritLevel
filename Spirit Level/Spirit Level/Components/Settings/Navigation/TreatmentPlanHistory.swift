@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct TreatmentPlanHistory<TreatmentPlanReposetoryType: TreatmentPlanManageable>: View {
+struct TreatmentPlanHistory<TreatmentPlanRepositoryType: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
-    let treatmentPlanRepository: TreatmentPlanReposetoryType
+    let treatmentPlanRepository: TreatmentPlanRepositoryType
     @State private var showDeleteFailedAlert = false
     @State private var editMode: EditMode = .inactive
     
@@ -28,7 +28,7 @@ struct TreatmentPlanHistory<TreatmentPlanReposetoryType: TreatmentPlanManageable
                             do {
                                 try treatmentPlanRepository.delete(item: item)
                             } catch {
-                                // TODO: Handle error appropriately (e.g., show an alert)
+                                showDeleteFailedAlert = true
                             }
                         }
                     }
@@ -51,7 +51,6 @@ struct TreatmentPlanHistory<TreatmentPlanReposetoryType: TreatmentPlanManageable
                     
                 }
             }
-            // TODO: Handle error appropriately
             .alert(.deleteFailedAlertTitle, isPresented: $showDeleteFailedAlert, actions: {
                 Button("OK", role: .cancel) { showDeleteFailedAlert.toggle() }
             }, message: {
@@ -77,4 +76,16 @@ private extension LocalizedStringResource {
     static let navigationBarTitle: Self = "History"
     static let deleteFailedAlertTitle: Self = "Failed to delete"
     static let deleteFailedAlertMessage: Self = "An error occurred while trying to delete the treatment plan. Please try again later."
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    TreatmentPlanHistory(treatmentPlanRepository: Mocks.treatmentPlanRepository)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    TreatmentPlanHistory(treatmentPlanRepository: Mocks.treatmentPlanRepository)
+        .preferredColorScheme(.dark)
 }

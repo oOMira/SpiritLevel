@@ -1,6 +1,5 @@
 import SwiftUI
 
-// TODO: Used for future statistics features.
 enum Trend: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     
@@ -11,10 +10,10 @@ enum Trend: String, CaseIterable, Identifiable {
     
     var image: Image {
         switch self {
-        case .down:     .init(systemName: .downArrow)
-        case .up:       .init(systemName: .upArrow)
-        case .stable:   .init(systemName: .stableArrow)
-        case .unclear:  .init(systemName: .questionMark)
+        case .down: .init(systemName: .downArrow)
+        case .up: .init(systemName: .upArrow)
+        case .stable: .init(systemName: .stableArrow)
+        case .unclear: .init(systemName: .questionMark)
         }
     }
 }

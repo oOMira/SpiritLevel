@@ -1,10 +1,11 @@
 import SwiftUI
 import SwiftData
-import Combine
+import OSLog
 
-class AppData: ObservableObject {
-    @Published var appStartDate: Date = Date()
-    
+@Observable
+class AppData {
+    var appStartDate: Date = Date()
+
     func refresh() {
         appStartDate = Date()
     }
@@ -12,67 +13,125 @@ class AppData: ObservableObject {
 
 @main
 struct MyApp: App {
-    @StateObject private var appData = AppData()
     @Environment(\.scenePhase) private var scenePhase
-    
-    let injectionRepository: InjectionRepository
-    let labResultsRepository: LabResultsRepository
-    let treatmentPlanRepository: TreatmentPlanRepository
-    let searchResultsManager: SearchResultsManager
-    let appStartRepository: AppStartRepository
-    let appStateRepository: AppStateRepository
-    let modelContainer: ModelContainer
-    let hormoneLevelManager: HormoneLevelManager
-    
+    @State private var appData = AppData()
+
+    private let startupResult: AppStartupResult
+
     init() {
-        appStartRepository = AppStartRepository.shared
-        appStateRepository = AppStateRepository.shared
-        
+        startupResult = Self.makeStartupResult()
+    }
+
+    private static func makeStartupResult() -> AppStartupResult {
+        let appStartRepository = AppStartRepository.shared
+        let appStateRepository = AppStateRepository.shared
         let config = ModelConfiguration()
-        
-        // TODO: - Handle Error UI
-        modelContainer = try! ModelContainer(for: Injection.self, LabResult.self, TreatmentPlan.self, configurations: config)
-        
-        injectionRepository = InjectionRepository(modelContext: modelContainer.mainContext)
-        labResultsRepository = LabResultsRepository(modelContext: modelContainer.mainContext)
-        treatmentPlanRepository = TreatmentPlanRepository(modelContext: modelContainer.mainContext)
-        
-        hormoneLevelManager = .init()
-        
-        let defaultItems = SearchResultsManager.getDefaultItems(
-            appStateManager: appStateRepository,
-            appStartRepository: appStartRepository,
-            injectionRepository: injectionRepository,
-            labResultsRepository: labResultsRepository,
-            treatmentPlanRepository: treatmentPlanRepository,
-            hormoneManager: hormoneLevelManager
-        )
-        searchResultsManager = SearchResultsManager(items: defaultItems)
-        Self.logFirstAppStart(in: appStartRepository)
-    }
-    
-    static func logFirstAppStart(in repository: AppStartManageable) {
-        guard repository.firstAppStart == nil else { return }
-        let date = Date()
-        repository.firstAppStart = date
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            ContentView(
+
+        do {
+            let modelContainer = try ModelContainer(
+                for: Injection.self,
+                LabResult.self,
+                TreatmentPlan.self,
+                configurations: config
+            )
+
+            let injectionRepository = InjectionRepository(modelContext: modelContainer.mainContext)
+            let labResultsRepository = LabResultsRepository(modelContext: modelContainer.mainContext)
+            let treatmentPlanRepository = TreatmentPlanRepository(modelContext: modelContainer.mainContext)
+            let hormoneLevelManager: HormoneLevelManager = .init()
+
+            logFirstAppStart(in: appStartRepository)
+
+            let appDependencies = AppDependencies(
                 appStateManager: appStateRepository,
                 appStartRepository: appStartRepository,
-                searchResultsManager: searchResultsManager,
                 injectionRepository: injectionRepository,
                 labResultsRepository: labResultsRepository,
                 treatmentPlanRepository: treatmentPlanRepository,
                 hormoneLevelManager: hormoneLevelManager
             )
-            .environmentObject(appData)
+
+            let defaultItems = SearchResultsManager.getDefaultItems(dependencies: appDependencies)
+            let searchResultsManager = SearchResultsManager(items: defaultItems)
+
+            Logger.app.info("App startup completed successfully")
+
+            return .success(
+                AppStartupContext(
+                    appDependencies: appDependencies,
+                    searchResultsManager: searchResultsManager,
+                    modelContainer: modelContainer
+                )
+            )
+        } catch {
+            Logger.app.error("App startup failed: \(error)")
+            return .failure(error)
+        }
+    }
+
+    static func logFirstAppStart(in repository: AppStartManageable) {
+        guard repository.firstAppStart == nil else { return }
+        repository.firstAppStart = .init().start
+        Logger.app.info("Recorded first app start")
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            switch startupResult {
+            case let .success(context):
+                ContentView(dependencies: context.appDependencies)
+                    .environment(appData)
+
+            case let .failure(error):
+                AppLaunchErrorView(error: error)
+            }
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             guard oldPhase != newPhase, newPhase == .active else { return }
-            appData.refresh()
+            if case .success = startupResult {
+                appData.refresh()
+            }
         }
+    }
+}
+
+private typealias AppStartupResult = Result<AppStartupContext, Error>
+
+private struct AppStartupContext {
+    let appDependencies: AppDependencies<
+        AppStateRepository,
+        AppStartRepository,
+        InjectionRepository,
+        LabResultsRepository,
+        TreatmentPlanRepository,
+        HormoneLevelManager
+    >
+    let searchResultsManager: SearchResultsManager
+    let modelContainer: ModelContainer
+}
+
+private struct AppLaunchErrorView: View {
+    let error: Error
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 36))
+                .foregroundStyle(.yellow)
+
+            Text("Unable to Start App")
+                .font(.title3.bold())
+
+            Text("Couldn’t load data. Please restart the app.")
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+
+            Text(error.localizedDescription)
+                .font(.footnote)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.top, 4)
+        }
+        .padding(24)
     }
 }

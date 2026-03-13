@@ -29,6 +29,18 @@ struct SearchSuggestionCellView: View {
     }
 }
 
+// MARK: AppArea+AccentColor
+
+private extension AppArea {
+    var accentColor: Color {
+        switch self {
+        case .overview: .red
+        case .statistics: .green
+        case .settings: .blue
+        }
+    }
+}
+
 // MARK: - Constants
 
 private extension CGFloat {
@@ -39,4 +51,20 @@ private extension Double {
     static func backgroundOpacity(increasedContrast: Bool) -> Self {
         increasedContrast ? 0.3 : 0.75
     }
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    List {
+        SearchSuggestionCellView(appArea: .overview, pressed: {})
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    List {
+        SearchSuggestionCellView(appArea: .overview, pressed: {})
+    }
+    .preferredColorScheme(.dark)
 }

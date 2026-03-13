@@ -26,7 +26,7 @@ extension SearchItem: SearchableItem {
     var feature: any SearchableItem { configuration.feature }
 
     var itemType: ItemType { feature.itemType }
-    var label: String { feature.label }
+    var label: LocalizedStringResource { feature.label }
     var systemImageName: String { feature.systemImageName }
 }
 
@@ -42,7 +42,7 @@ protocol NavigationConfigurationProvidable {
 
 struct NavigationConfiguration<FeatureType: SearchableItem>: NavigationConfigurationProvidable {
     let feature: FeatureType
-    private let _destination: () -> AnyView
+    private let destination: () -> AnyView
     
     init<V: View>(feature: FeatureType, @ViewBuilder destination: @escaping () -> V) {
         var embedInList: Bool {
@@ -53,7 +53,7 @@ struct NavigationConfiguration<FeatureType: SearchableItem>: NavigationConfigura
         }
 
         self.feature = feature
-        self._destination = {
+        self.destination = {
             if embedInList {
                 AnyView(
                     List { destination() }
@@ -67,6 +67,6 @@ struct NavigationConfiguration<FeatureType: SearchableItem>: NavigationConfigura
     
     @ViewBuilder
     func getDestination() -> AnyView {
-        _destination()
+        destination()
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import OSLog
 
 struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
     @Environment(\.dismiss) private var dismiss
@@ -18,10 +19,8 @@ struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
                                            value: $concentration)
                     AccessibleDatePicker(title: .dateTitle, selectedDate: $labResultDate)
                 }
-                
                 Section {
                     Button(action: {
-                        // TODO: Add error UI
                         guard let concentrationValue = Double(concentration) else {
                             return showsEmptyConcentrationAlert.toggle()
                         }
@@ -31,7 +30,7 @@ struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
                                                                      date: labResultDate))
                         } catch {
                             showsSavingErrorAlert.toggle()
-                            print(error)
+                            Logger.data.error("Failed to save lab result: \(error)")
                         }
                         dismiss()
                     }, label: {
@@ -41,7 +40,6 @@ struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
                 }
                 
             }
-            // TODO: Replace with more sophisticated error UI
             .alert("Invalid Concentration", isPresented: $showsEmptyConcentrationAlert) {
                 Button("OK", role: .cancel) { showsEmptyConcentrationAlert.toggle() }
             } message: {
@@ -80,4 +78,16 @@ private extension LocalizedStringResource {
 
 private extension String {
     static let xmarkIcon = "xmark"
+}
+
+// MARK: - Previews
+
+#Preview("Light Mode") {
+    LogLabResultView(labResultsRepository: Mocks.labResultsRepository)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    LogLabResultView(labResultsRepository: Mocks.labResultsRepository)
+        .preferredColorScheme(.dark)
 }
