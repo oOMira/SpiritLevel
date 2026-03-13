@@ -26,6 +26,7 @@ struct MoodCellView<InjectionRepositoryType: InjectionManageable,
                     playing = false
                 }
                 .reloadAnimationTrigger(playing, showPlaceholder: false)
+                .grayscale(currentMood == .unclear ? 1 : 0)
                 .onTapGesture {
                     guard reduceMotion else { return }
                     playing = true

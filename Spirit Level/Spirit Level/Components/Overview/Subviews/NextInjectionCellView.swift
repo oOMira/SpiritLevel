@@ -2,23 +2,38 @@ import SwiftUI
 
 struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                              InjectionsReportRepositoryType: InjectionManageable>: View {
-
+    
     @EnvironmentObject var appData: AppData
-
+    @ScaledMetric(relativeTo: .body) private var imageHeight: CGFloat = 30
+    
     let treatmentRepository: TreatmentPlanRepositoryType
     let injectionRepository: InjectionsReportRepositoryType
     
     var body: some View {
-        if let injectionDate = getNextInjectionDate(till: appData.appStartDate.start) {
-            Text(injectionDate, format: .dateTime.month(.wide).day().year())
-                .accessibilityElement(children: .combine)
+        let injectionDate = getNextInjectionDate(till: appData.appStartDate)
+        if let injectionDate = injectionDate {
+            HStack(spacing: 16) {
+                Image(systemName: "calendar")
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxHeight: imageHeight)
+                VStack(alignment: .leading) {
+                    Text(injectionDate, format: .dateTime.month(.wide).day().year())
+                        .font(.headline)
+                    Text("Description")
+                }
+            }
+            .accessibilityElement(children: .combine)
+            .padding(.leading, 4)
         } else {
-            VStack(alignment: .leading) {
+            VStack(alignment: .center) {
                 Text(.noTreatmentPlanTitle)
                     .font(.headline)
                 Text(.noTreatmentPlanMessage)
+                    .multilineTextAlignment(.center)
             }
             .accessibilityElement(children: .combine)
+            .padding()
         }
     }
 }
@@ -40,6 +55,6 @@ private extension NextInjectionCellView {
 // MARK: - Constants
 
 extension LocalizedStringResource {
-        static let noTreatmentPlanTitle: Self = "No Treatment Plan"
-        static let noTreatmentPlanMessage: Self = "Please set up your plan to see your next injection date"
+    static let noTreatmentPlanTitle: Self = "No Treatment Plan"
+    static let noTreatmentPlanMessage: Self = "Please set up your plan to see your next injection date"
 }

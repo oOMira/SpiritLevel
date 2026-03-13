@@ -6,8 +6,6 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
                            TreatmentPlanRepositoryType: TreatmentPlanManageable,
                            LabResultsRepositoryType: LabResultsManageable,
                            HormoneLevelManagerType: HormoneLevelManageable>: View {
-    let now: Date = .now
-    
     @Bindable var appStateManager: AppStateManagerType
     let injectionRepository: InjectionRepositoryType
     let treatmentPlanRepository: TreatmentPlanRepositoryType
