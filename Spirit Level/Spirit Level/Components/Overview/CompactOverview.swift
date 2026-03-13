@@ -7,25 +7,37 @@ struct CompactOverview<AppStateManagerType: AppStateManageable,
                        TreatmentPlanRepositoryType: TreatmentPlanManageable,
                        HormoneManagerType: HormoneLevelManageable>: View {
     
-    let appStateManager: AppStateManagerType
-    let appStartRepository: AppStartRepositoryType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneManager: HormoneManagerType
+    private let appStateManager: AppStateManagerType
+    private let appStartRepository: AppStartRepositoryType
+    private let injectionRepository: InjectionRepositoryType
+    private let labResultsRepository: LabResultsRepositoryType
+    private let treatmentPlanRepository: TreatmentPlanRepositoryType
+    private let hormoneManager: HormoneManagerType
+    
+    init(appStateManager: AppStateManagerType,
+         appStartRepository: AppStartRepositoryType,
+         injectionRepository: InjectionRepositoryType,
+         labResultsRepository: LabResultsRepositoryType,
+         treatmentPlanRepository: TreatmentPlanRepositoryType,
+         hormoneManager: HormoneManagerType) {
+        self.appStateManager = appStateManager
+        self.appStartRepository = appStartRepository
+        self.injectionRepository = injectionRepository
+        self.labResultsRepository = labResultsRepository
+        self.treatmentPlanRepository = treatmentPlanRepository
+        self.hormoneManager = hormoneManager
+    }
     
     var body: some View {
-        NavigationStack {
-            List {
-                OverviewContentView(appStateManager: appStateManager,
-                                    appStartManager: appStartRepository,
-                                    injectionRepository: injectionRepository,
-                                    treatmentPlanRepository: treatmentPlanRepository,
-                                    hormoneLevelManager: hormoneManager,
-                                    labResultsRepository: labResultsRepository)
-            }
-            .navigationTitle(.navigationTitle)
+        List {
+            OverviewContentView(appStateManager: appStateManager,
+                                appStartManager: appStartRepository,
+                                injectionRepository: injectionRepository,
+                                treatmentPlanRepository: treatmentPlanRepository,
+                                hormoneLevelManager: hormoneManager,
+                                labResultsRepository: labResultsRepository)
         }
+        .navigationTitle(.navigationTitle)
     }
 }
 

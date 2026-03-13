@@ -14,6 +14,10 @@ struct CurrentHormoneLevelCellView<InjectionRepositoryType: InjectionManageable,
     var body: some View {
         let injections = injectionRepository.allItems.filter { $0.date.start <= appData.appStartDate.start }
         
+        // TODO: finde better default values
+        let maxX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.upperBound, to: appData.appStartDate) ?? .init()
+        let minX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.lowerBound, to: appData.appStartDate) ?? .init()
+        
         let values: [(x: Date, y: Double)] = ClosedRange.xDomain.compactMap {
             guard !injections.isEmpty else { return nil }
             let date = Calendar.current.date(byAdding: .day, value: $0, to: appData.appStartDate) ?? appData.appStartDate
@@ -37,6 +41,7 @@ struct CurrentHormoneLevelCellView<InjectionRepositoryType: InjectionManageable,
             .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram  pr milliliter on \($1.x, format: .dateTime.day().month().year())")
         }
         .chartYScale(domain: yDomain)
+        .chartXScale(domain: minX...maxX)
         .opacity(injections.isEmpty ? 0.6 : 1.0)
         .accessibilityLabel("Chart showing simulated hormone levels based on logged injections")
         .frame(height: chartHeight)

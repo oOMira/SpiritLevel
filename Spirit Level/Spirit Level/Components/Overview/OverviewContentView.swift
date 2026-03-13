@@ -6,16 +6,17 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
                            TreatmentPlanRepositoryType: TreatmentPlanManageable,
                            LabResultsRepositoryType: LabResultsManageable,
                            HormoneLevelManagerType: HormoneLevelManageable>: View {
-    @Bindable var appStateManager: AppStateManagerType
-    let injectionRepository: InjectionRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
-    let appStartManager: AppStartManagerType
-    let labResultsRepository: LabResultsRepositoryType
-    let achievementsManager: AchievementsManager<InjectionRepositoryType,
-                                                 TreatmentPlanRepositoryType,
-                                                 LabResultsRepositoryType,
-                                                 AppStartManagerType>
+    
+    @Bindable private var appStateManager: AppStateManagerType
+    private let injectionRepository: InjectionRepositoryType
+    private let treatmentPlanRepository: TreatmentPlanRepositoryType
+    private let hormoneLevelManager: HormoneLevelManagerType
+    private let appStartManager: AppStartManagerType
+    private let labResultsRepository: LabResultsRepositoryType
+    private let achievementsManager: AchievementsManager<InjectionRepositoryType,
+                                                         TreatmentPlanRepositoryType,
+                                                         LabResultsRepositoryType,
+                                                         AppStartManagerType>
     
     init(appStateManager: AppStateManagerType,
          appStartManager: AppStartManagerType,
@@ -23,6 +24,7 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
          treatmentPlanRepository: TreatmentPlanRepositoryType,
          hormoneLevelManager: HormoneLevelManagerType,
          labResultsRepository: LabResultsRepositoryType) {
+
         self.appStateManager = appStateManager
         self.injectionRepository = injectionRepository
         self.treatmentPlanRepository = treatmentPlanRepository
@@ -35,10 +37,22 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
                                                     appStartRepository: appStartManager)
     }
     
-    @ViewBuilder
     var body: some View {
-        ForEach(OverviewFeature.allCases, id: \.self) { feature in
+        ForEach(OverviewFeature.allCases) { feature in
             switch feature {
+            case .reminders:
+                Section("Reminders", content: {
+                    SetupCellView(title: "Setup Plan", setupAction: {
+                        print("setup")
+                    }, dismissAction: {
+                        print("dismiss")
+                    })
+                    SetupCellView(title: "Setup Plan", setupAction: {
+                        print("setup")
+                    }, dismissAction: {
+                        print("dismiss")
+                    })
+                })
             case .mood:
                 Section {
                     if appStateManager.isMoodExpanded {
@@ -71,24 +85,45 @@ struct OverviewContentView<AppStateManagerType: AppStateManageable,
                     AchievementsCellView(achievementManager: achievementsManager)
                         .accessibilityElement(children: .contain)
                 } header: {
-                    NavigationLink(destination: {
+                    AchievementsHeader(title: feature.label, destination: {
                         AchievementsView(achievementsManager: achievementsManager)
-                    }, label: {
-                        HStack {
-                            Text(feature.label)
-                            Image(systemName: "chevron.forward")
-                                .font(.caption.weight(.semibold))
-                        }
                     })
-                    .buttonStyle(.plain)
-                    .accessibilityHint("Double tap for details")
                 }
             }
         }
     }
 }
 
+// MARK: OverviewContentView+AchievementsHeader
+
+private extension OverviewContentView {
+    struct AchievementsHeader<Destination: View>: View {
+        private let title: String
+        private let destination: Destination
+        
+        init(title: String, @ViewBuilder destination: () -> Destination) {
+            self.title = title
+            self.destination = destination()
+        }
+        
+        var body: some View {
+            NavigationLink(destination: destination, label: {
+                HStack {
+                    Text(title)
+                    SystemImage.chevronForward.image
+                        .font(.caption.weight(.semibold))
+                }
+            })
+            .buttonStyle(.plain)
+            .accessibilityHint(.accessibilityHint)
+        }
+    }
+}
+
+// MARK: - Constants
+
 private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
     static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
+    static let accessibilityHint: Self = "Double tap for details"
 }

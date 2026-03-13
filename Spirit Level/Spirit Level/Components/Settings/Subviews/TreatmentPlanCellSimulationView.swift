@@ -60,7 +60,20 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
         .chartXVisibleDomain(length: TimeInterval.interval * (250 / chartHeight))
         .scrollBounceBehavior(.basedOnSize)
         .frame(height: chartHeight)
+        .overlay {
+            // TODO: - Fix animation / test when chart is not rebuild every time
+            if visibleItems.isEmpty {
+                VStack {
+                    Text("No Plan Selected")
+                        .font(.headline)
+                    Text("Select a treatment plan to see the simulated hormone levels")
+                        .multilineTextAlignment(.center)
+                }
+                .accessibilityElement(children: .combine)
+            }
+        }
         .animation(.easeInOut, value: visibleItems)
+        .animation(.easeInOut, value: visibleItems.isEmpty)
         .animation(.easeOut, value: simulationStyle)
     }
 }

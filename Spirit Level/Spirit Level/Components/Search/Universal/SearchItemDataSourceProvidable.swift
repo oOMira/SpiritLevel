@@ -46,6 +46,7 @@ extension OverviewFeature {
                                treatmentPlanRepository: TreatmentPlanRepository) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             switch feature {
+            case .reminders: return nil
             case .mood:
                 return .overview(.init(feature: feature, destination: {
                     MoodCellView(injectionRepository: injectionRepository,

@@ -6,13 +6,29 @@ struct Overview<AppStateManagerType: AppStateManageable,
                 LabResultsRepositoryType: LabResultsManageable,
                 TreatmentPlanRepositoryType: TreatmentPlanManageable,
                 HormoneManagerType: HormoneLevelManageable>: View {
+
     @State private var activeSheet: ShortcutFeature?
-    var appStateManager: AppStateManagerType
-    var appStartRepository: AppStartRepositoryType
-    var injectionRepository: InjectionRepositoryType
-    var labResultsRepository: LabResultsRepositoryType
-    var treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneManager: HormoneManagerType
+
+    private let appStateManager: AppStateManagerType
+    private let appStartRepository: AppStartRepositoryType
+    private let injectionRepository: InjectionRepositoryType
+    private let labResultsRepository: LabResultsRepositoryType
+    private let treatmentPlanRepository: TreatmentPlanRepositoryType
+    private let hormoneManager: HormoneManagerType
+    
+    init(appStateManager: AppStateManagerType,
+         appStartRepository: AppStartRepositoryType,
+         injectionRepository: InjectionRepositoryType,
+         labResultsRepository: LabResultsRepositoryType,
+         treatmentPlanRepository: TreatmentPlanRepositoryType,
+         hormoneManager: HormoneManagerType) {
+        self.appStateManager = appStateManager
+        self.appStartRepository = appStartRepository
+        self.injectionRepository = injectionRepository
+        self.labResultsRepository = labResultsRepository
+        self.treatmentPlanRepository = treatmentPlanRepository
+        self.hormoneManager = hormoneManager
+    }
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -39,7 +55,7 @@ struct Overview<AppStateManagerType: AppStateManageable,
                 activeSheet = feature
             })
             .accessibilityElement(children: .contain)
-            .accessibilityLabel("Quick Actions")
+            .accessibilityLabel(.accessibilityLabel)
         }
     }
 }
@@ -49,4 +65,26 @@ struct Overview<AppStateManagerType: AppStateManageable,
 private extension LocalizedStringResource {
     static let navigationTitle: Self = "Overview"
     static let moodTitle: Self = "Mood"
+    static let accessibilityLabel: Self = "Quick Actions"
+}
+
+
+struct SetupCellView: View {
+    let title: LocalizedStringResource
+    let setupAction: () -> Void
+    let dismissAction: () -> Void
+
+    var body: some View {
+        HStack {
+            Image(systemName: "exclamationmark.triangle.fill")
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Button(action: setupAction, label: {
+                Text("setup")
+            })
+            Button(action: dismissAction, label: {
+                Text("dismiss")
+            })
+        }
+    }
 }
