@@ -3,6 +3,11 @@ import SwiftData
 
 protocol InjectionManageable: SwiftDataManageable where ItemType == Injection { }
 
+protocol HasInjectionRepository: AnyObject, Observable {
+    associatedtype InjectionRepositoryType: InjectionManageable
+    var injectionRepository: InjectionRepositoryType { get set }
+}
+
 // MARK: - InjectionRepository
 
 @MainActor

@@ -9,6 +9,11 @@ protocol AppStateManageable: Observable, AnyObject {
     var searchHistoryData: String { get set }
 }
 
+protocol HasAppStateManager: AnyObject, Observable {
+    associatedtype AppStateManagerType: AppStateManageable
+    var appStateManager: AppStateManagerType { get set }
+}
+
 // MARK: - AppStateManager
 
 @Observable

@@ -1,9 +1,9 @@
 import SwiftUI
 import SwiftData
-import Combine
 
-class AppData: ObservableObject {
-    @Published var appStartDate: Date = Date()
+@Observable
+class AppData {
+    var appStartDate: Date = Date()
     
     func refresh() {
         appStartDate = Date()
@@ -12,11 +12,12 @@ class AppData: ObservableObject {
 
 @main
 struct MyApp: App {
-    @StateObject private var appData = AppData()
     @Environment(\.scenePhase) private var scenePhase
+    @State private var appData = AppData()
     
     let appDependencies: AppDependencies<AppStateRepository,
                                          AppStartRepository,
+                                         SearchResultsManager,
                                          InjectionRepository,
                                          LabResultsRepository,
                                          TreatmentPlanRepository,
@@ -51,24 +52,23 @@ struct MyApp: App {
         self.searchResultsManager = SearchResultsManager(items: defaultItems)
         Self.logFirstAppStart(in: appStartRepository)
         self.appDependencies = .init(appStateManager: appStateRepository,
-                                     appStartManger: appStartRepository,
+                                     appStartRepository: appStartRepository,
+                                     searchResultsManager: searchResultsManager,
                                      injectionRepository: injectionRepository,
+                                     labResultsRepository: labResultsRepository,
                                      treatmentPlanRepository: treatmentPlanRepository,
-                                     hormoneLevelManager: hormoneLevelManager,
-                                     labResultsRepository: labResultsRepository)
+                                     hormoneLevelManager: hormoneLevelManager)
     }
     
     static func logFirstAppStart(in repository: AppStartManageable) {
         guard repository.firstAppStart == nil else { return }
-        let date = Date()
-        repository.firstAppStart = date
+        repository.firstAppStart = .init().start
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(dependencies: appDependencies,
-                        searchResultsManager: searchResultsManager)
-            .environmentObject(appData)
+            ContentView(dependencies: appDependencies)
+                .environment(appData)
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             guard oldPhase != newPhase, newPhase == .active else { return }

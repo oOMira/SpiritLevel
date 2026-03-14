@@ -1,36 +1,26 @@
 import SwiftUI
 
-struct Overview<AppStateManagerType: AppStateManageable,
-                AppStartRepositoryType: AppStartManageable,
-                InjectionRepositoryType: InjectionManageable,
-                LabResultsRepositoryType: LabResultsManageable,
-                TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                HormoneManagerType: HormoneLevelManageable>: View {
-
+struct Overview<Dependencies: OverviewDependencies>: View {
+    
     @State private var activeSheet: ShortcutFeature?
     
-    let dependencies: AppDependencies<AppStateManagerType,
-                                      AppStartRepositoryType,
-                                      InjectionRepositoryType,
-                                      LabResultsRepositoryType,
-                                      TreatmentPlanRepositoryType,
-                                      HormoneManagerType>
+    let dependencies: Dependencies
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             let dependencie = dependencies
-            OverviewContentView(viewModel: dependencie)
-            .navigationTitle(.navigationTitle)
-            // MARK: - Quick Actions
-            .sheet(item: $activeSheet) { sheet in
-                switch sheet {
-                case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
-                    .presentationDetents([.medium, .large])
-                case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
-                    .presentationDetents([.medium, .large])
+            OverviewContentView(dependencies: dependencie)
+                .navigationTitle(.navigationTitle)
+                // MARK: - Quick Actions
+                .sheet(item: $activeSheet) { sheet in
+                    switch sheet {
+                    case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
+                            .presentationDetents([.medium, .large])
+                    case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
+                            .presentationDetents([.medium, .large])
+                    }
                 }
-            }
-
+            
             PhoneQuickActionsView(action: { feature in
                 activeSheet = feature
             })
@@ -48,6 +38,3 @@ private extension LocalizedStringResource {
     static let accessibilityLabel: Self = "Quick Actions"
 }
 
-struct Reminder: Identifiable, Hashable {
-    let id = UUID()
-}

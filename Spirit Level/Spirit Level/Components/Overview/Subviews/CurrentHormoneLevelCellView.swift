@@ -3,7 +3,7 @@ import Charts
 
 struct CurrentHormoneLevelCellView<InjectionRepositoryType: InjectionManageable,
                                    HormoneLevelManagerType: HormoneLevelManageable>: View {
-    @EnvironmentObject var appData: AppData
+    @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 180
     
     let injectionRepository: InjectionRepositoryType

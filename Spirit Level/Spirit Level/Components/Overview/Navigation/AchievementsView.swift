@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
-    @EnvironmentObject var appData: AppData
+    @Environment(AppData.self) var appData: AppData
     let achievementsManager: AchievementsManagerType
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 50
                                               

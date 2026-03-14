@@ -6,7 +6,7 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 250
     let hormoneManager: HormoneLevelManager
     @Bindable var store: TreatmentPlanStore
-    @EnvironmentObject var appData: AppData
+    @Environment(AppData.self) var appData: AppData
     var simulationStyle: SimulationStyle
     @State private var scrollPosition: Date = .now.addingTimeInterval(TimeInterval.interval)
     

@@ -8,6 +8,11 @@ protocol SearchResultsManageable: AnyObject, Observable {
     var filteredItems: [SearchItem] { get }
 }
 
+protocol HasSearchResultsManager: AnyObject, Observable {
+    associatedtype SearchResultsManagerType: SearchResultsManageable
+    var searchResultsManager: SearchResultsManagerType { get set }
+}
+
 // MARK: - SearchResultsManager
 
 @Observable

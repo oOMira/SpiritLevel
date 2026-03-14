@@ -6,6 +6,11 @@ protocol TreatmentPlanManageable: SwiftDataManageable where ItemType == Treatmen
     var latest: ItemType? { get }
 }
 
+protocol HasTreatmentPlanRepository: AnyObject, Observable {
+    associatedtype TreatmentPlanRepositoryType: TreatmentPlanManageable
+    var treatmentPlanRepository: TreatmentPlanRepositoryType { get set }
+}
+
 // MARK: - InjectionRepository
 
 @MainActor

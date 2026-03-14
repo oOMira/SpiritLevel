@@ -3,7 +3,7 @@ import SwiftUI
 struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: View {
     @State var size: CGSize = .zero
     @ScaledMetric(relativeTo: .body) private var frameWidth: CGFloat = .baseFrameWidth
-    @EnvironmentObject var appData: AppData
+    @Environment(AppData.self) var appData: AppData
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     let achievementManager: AchievementsManagerType
     

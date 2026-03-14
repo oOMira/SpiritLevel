@@ -3,7 +3,7 @@ import SwiftUI
 struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                              InjectionsReportRepositoryType: InjectionManageable>: View {
     
-    @EnvironmentObject var appData: AppData
+    @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var imageHeight: CGFloat = 30
     
     let treatmentRepository: TreatmentPlanRepositoryType

@@ -3,6 +3,11 @@ import SwiftData
 
 protocol LabResultsManageable: SwiftDataManageable where ItemType == LabResult { }
 
+protocol HasLabResultsRepository: AnyObject, Observable {
+    associatedtype LabResultsRepositoryType: LabResultsManageable
+    var labResultsRepository: LabResultsRepositoryType { get set }
+}
+
 // MARK: - InjectionRepository
 
 @MainActor

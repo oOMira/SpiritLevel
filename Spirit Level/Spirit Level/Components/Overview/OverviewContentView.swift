@@ -1,93 +1,90 @@
 import SwiftUI
 
+// MARK: - OverviewDependencies
 
-protocol OverviewContentViewDependencies: AnyObject, Observable {
-    associatedtype AppStateManagerType: AppStateManageable
-    associatedtype AppStartManagerType: AppStartManageable
-    associatedtype InjectionRepositoryType: InjectionManageable
-    associatedtype TreatmentPlanRepositoryType: TreatmentPlanManageable
-    associatedtype LabResultsRepositoryType: LabResultsManageable
-    associatedtype HormoneLevelManagerType: HormoneLevelManageable
+typealias OverviewDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
+
+@Observable
+final class OverviewContentViewModel<Dependencies: OverviewDependencies> {
+    var dependencies: Dependencies
     
-    var appStateManager: AppStateManagerType { get set }
-    var appStartManger: AppStartManagerType { get set }
-    var injectionRepository: InjectionRepositoryType { get set }
-    var treatmentPlanRepository: TreatmentPlanRepositoryType { get set }
-    var hormoneLevelManager: HormoneLevelManagerType { get set }
-    var labResultsRepository: LabResultsRepositoryType { get set }
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
 }
 
-struct OverviewContentViewModel<DependencyType: OverviewContentViewDependencies> {
-    let dependencies: DependencyType
-}
-
-struct OverviewContentView<ViewModel: OverviewContentViewDependencies>: View {
-    
-    @Bindable var viewModel: ViewModel
-    
+struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     @Namespace var animationNamespace
-    
+
+    @Bindable private var viewModel: OverviewContentViewModel<Dependencies>
+
     @State private var showsSetupPlanCell: Bool = true
     @State private var showsSetupPlanSheet: Bool = false
+    @State private var showsDialog: Bool = false
     
+    private let achievementsManager: AchievementsManager<Dependencies.InjectionRepositoryType,
+                                                         Dependencies.TreatmentPlanRepositoryType,
+                                                         Dependencies.LabResultsRepositoryType,
+                                                         Dependencies.AppStartRepositoryType>
     
-    private let achievementsManager: AchievementsManager<ViewModel.InjectionRepositoryType,
-                                                         ViewModel.TreatmentPlanRepositoryType,
-                                                         ViewModel.LabResultsRepositoryType,
-                                                         ViewModel.AppStartManagerType>
-    
-    init(viewModel: ViewModel) {
-        self.viewModel = viewModel
-        self.achievementsManager = .init(injectionRepository: viewModel.injectionRepository,
-                                         treatmentPlanRepository: viewModel.treatmentPlanRepository,
-                                         labResultsRepository: viewModel.labResultsRepository,
-                                         appStartRepository: viewModel.appStartManger)
+    init(dependencies: Dependencies) {
+        self.viewModel = .init(dependencies: dependencies)
+        self.achievementsManager = .init(injectionRepository: dependencies.injectionRepository,
+                                         treatmentPlanRepository: dependencies.treatmentPlanRepository,
+                                         labResultsRepository: dependencies.labResultsRepository,
+                                         appStartRepository: dependencies.appStartRepository)
     }
     
     var body: some View {
         List(OverviewFeature.allCases) { feature in
             switch feature {
             case .reminders:
-                if [showsSetupPlanCell].contains(true) {
-                    Section("Reminders", content: {
-                        if showsSetupPlanCell {
-                            SetupCellView(systemImage: .chevronForward,
-                                          title: "Setup Plan",
-                                          setupAction: {
-                                print("setup")
-                                showsSetupPlanSheet.toggle()
-                            }, dismissAction: {
-                                withAnimation { showsSetupPlanCell.toggle() }
-                            })
-                        }
-                    })
+                Section(content: {
+                    if showsSetupPlanCell {
+                        RemindersCell(systemImageName: "calendar",
+                                      title: "Setup Plan",
+                                      description: "Setup a treatmentplan to get started",
+                                      action: { showsSetupPlanSheet.toggle() },
+                                      longPressAction: { showsDialog.toggle() })
+                    }
+                }, header: {
+                    if [showsSetupPlanCell].contains(true) {
+                        Text(.remindersSectionTitle)
+                    }
+                })
+                .confirmationDialog("Are you sure?", isPresented: $showsDialog) {
+                    Button("Clear") {
+                        withAnimation { showsSetupPlanCell.toggle() }
+                    }
+                } message: {
+                    Text("Clear Reminders Cell")
                 }
             case .mood:
                 Section {
-                    if viewModel.appStateManager.isMoodExpanded {
-                        MoodCellView(injectionRepository: viewModel.injectionRepository,
-                                     hormoneManager: viewModel.hormoneLevelManager)
+                    if viewModel.dependencies.appStateManager.isMoodExpanded {
+                        MoodCellView(injectionRepository: viewModel.dependencies.injectionRepository,
+                                     hormoneManager: viewModel.dependencies.hormoneLevelManager)
                     }
                 } header: {
                     ExpandableSectionHeader(title: .moodTitle,
-                                            expanded: $viewModel.appStateManager.isMoodExpanded)
+                                            expanded: $viewModel.dependencies.appStateManager.isMoodExpanded)
                 }
             case .currentLevel:
                 Section(content: {
-                    CurrentHormoneLevelCellView(injectionRepository: viewModel.injectionRepository,
-                                                hormoneManager: viewModel.hormoneLevelManager)
+                    CurrentHormoneLevelCellView(injectionRepository: viewModel.dependencies.injectionRepository,
+                                                hormoneManager: viewModel.dependencies.hormoneLevelManager)
                 }, header: {
                     Text(feature.label)
                 }, footer: {
-                    if !viewModel.injectionRepository.allItems.isEmpty {
+                    if !viewModel.dependencies.injectionRepository.allItems.isEmpty {
                         Text(.medicalDisclaimer)
                             .font(.footnote)
                     }
                 })
             case .nextInjection:
                 Section(feature.label) {
-                    NextInjectionCellView(treatmentRepository: viewModel.treatmentPlanRepository,
-                                          injectionRepository: viewModel.injectionRepository)
+                    NextInjectionCellView(treatmentRepository: viewModel.dependencies.treatmentPlanRepository,
+                                          injectionRepository: viewModel.dependencies.injectionRepository)
                 }
             case .achievements:
                 Section {
@@ -102,37 +99,36 @@ struct OverviewContentView<ViewModel: OverviewContentViewDependencies>: View {
         }
         .sheet(isPresented: $showsSetupPlanSheet, content: {
             NavigationStack {
-                TreatmentPlanView(treatmentPlanRepository: viewModel.treatmentPlanRepository,
-                                  hormoneLevelManager: viewModel.hormoneLevelManager)
+                TreatmentPlanView(treatmentPlanRepository: viewModel.dependencies.treatmentPlanRepository,
+                                  hormoneLevelManager: viewModel.dependencies.hormoneLevelManager)
                 .navigationTitle("Setup Plan")
             }
         })
+        .navigationTitle(.navigationTitle)
     }
 }
 
-// MARK: OverviewContentView+AchievementsHeader
+// MARK: - AchievementsHeader
 
-private extension OverviewContentView {
-    struct AchievementsHeader<Destination: View>: View {
-        private let title: String
-        private let destination: Destination
-        
-        init(title: String, @ViewBuilder destination: () -> Destination) {
-            self.title = title
-            self.destination = destination()
-        }
-        
-        var body: some View {
-            NavigationLink(destination: destination, label: {
-                HStack {
-                    Text(title)
-                    SystemImage.chevronForward.image
-                        .font(.caption.weight(.semibold))
-                }
-            })
-            .buttonStyle(.plain)
-            .accessibilityHint(.accessibilityHint)
-        }
+private struct AchievementsHeader<Destination: View>: View {
+    private let title: String
+    private let destination: Destination
+    
+    init(title: String, @ViewBuilder destination: () -> Destination) {
+        self.title = title
+        self.destination = destination()
+    }
+    
+    var body: some View {
+        NavigationLink(destination: destination, label: {
+            HStack {
+                Text(title)
+                SystemImage.chevronForward.image
+                    .font(.caption.weight(.semibold))
+            }
+        })
+        .buttonStyle(.plain)
+        .accessibilityHint(.accessibilityHint)
     }
 }
 
@@ -142,4 +138,6 @@ private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
     static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
     static let accessibilityHint: Self = "Double tap for details"
+    static let navigationTitle: Self = "Overview"
+    static let remindersSectionTitle: Self = "Reminders"
 }

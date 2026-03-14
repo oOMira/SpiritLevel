@@ -7,6 +7,11 @@ protocol AppStartManageable: Observable, AnyObject {
     var firstAppStart: Date? { get set }
 }
 
+protocol HasAppStartRepository: AnyObject, Observable {
+    associatedtype AppStartRepositoryType: AppStartManageable
+    var appStartRepository: AppStartRepositoryType { get set }
+}
+
 // MARK: - AppStartManager
 
 @Observable

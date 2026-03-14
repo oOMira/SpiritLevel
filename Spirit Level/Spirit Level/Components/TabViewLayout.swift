@@ -1,21 +1,8 @@
 import SwiftUI
 
-struct TabViewLayout<AppStateManagerType: AppStateManageable,
-                     AppStartRepositoryType: AppStartManageable,
-                     SearchResultsManagerType: SearchResultsManageable,
-                     InjectionRepositoryType: InjectionManageable,
-                     LabResultsRepositoryType: LabResultsManageable,
-                     TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                     HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct TabViewLayout<DependenciesType: AppDependenciesProtocol>: View {
     
-    @Bindable var dependencies: AppDependencies<AppStateManagerType,
-                                                AppStartRepositoryType,
-                                                InjectionRepositoryType,
-                                                LabResultsRepositoryType,
-                                                TreatmentPlanRepositoryType,
-                                                HormoneLevelManagerType>
-    
-    let searchResultsManager: SearchResultsManagerType
+    @Bindable var dependencies: DependenciesType
     
     var body: some View {
         TabView(selection: $dependencies.appStateManager.selectedTab) {
@@ -30,7 +17,7 @@ struct TabViewLayout<AppStateManagerType: AppStateManageable,
                         case .statistics: StatisticsView(injectionRepository: dependencies.injectionRepository,
                                                          labResultsRepository: dependencies.labResultsRepository,
                                                          hormoneLevelManager: dependencies.hormoneLevelManager)
-                        case .settings: SettingsView(appStartRepository: dependencies.appStartManger,
+                        case .settings: SettingsView(appStartRepository: dependencies.appStartRepository,
                                                      appStateRepository: dependencies.appStateManager,
                                                      injectionRepository: dependencies.injectionRepository,
                                                      labResultsRepository: dependencies.labResultsRepository,
@@ -41,10 +28,8 @@ struct TabViewLayout<AppStateManagerType: AppStateManageable,
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
-                SearchView(dependencies: dependencies,
-                           searchManager: searchResultsManager)
+                SearchView(dependencies: dependencies)
             }
         }
     }
 }
-

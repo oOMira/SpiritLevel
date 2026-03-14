@@ -1,23 +1,10 @@
 import SwiftUI
 
-struct SearchView<AppStateManagerType: AppStateManageable,
-                  AppStartRepositoryType: AppStartManageable,
-                  SearchResultsManagerType: SearchResultsManageable,
-                  InjectionRepositoryType: InjectionManageable,
-                  LabResultsRepositoryType: LabResultsManageable,
-                  TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                  HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct SearchView<DependenciesType: AppDependenciesProtocol>: View {
 
     @State private var navManager = NavigationManager()
     
-    let dependencies: AppDependencies<AppStateManagerType,
-                                      AppStartRepositoryType,
-                                      InjectionRepositoryType,
-                                      LabResultsRepositoryType,
-                                      TreatmentPlanRepositoryType,
-                                      HormoneLevelManagerType>
-    
-    let searchManager: SearchResultsManagerType
+    let dependencies: DependenciesType
     
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
@@ -26,8 +13,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
         NavigationStack(path: $navManager.path) {
             List {
                 if isSearching {
-                    SearchActiveView(searchHistoryManager: .init(appStateManager: dependencies.appStateManager),
-                                     searchManager: searchManager)
+                    SearchActiveView(searchHistoryManager: .init(appStateManager: dependencies.appStateManager), searchManager: dependencies.searchResultsManager)
                 } else {
                     SearchInactiveView(activeSheet: $activeSheet,
                                        appStateManager: dependencies.appStateManager,
@@ -39,10 +25,10 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             .navigationTitle(.navigationTitle)
             .searchable(
                 text: Binding(
-                    get: { searchManager.searchText },
+                    get: { dependencies.searchResultsManager.searchText },
                     set: { newValue in
                         withAnimation(.snappy) {
-                            searchManager.searchText = newValue
+                            dependencies.searchResultsManager.searchText = newValue
                         }
                     }
                 ),
@@ -52,7 +38,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
             )
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
-                SearchHistoryManager(appStateManager: dependencies.appStateManager).addToHistory(searchManager.searchText)
+                SearchHistoryManager(appStateManager: dependencies.appStateManager).addToHistory(dependencies.searchResultsManager.searchText)
             }
             .activeSheetDestination(activeSheet: $activeSheet,
                                     injectionRepository: dependencies.injectionRepository,
@@ -63,7 +49,7 @@ struct SearchView<AppStateManagerType: AppStateManageable,
                 case .statistics: StatisticsView(injectionRepository: dependencies.injectionRepository,
                                                  labResultsRepository: dependencies.labResultsRepository,
                                                  hormoneLevelManager: dependencies.hormoneLevelManager)
-                case .settings: SettingsView(appStartRepository: dependencies.appStartManger,
+                case .settings: SettingsView(appStartRepository: dependencies.appStartRepository,
                                              appStateRepository: dependencies.appStateManager,
                                              injectionRepository: dependencies.injectionRepository,
                                              labResultsRepository: dependencies.labResultsRepository,

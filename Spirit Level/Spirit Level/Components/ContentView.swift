@@ -1,31 +1,16 @@
 import SwiftUI
 
-struct ContentView<AppStateManagerType: AppStateManageable,
-                   AppStartRepositoryType: AppStartManageable,
-                   SearchResultsManagerType: SearchResultsManageable,
-                   InjectionRepositoryType: InjectionManageable,
-                   LabResultsManagerType: LabResultsManageable,
-                   TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                   HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct ContentView<DependenciesType: AppDependenciesProtocol>: View {
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    let dependencies: AppDependencies<AppStateManagerType,
-                                      AppStartRepositoryType,
-                                      InjectionRepositoryType,
-                                      LabResultsManagerType,
-                                      TreatmentPlanRepositoryType,
-                                      HormoneLevelManagerType>
-    
-    let searchResultsManager: SearchResultsManagerType
+    let dependencies: DependenciesType
     
     var body: some View {
         if horizontalSizeClass == .compact {
-            TabViewLayout(dependencies: dependencies,
-                          searchResultsManager: searchResultsManager)
+            TabViewLayout(dependencies: dependencies)
         } else {
-            SplitViewLayout(dependencies: dependencies,
-                            searchResultsManager: searchResultsManager)
+            SplitViewLayout(dependencies: dependencies)
         }
     }
 }

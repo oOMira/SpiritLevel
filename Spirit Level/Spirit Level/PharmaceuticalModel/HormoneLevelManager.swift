@@ -5,6 +5,11 @@ protocol HormoneLevelManageable: AnyObject {
     func isLevelFalling(injections: [Injection], date: Date) -> Bool?
 }
 
+protocol HasHormoneLevelManager: AnyObject, Observable {
+    associatedtype HormoneLevelManagerType: HormoneLevelManageable
+    var hormoneLevelManager: HormoneLevelManagerType { get set }
+}
+
 // TODO: Better handling for 0
 class HormoneLevelManager: HormoneLevelManageable {
     private let lvlFunctions: [Ester: OneComponentBateman]

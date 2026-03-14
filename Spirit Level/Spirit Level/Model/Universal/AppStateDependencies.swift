@@ -1,32 +1,39 @@
 import Foundation
 
+typealias AppDependenciesProtocol = HasAppStateManager & HasAppStartRepository & HasSearchResultsManager & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
+
+// MARK: - Implementation
+
 @Observable
 final class AppDependencies<AppStateManagerType: AppStateManageable,
                             AppStartRepositoryType: AppStartManageable,
+                            SearchResultsManagerType: SearchResultsManageable,
                             InjectionRepositoryType: InjectionManageable,
                             LabResultsRepositoryType: LabResultsManageable,
                             TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                            HormoneManagerType: HormoneLevelManageable>: OverviewContentViewDependencies {
-
+                            HormoneLevelManagerType: HormoneLevelManageable>: AppDependenciesProtocol {
+    
     var appStateManager: AppStateManagerType
-    var appStartManger: AppStartRepositoryType
+    var appStartRepository: AppStartRepositoryType
+    var searchResultsManager: SearchResultsManagerType
     var injectionRepository: InjectionRepositoryType
-    var treatmentPlanRepository: TreatmentPlanRepositoryType
-    var hormoneLevelManager: HormoneManagerType
     var labResultsRepository: LabResultsRepositoryType
+    var treatmentPlanRepository: TreatmentPlanRepositoryType
+    var hormoneLevelManager: HormoneLevelManagerType
     
     init(appStateManager: AppStateManagerType,
-         appStartManger: AppStartRepositoryType,
+         appStartRepository: AppStartRepositoryType,
+         searchResultsManager: SearchResultsManagerType,
          injectionRepository: InjectionRepositoryType,
+         labResultsRepository: LabResultsRepositoryType,
          treatmentPlanRepository: TreatmentPlanRepositoryType,
-         hormoneLevelManager: HormoneManagerType,
-         labResultsRepository: LabResultsRepositoryType) {
+         hormoneLevelManager: HormoneLevelManagerType) {
         self.appStateManager = appStateManager
-        self.appStartManger = appStartManger
+        self.appStartRepository = appStartRepository
+        self.searchResultsManager = searchResultsManager
         self.injectionRepository = injectionRepository
+        self.labResultsRepository = labResultsRepository
         self.treatmentPlanRepository = treatmentPlanRepository
         self.hormoneLevelManager = hormoneLevelManager
-        self.labResultsRepository = labResultsRepository
     }
 }
-
