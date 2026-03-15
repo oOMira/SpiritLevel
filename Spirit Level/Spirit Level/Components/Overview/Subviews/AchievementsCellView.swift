@@ -26,7 +26,7 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: .contentSpacing) {
+            LazyHStack(spacing: .contentSpacing) {
                 ForEach(Achievement.allCases) { achievement in
                     achievementCell(achievement)
                 }

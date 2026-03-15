@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - OverviewDependencies
+// MARK: - ViewModel
 
 typealias OverviewDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
 
@@ -13,6 +13,8 @@ final class OverviewContentViewModel<Dependencies: OverviewDependencies> {
     }
 }
 
+// MARK: - View
+
 struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     @Namespace var animationNamespace
 
@@ -20,7 +22,6 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
 
     @State private var showsSetupPlanCell: Bool = true
     @State private var showsSetupPlanSheet: Bool = false
-    @State private var showsDialog: Bool = false
     
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
@@ -28,6 +29,7 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     
     var body: some View {
         List(OverviewFeature.allCases) { feature in
+            // MARK: Content
             switch feature {
             case .reminders:
                 Section(content: {
@@ -35,8 +37,9 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                         RemindersCell(systemImageName: "calendar",
                                       title: "Setup Plan",
                                       description: "Description",
-                                      action: { showsSetupPlanSheet.toggle() },
-                                      longPressAction: { showsDialog.toggle() })
+                                      action: { withAnimation { showsSetupPlanSheet.toggle() } },
+                                      dismissAction: { withAnimation { showsSetupPlanCell.toggle() } })
+                        .accessibilityElement(children: .combine)
                     }
                 }, header: {
                     if [showsSetupPlanCell].contains(true) {
@@ -45,13 +48,6 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                         })
                     }
                 })
-                .confirmationDialog("Are you sure?", isPresented: $showsDialog) {
-                    Button("Clear") {
-                        withAnimation { showsSetupPlanCell.toggle() }
-                    }
-                } message: {
-                    Text("Clear Reminders Cell")
-                }
             case .mood:
                 Section {
                     if viewModel.dependencies.appStateManager.isMoodExpanded {
@@ -90,6 +86,7 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                 }
             }
         }
+        // MARK: Navigation
         .sheet(isPresented: $showsSetupPlanSheet, content: {
             NavigationStack {
                 TreatmentPlanView(treatmentPlanRepository: viewModel.dependencies.treatmentPlanRepository,
@@ -101,7 +98,7 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     }
 }
 
-// MARK: - AchievementsHeader
+// MARK: - UIComponents
 
 private struct RemindersSectionHeader: View {
     private let title: LocalizedStringResource
@@ -116,14 +113,14 @@ private struct RemindersSectionHeader: View {
         HStack {
             Text(title)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
             Button("Clear all", action: clearAction)
                 .buttonStyle(.plain)
                 .foregroundStyle(.accent)
         }
+        .accessibilityElement(children: .contain)
     }
 }
-
-// MARK: - AchievementsHeader
 
 private struct AchievementsHeader<Destination: View>: View {
     private let title: String
@@ -152,7 +149,7 @@ private struct AchievementsHeader<Destination: View>: View {
 private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
     static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
-    static let accessibilityHint: Self = "Double tap for details"
+    static let accessibilityHint: Self = "Double tap to open details"
     static let navigationTitle: Self = "Overview"
     static let remindersSectionTitle: Self = "Reminders"
 }

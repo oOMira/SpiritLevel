@@ -10,7 +10,6 @@ final class AchievementsViewModel<Dependencies: AchievementsViewDependencies>: A
     }
 }
 
-
 struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     @Environment(AppData.self) var appData: AppData

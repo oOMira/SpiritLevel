@@ -25,7 +25,6 @@ struct LogInjectionView<InjectionRepositoryType: InjectionManageable>: View {
                 }
                 
                 Section {
-                
                     Button(action: {
                         // TODO: Add error UI
                         do {
