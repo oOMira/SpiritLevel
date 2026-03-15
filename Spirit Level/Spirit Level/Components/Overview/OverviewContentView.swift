@@ -22,17 +22,8 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     @State private var showsSetupPlanSheet: Bool = false
     @State private var showsDialog: Bool = false
     
-    private let achievementsManager: AchievementsManager<Dependencies.InjectionRepositoryType,
-                                                         Dependencies.TreatmentPlanRepositoryType,
-                                                         Dependencies.LabResultsRepositoryType,
-                                                         Dependencies.AppStartRepositoryType>
-    
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
-        self.achievementsManager = .init(injectionRepository: dependencies.injectionRepository,
-                                         treatmentPlanRepository: dependencies.treatmentPlanRepository,
-                                         labResultsRepository: dependencies.labResultsRepository,
-                                         appStartRepository: dependencies.appStartRepository)
     }
     
     var body: some View {
@@ -43,13 +34,15 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                     if showsSetupPlanCell {
                         RemindersCell(systemImageName: "calendar",
                                       title: "Setup Plan",
-                                      description: "Setup a treatmentplan to get started",
+                                      description: "Description",
                                       action: { showsSetupPlanSheet.toggle() },
                                       longPressAction: { showsDialog.toggle() })
                     }
                 }, header: {
                     if [showsSetupPlanCell].contains(true) {
-                        Text(.remindersSectionTitle)
+                        RemindersSectionHeader(title: .remindersSectionTitle, clearAction: {
+                            withAnimation { showsSetupPlanCell.toggle() }
+                        })
                     }
                 })
                 .confirmationDialog("Are you sure?", isPresented: $showsDialog) {
@@ -88,11 +81,11 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                 }
             case .achievements:
                 Section {
-                    AchievementsCellView(achievementManager: achievementsManager)
+                    AchievementsCellView(viewModel: .init(dependencies: viewModel.dependencies))
                         .accessibilityElement(children: .contain)
                 } header: {
                     AchievementsHeader(title: feature.label, destination: {
-                        AchievementsView(achievementsManager: achievementsManager)
+                        AchievementsView(viewModel: .init(dependencies: viewModel.dependencies))
                     })
                 }
             }
@@ -105,6 +98,28 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
             }
         })
         .navigationTitle(.navigationTitle)
+    }
+}
+
+// MARK: - AchievementsHeader
+
+private struct RemindersSectionHeader: View {
+    private let title: LocalizedStringResource
+    private let clearAction: () -> Void
+    
+    init(title: LocalizedStringResource, clearAction: @escaping () -> Void) {
+        self.title = title
+        self.clearAction = clearAction
+    }
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Button("Clear all", action: clearAction)
+                .buttonStyle(.plain)
+                .foregroundStyle(.accent)
+        }
     }
 }
 

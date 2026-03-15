@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RemindersCell: View {
-    @ScaledMetric(relativeTo: .body) private var height: CGFloat = 25
+    @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 25
     let systemImageName: String
     let title: LocalizedStringResource
     let description: LocalizedStringResource
@@ -21,28 +21,24 @@ struct RemindersCell: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
             Image(systemName: systemImageName)
-                .aspectRatio(contentMode: .fit)
-                .frame(maxHeight: height)
-                .foregroundStyle(.primary)
-            VStack(alignment: .leading) {
+                .resizable()
+                .aspectRatio(1, contentMode: .fit)
+                .frame(maxWidth: imageWidth)
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.headline)
                 Text(description)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .onTapGesture {
-            action()
-        }
-        .onLongPressGesture {
-            longPressAction?()
-        }
+        .contentShape(Rectangle())
+        .onTapGesture { action() }
+        .onLongPressGesture { longPressAction?() }
         .accessibilityElement(children: .combine)
+        .padding(.leading, 4)
     }
 }
 

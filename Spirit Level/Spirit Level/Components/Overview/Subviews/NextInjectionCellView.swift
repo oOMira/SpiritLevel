@@ -4,7 +4,7 @@ struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageabl
                              InjectionsReportRepositoryType: InjectionManageable>: View {
     
     @Environment(AppData.self) var appData: AppData
-    @ScaledMetric(relativeTo: .body) private var imageHeight: CGFloat = 30
+    @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 30
     
     let treatmentRepository: TreatmentPlanRepositoryType
     let injectionRepository: InjectionsReportRepositoryType
@@ -16,11 +16,13 @@ struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageabl
                 Image(systemName: "calendar")
                     .resizable()
                     .aspectRatio(1, contentMode: .fit)
-                    .frame(maxHeight: imageHeight)
+                    .frame(maxHeight: imageWidth)
                 VStack(alignment: .leading) {
                     Text(injectionDate, format: .dateTime.month(.wide).day().year())
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.headline)
                     Text("Description")
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .accessibilityElement(children: .combine)

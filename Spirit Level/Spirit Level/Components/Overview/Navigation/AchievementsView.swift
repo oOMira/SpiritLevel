@@ -1,15 +1,31 @@
 import SwiftUI
 
-struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
+typealias AchievementsViewDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
+
+final class AchievementsViewModel<Dependencies: AchievementsViewDependencies>: AchievementsManageable {
+    var dependencies: Dependencies
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+
+struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     @Environment(AppData.self) var appData: AppData
-    let achievementsManager: AchievementsManagerType
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 50
+    
+    let viewModel: AchievementsViewModel<Dependencies>
+    
+    init(viewModel: AchievementsViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
                                               
     var body: some View {
         List {
             ForEach(Achievement.allCases) { achievement in
-                let isDone = achievementsManager.isAchievementDone(achievement, date: appData.appStartDate)
+                let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
                 HStack {
                     achievement.image
                         .resizable()
@@ -52,14 +68,14 @@ struct AchievementsView<AchievementsManagerType: AchievementsManageable>: View {
         .navigationTitle(.navigationTitle)
         .accessibilityRotor("Completed Achievements") {
             ForEach(Achievement.allCases) { achievement in
-                if achievementsManager.isAchievementDone(achievement, date: appData.appStartDate) {
+                if viewModel.isAchievementDone(achievement, date: appData.appStartDate) {
                     AccessibilityRotorEntry(achievement.name, id: achievement.id)
                 }
             }
         }
         .accessibilityRotor("Incomplete Achievements") {
             ForEach(Achievement.allCases) { achievement in
-                if !achievementsManager.isAchievementDone(achievement, date: appData.appStartDate) {
+                if !viewModel.isAchievementDone(achievement, date: appData.appStartDate) {
                     AccessibilityRotorEntry(achievement.name, id: achievement.id)
                 }
             }

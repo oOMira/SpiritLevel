@@ -1,11 +1,25 @@
 import SwiftUI
 
-struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: View {
+typealias AchievementsCellDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
+
+final class AchievementsCellViewModel<Dependencies: AchievementsCellDependencies>: AchievementsManageable {
+    var dependencies: Dependencies
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
     @State var size: CGSize = .zero
     @ScaledMetric(relativeTo: .body) private var frameWidth: CGFloat = .baseFrameWidth
     @Environment(AppData.self) var appData: AppData
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
-    let achievementManager: AchievementsManagerType
+    let viewModel: AchievementsCellViewModel<Dependencies>
+    
+    init(viewModel: AchievementsCellViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
     
     private let roundedRectangle = RoundedRectangle(cornerRadius: .cornerRadius,
                                             style: .continuous)
@@ -34,7 +48,7 @@ struct AchievementsCellView<AchievementsManagerType: AchievementsManageable>: Vi
     
     @ViewBuilder
     private func achievementCell(_ achievement: Achievement) -> some View {
-        let isDone = achievementManager.isAchievementDone(achievement, date: appData.appStartDate)
+        let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
         
         achievement.image
             .resizable()
