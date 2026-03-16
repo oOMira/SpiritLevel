@@ -1,13 +1,18 @@
 import SwiftUI
 
+// MARK: - Configuration
 
-struct Configuration {
-    let systemImageName: String
-    let title: LocalizedStringResource
-    let description: LocalizedStringResource
-    let action: () -> Void
-    let dismissAction: () -> Void
+extension RemindersCell {
+    struct Configuration {
+        let systemImageName: String
+        let title: LocalizedStringResource
+        let description: LocalizedStringResource
+        let action: () -> Void
+        let dismissAction: () -> Void
+    }
 }
+
+// MARK: - View
 
 struct RemindersCell: View {
     @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 20
@@ -47,12 +52,12 @@ struct RemindersCell: View {
         .padding(.vertical, 8)
         .listRowSeparator(.hidden)
         .listRowInsets(.vertical, 8)
-        .listRowInsets(.horizontal, 4)
+        .listRowInsets(.horizontal, 2)
         .listRowBackground(Color.clear)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 42))
         .accessibilityElement(children: .combine)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 0)
+        .shadow(color: .primary.opacity(0.2), radius: 2)
     }
 }
 

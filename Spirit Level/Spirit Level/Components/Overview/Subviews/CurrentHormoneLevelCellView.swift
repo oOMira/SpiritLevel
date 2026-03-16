@@ -1,30 +1,40 @@
 import SwiftUI
 import Charts
 
-struct CurrentHormoneLevelCellView<InjectionRepositoryType: InjectionManageable,
-                                   HormoneLevelManagerType: HormoneLevelManageable>: View {
+typealias CurrentHormoneLevelCellDependencies = HasInjectionRepository & HasHormoneLevelManager
+
+final class CurrentHormoneLevelCellViewModel<Dependencies: CurrentHormoneLevelCellDependencies> {
+    var dependencies: Dependencies
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+struct CurrentHormoneLevelCellView<Dependencies: CurrentHormoneLevelCellDependencies>: View {
     @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 180
     
-    let injectionRepository: InjectionRepositoryType
-    let hormoneManager: HormoneLevelManagerType
-
+    private var viewModel: CurrentHormoneLevelCellViewModel<Dependencies>
+    
+    init(viewModel: CurrentHormoneLevelCellViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
     
     // TODO: clean up, move to outside of body to help with perfromance, fully test voice over
     var body: some View {
-        let injections = injectionRepository.allItems.filter { $0.date.start <= appData.appStartDate.start }
+        let injections = viewModel.dependencies.injectionRepository.allItems.filter { $0.date.start <= appData.appStartDate.start }
         
         // TODO: finde better default values
         let maxX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.upperBound, to: appData.appStartDate) ?? .init()
         let minX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.lowerBound, to: appData.appStartDate) ?? .init()
         
-        let values: [(x: Date, y: Double)] = ClosedRange.xDomain.compactMap {
+        let values: [(x: Date, y: Double)] = ClosedRange.xDomain.compactMap { day -> (x: Date, y: Double)? in
             guard !injections.isEmpty else { return nil }
-            let date = Calendar.current.date(byAdding: .day, value: $0, to: appData.appStartDate) ?? appData.appStartDate
-            let level = hormoneManager.levelForInjections(injections, at: date)
+            let date = Calendar.current.date(byAdding: .day, value: day, to: appData.appStartDate) ?? appData.appStartDate
+            let level = viewModel.dependencies.hormoneLevelManager.levelForInjections(injections, at: date)
             return (x: date, y: level)
         }
-        
         
         var yDomain: ClosedRange<Double> {
             let dataMax = values.map(\.y).max() ?? 100

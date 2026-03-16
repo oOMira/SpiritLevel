@@ -10,7 +10,6 @@ struct Overview<Dependencies: OverviewDependencies>: View {
         ZStack(alignment: .bottomTrailing) {
             let dependencie = dependencies
             OverviewContentView(dependencies: dependencie)
-                // MARK: - Quick Actions
                 .sheet(item: $activeSheet) { sheet in
                     switch sheet {
                     case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
@@ -20,7 +19,7 @@ struct Overview<Dependencies: OverviewDependencies>: View {
                     }
                 }
             
-            PhoneQuickActionsView(action: { feature in
+            RegulagQuickActionsControl(action: { feature in
                 activeSheet = feature
             })
             .accessibilityElement(children: .contain)

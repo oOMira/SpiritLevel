@@ -3,8 +3,7 @@ import SwiftUI
 typealias AchievementsManagerDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
 
 @MainActor
-protocol AchievementsManageable: AnyObject, Observable {
-    associatedtype Dependencies: AchievementsManagerDependencies
+protocol AchievementsManageable: AnyObject, Observable, PlannedInjectionsManagable where Dependencies: AchievementsManagerDependencies {
     var dependencies: Dependencies { get }
     func isAchievementDone(_ achievement: Achievement, date: Date) -> Bool
 }
@@ -17,8 +16,7 @@ extension AchievementsManageable {
         
     
     func isAchievementDone(_ achievement: Achievement, date: Date) -> Bool {
-        // TODO: clean up
-        let plannedInjectionDateList = dependencies.treatmentPlanRepository.allItems.getPlannedInjectionsList(till: date).map(\.date)
+        let plannedInjectionDateList = getPlannedInjectionsList(till: date).map(\.date)
         let numberOnTimeInjections = injections.filter { plannedInjectionDateList.contains($0.date.start) }.count
 
         switch achievement {

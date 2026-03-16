@@ -1,27 +1,11 @@
 import SwiftUI
 
-// MARK: - ViewModel
-
-typealias OverviewDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
-
-@Observable
-final class OverviewContentViewModel<Dependencies: OverviewDependencies> {
-    var dependencies: Dependencies
-    
-    init(dependencies: Dependencies) {
-        self.dependencies = dependencies
-    }
-}
-
 // MARK: - View
 
 struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     @Namespace var animationNamespace
 
     @Bindable private var viewModel: OverviewContentViewModel<Dependencies>
-
-    @State private var showsSetupPlanCell: Bool = true
-    @State private var showsSetupPlanSheet: Bool = false
     
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
@@ -33,28 +17,21 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
             switch feature {
             case .reminders:
                 Section(content: {
-                    if showsSetupPlanCell {
-                        RemindersCell(configuration: .init(
-                            systemImageName: "calendar",
-                            title: "Setup Plan",
-                            description: "Description",
-                            action: { withAnimation { showsSetupPlanSheet.toggle() } },
-                            dismissAction: { withAnimation { showsSetupPlanCell.toggle() } } )
-                        )
-                        .matchedTransitionSource(id: "animation", in: animationNamespace)
+                    ForEach(viewModel.reminders.filter(\.showsCell)) {
+                        RemindersCell(configuration: $0.cellConfiguration)
+                            .matchedTransitionSource(id: $0.id, in: animationNamespace)
                     }
                 }, header: {
-                    if [showsSetupPlanCell].contains(true) {
+                    if viewModel.reminders.contains(where: { $0.showsCell }) {
                         RemindersSectionHeader(title: .remindersSectionTitle, clearAction: {
-                            withAnimation { showsSetupPlanCell.toggle() }
+                            withAnimation { viewModel.reminders.forEach { $0.showsCell = false } }
                         })
                     }
                 })
             case .mood:
                 Section {
                     if viewModel.dependencies.appStateManager.isMoodExpanded {
-                        MoodCellView(injectionRepository: viewModel.dependencies.injectionRepository,
-                                     hormoneManager: viewModel.dependencies.hormoneLevelManager)
+                        MoodCellView(dependencies: viewModel.dependencies)
                     }
                 } header: {
                     ExpandableSectionHeader(title: .moodTitle,
@@ -62,8 +39,7 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                 }
             case .currentLevel:
                 Section(content: {
-                    CurrentHormoneLevelCellView(injectionRepository: viewModel.dependencies.injectionRepository,
-                                                hormoneManager: viewModel.dependencies.hormoneLevelManager)
+                    CurrentHormoneLevelCellView(viewModel: .init(dependencies: viewModel.dependencies))
                 }, header: {
                     Text(feature.label)
                 }, footer: {
@@ -74,8 +50,7 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                 })
             case .nextInjection:
                 Section(feature.label) {
-                    NextInjectionCellView(treatmentRepository: viewModel.dependencies.treatmentPlanRepository,
-                                          injectionRepository: viewModel.dependencies.injectionRepository)
+                    NextInjectionCellView(viewModel: .init(dependencies: viewModel.dependencies))
                 }
             case .achievements:
                 Section {
@@ -89,7 +64,7 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
             }
         }
         // MARK: Navigation
-        .sheet(isPresented: $showsSetupPlanSheet, content: {
+        .sheet(item: $viewModel.visibleReminder, content: { reminder in
             NavigationStack {
                 SelectTreatmentPlan(activePlan: nil,
                                     treatmentRepository: viewModel.dependencies.treatmentPlanRepository,
@@ -97,14 +72,14 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
                 .toolbar {
                     ToolbarItem(placement: .destructiveAction) {
                         Button {
-                            showsSetupPlanSheet.toggle()
+                            viewModel.visibleReminder = nil
                         } label: {
                             Label("close", systemImage: "xmark")
                         }
                     }
                 }
             }
-            .navigationTransition(.zoom(sourceID: "animation", in: animationNamespace))
+            .navigationTransition(.zoom(sourceID: reminder.id, in: animationNamespace))
         })
         .navigationTitle(.navigationTitle)
     }
@@ -153,6 +128,23 @@ private struct AchievementsHeader<Destination: View>: View {
         })
         .buttonStyle(.plain)
         .accessibilityHint(.accessibilityHint)
+    }
+}
+
+// MARK: - Helper
+
+private extension OverviewContentViewModel.ReminderConfiguration {
+    var cellConfiguration: RemindersCell.Configuration {
+        let action: () -> Void = { [weak self] in
+            guard let self else { return }
+            self.action(self)
+        }
+        
+        return .init(systemImageName: systemImageName,
+                     title: title,
+                     description: description,
+                     action: action,
+                     dismissAction: dismissAction)
     }
 }
 

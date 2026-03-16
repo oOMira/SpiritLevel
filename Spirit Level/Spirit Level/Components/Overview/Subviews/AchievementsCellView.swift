@@ -46,46 +46,45 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
         .scrollClipDisabled(true)
     }
     
-    @ViewBuilder
     private func achievementCell(_ achievement: Achievement) -> some View {
         let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
         
-        achievement.image
+        return achievement.image
             .resizable()
             .scaledToFit()
             .containerRelativeFrame(.horizontal) { size, _ in
                 frameWidth > size ? size : frameWidth
             }
             .clipShape(roundedRectangle)
-            .shadow(color: .shadowColor,
-                    radius: .shadowRadius,
-                    x: .xShadowOffset,
-                    y: .yShadowOffset)
+            .shadow(color: .shadowColor, radius: .shadowRadius, x: .xShadowOffset, y: .yShadowOffset)
             .accessibilityIgnoresInvertColors()
             .accessibilityRemoveTraits([.isImage, .isButton])
             .accessibilityLabel(achievement.name)
             .accessibilityValue(isDone ? "Completed" : "Not completed")
             .accessibilityAction(named: "Describe Image") {
-                let imageDescription = isDone
-                    ? achievement.imageDescription
-                    : "\(achievement.imageDescription) - grayedOut"
-                UIAccessibility.post(
-                    notification: .announcement,
-                    argument: imageDescription
-                )
+                accessibilityDescriptionAction(achievement: achievement, isDone: isDone)
             }
             .overlay(alignment: .bottomTrailing) {
                 if accessibilityDifferentiateWithoutColor {
                     accessibilityOverlay(isDone: isDone)
                 }
             }
-            .scrollTransition(.interactive,
-                              axis: .horizontal) { effect, phase in
+            .scrollTransition(.interactive, axis: .horizontal) { effect, phase in
                 let scale = 1.0 - (abs(phase.value) * 0.15)
                 return effect.scaleEffect(CGFloat(max(0.85, scale)))
             }
             .grayscale(isDone ? 0.0 : 1.0)
             .contentShape(.accessibility, roundedRectangle)
+    }
+    
+    private func accessibilityDescriptionAction(achievement: Achievement, isDone: Bool) {
+        let imageDescription = isDone
+            ? achievement.imageDescription
+            : "\(achievement.imageDescription) - grayedOut"
+        UIAccessibility.post(
+            notification: .announcement,
+            argument: imageDescription
+        )
     }
     
     private func accessibilityOverlay(isDone: Bool) -> some View {

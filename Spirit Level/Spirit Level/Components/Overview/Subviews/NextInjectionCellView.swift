@@ -1,13 +1,30 @@
 import SwiftUI
 
-struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                             InjectionsReportRepositoryType: InjectionManageable>: View {
+// MARK: - ViewModel
+
+typealias NextInjectionCellDependencies = HasInjectionRepository & HasTreatmentPlanRepository
+
+@Observable
+final class NextInjectionCellViewModel<Dependencies: NextInjectionCellDependencies>: PlannedInjectionsManagable {
+    var dependencies: Dependencies
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+// MARK: - View
+
+struct NextInjectionCellView<Dependencies: NextInjectionCellDependencies>: View {
     
     @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 30
     
-    let treatmentRepository: TreatmentPlanRepositoryType
-    let injectionRepository: InjectionsReportRepositoryType
+    private var viewModel: NextInjectionCellViewModel<Dependencies>
+    
+    init(viewModel: NextInjectionCellViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         let injectionDate = getNextInjectionDate(till: appData.appStartDate)
@@ -45,11 +62,11 @@ struct NextInjectionCellView<TreatmentPlanRepositoryType: TreatmentPlanManageabl
 private extension NextInjectionCellView {
     // TODO: Untested and not readable
     func getNextInjectionDate(till date: Date) -> Date? {
-        let sortedPlans = treatmentRepository.allItems.sorted { $0.firstInjectionDate.start > $1.firstInjectionDate.start }
+        let sortedPlans = viewModel.dependencies.treatmentPlanRepository.allItems.sorted { $0.firstInjectionDate.start > $1.firstInjectionDate.start }
         guard let latestPlan = sortedPlans.first else { return nil }
         guard latestPlan.firstInjectionDate.start < date.start else { return latestPlan.firstInjectionDate.start }
-        let lastPlannedDateTillNow = sortedPlans.getPlannedInjectionsList(till: appData.appStartDate).sorted { $0.date.start > $1.date.start }.first?.date ?? date.start
-        guard let latestInjectionDate = injectionRepository.allItems.sorted(by: { $0.date.start > $1.date.start }).first?.date else { return latestPlan.firstInjectionDate.start }
+        let lastPlannedDateTillNow = viewModel.getPlannedInjectionsList(till: appData.appStartDate).sorted { $0.date.start > $1.date.start }.first?.date ?? date.start
+        guard let latestInjectionDate = viewModel.dependencies.injectionRepository.allItems.sorted(by: { $0.date.start > $1.date.start }).first?.date else { return latestPlan.firstInjectionDate.start }
         return (latestInjectionDate < lastPlannedDateTillNow) ? lastPlannedDateTillNow : Calendar.current.date(byAdding: .day, value: latestPlan.frequency, to: lastPlannedDateTillNow.start) ?? date.start
     }
 }

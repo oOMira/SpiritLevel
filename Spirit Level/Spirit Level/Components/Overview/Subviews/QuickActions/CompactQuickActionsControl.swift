@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct QuickActionsControl: View {
+struct CompactQuickActionsControl: View {
     let actions: [ActionConfiguration]
 
     var body: some View {
@@ -25,7 +25,7 @@ struct QuickActionsControl: View {
 
 // MARK: - QuickActionsControl+ActionConfiguration
 
-extension QuickActionsControl {
+extension CompactQuickActionsControl {
     struct ActionConfiguration: Identifiable {
         var id: ShortcutFeature.ID { feature.id }
         
@@ -33,6 +33,7 @@ extension QuickActionsControl {
         let action: () -> Void
     }
 }
+
 // MARK: - Constants
 
 private extension CGFloat {

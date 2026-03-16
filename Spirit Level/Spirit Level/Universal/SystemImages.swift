@@ -2,6 +2,7 @@ import SwiftUI
 
 enum SystemImage: String, CaseIterable {
     case chevronForward = "chevron.forward"
+    case calendar = "calendar"
 }
 
 extension SystemImage {

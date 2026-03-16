@@ -69,7 +69,6 @@ struct DeleteSheet<AppStartRepositoryTyp: AppStartManageable,
                 }
             }
         }
-        .presentationDetents([.large])
     }
     
     private func deleteButtonPressed() {

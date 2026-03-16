@@ -22,13 +22,7 @@ extension DeleteSheet {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .accessibilityElement(children: .combine)
-            .accessibilityLabel(title)
-            .accessibilityAction(named: LocalizedStringResource("Explain consequences")) {
-                UIAccessibility.post(
-                    notification: .announcement,
-                    argument: String(localized: description)
-                )
-            }
+            .accessibilityLabel("\(title) - \(description)")
         }
     }
 }
