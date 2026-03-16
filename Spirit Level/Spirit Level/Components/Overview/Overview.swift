@@ -10,7 +10,6 @@ struct Overview<Dependencies: OverviewDependencies>: View {
         ZStack(alignment: .bottomTrailing) {
             let dependencie = dependencies
             OverviewContentView(dependencies: dependencie)
-                .navigationTitle(.navigationTitle)
                 // MARK: - Quick Actions
                 .sheet(item: $activeSheet) { sheet in
                     switch sheet {
@@ -33,7 +32,6 @@ struct Overview<Dependencies: OverviewDependencies>: View {
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let navigationTitle: Self = "Overview"
     static let moodTitle: Self = "Mood"
     static let accessibilityLabel: Self = "Quick Actions"
 }

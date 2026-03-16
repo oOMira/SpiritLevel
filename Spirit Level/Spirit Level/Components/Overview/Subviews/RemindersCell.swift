@@ -1,63 +1,57 @@
 import SwiftUI
 
-struct RemindersCell: View {
-    @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 20
+
+struct Configuration {
     let systemImageName: String
     let title: LocalizedStringResource
     let description: LocalizedStringResource
     let action: () -> Void
     let dismissAction: () -> Void
+}
+
+struct RemindersCell: View {
+    @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 20
+    let configuration: Configuration
     
-    init(systemImageName: String,
-         title: LocalizedStringResource,
-         description: LocalizedStringResource,
-         action: @escaping () -> Void,
-         dismissAction: @escaping () -> Void) {
-        self.systemImageName = systemImageName
-        self.title = title
-        self.description = description
-        self.action = action
-        self.dismissAction = dismissAction
+    init(configuration: Configuration) {
+        self.configuration = configuration
     }
 
     var body: some View {
         HStack {
-            Button(action: action, label: {
-                Image(systemName: systemImageName)
+            Button(action: configuration.action, label: {
+                Image(systemName: configuration.systemImageName)
                     .resizable()
                     .aspectRatio(1, contentMode: .fit)
                     .frame(maxWidth: imageWidth)
                     .padding(.trailing, 4)
                     .padding(.leading, 4)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
+                    Text(configuration.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.headline)
-                    Text(description)
+                    Text(configuration.description)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             })
             .buttonStyle(.plain)
             Divider()
             Button(action: {
-                dismissAction()
+                configuration.dismissAction()
             }, label: {
                 Image(systemName: "xmark.circle.fill")
             })
-            .padding(.leading, 4)
             .buttonStyle(.plain)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
         .listRowSeparator(.hidden)
-        .listRowInsets(.init(top: 8,
-                             leading: 4,
-                             bottom: 8,
-                             trailing: 4))
+        .listRowInsets(.vertical, 8)
+        .listRowInsets(.horizontal, 4)
         .listRowBackground(Color.clear)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 42))
         .accessibilityElement(children: .combine)
-        .clipShape(RoundedRectangle(cornerSize: .init(width: 42, height: 42)))
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 0)
     }
 }
@@ -66,12 +60,12 @@ struct RemindersCell: View {
 
 #Preview("Light Mode") {
     List {
-        RemindersCell(
+        RemindersCell(configuration: .init(
             systemImageName: "bell.badge",
             title: "Set up notifications",
             description: "Get reminders for your injections",
             action: { print("Tapped") },
-            dismissAction: { print("dismiss tapped") }
+            dismissAction: { print("dismiss tapped") })
         )
         .preferredColorScheme(.light)
     }
@@ -79,12 +73,12 @@ struct RemindersCell: View {
 
 #Preview("Dark Mode") {
     List {
-        RemindersCell(
+        RemindersCell(configuration: .init(
             systemImageName: "bell.badge",
             title: "Set up notifications",
             description: "Get reminders for your injections",
             action: { print("Tapped") },
-            dismissAction: { print("dismiss tapped") }
+            dismissAction: { print("dismiss tapped") } )
         )
         .preferredColorScheme(.dark)
     }

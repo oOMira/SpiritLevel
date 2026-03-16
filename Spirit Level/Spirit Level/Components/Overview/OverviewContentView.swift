@@ -34,12 +34,14 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
             case .reminders:
                 Section(content: {
                     if showsSetupPlanCell {
-                        RemindersCell(systemImageName: "calendar",
-                                      title: "Setup Plan",
-                                      description: "Description",
-                                      action: { withAnimation { showsSetupPlanSheet.toggle() } },
-                                      dismissAction: { withAnimation { showsSetupPlanCell.toggle() } })
-                        .accessibilityElement(children: .combine)
+                        RemindersCell(configuration: .init(
+                            systemImageName: "calendar",
+                            title: "Setup Plan",
+                            description: "Description",
+                            action: { withAnimation { showsSetupPlanSheet.toggle() } },
+                            dismissAction: { withAnimation { showsSetupPlanCell.toggle() } } )
+                        )
+                        .matchedTransitionSource(id: "animation", in: animationNamespace)
                     }
                 }, header: {
                     if [showsSetupPlanCell].contains(true) {
@@ -89,10 +91,20 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
         // MARK: Navigation
         .sheet(isPresented: $showsSetupPlanSheet, content: {
             NavigationStack {
-                TreatmentPlanView(treatmentPlanRepository: viewModel.dependencies.treatmentPlanRepository,
-                                  hormoneLevelManager: viewModel.dependencies.hormoneLevelManager)
-                .navigationTitle("Setup Plan")
+                SelectTreatmentPlan(activePlan: nil,
+                                    treatmentRepository: viewModel.dependencies.treatmentPlanRepository,
+                                    treatmentPlanStore: .init(wrappedValue: .shared))
+                .toolbar {
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button {
+                            showsSetupPlanSheet.toggle()
+                        } label: {
+                            Label("close", systemImage: "xmark")
+                        }
+                    }
+                }
             }
+            .navigationTransition(.zoom(sourceID: "animation", in: animationNamespace))
         })
         .navigationTitle(.navigationTitle)
     }
