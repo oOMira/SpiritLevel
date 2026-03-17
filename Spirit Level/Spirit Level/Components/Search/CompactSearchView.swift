@@ -1,13 +1,22 @@
 import SwiftUI
 
-struct CompactSearchView<AppStateManagerType: AppStateManageable,
+typealias CompactSearchDependencies = HasAppStateManager
+
+struct CompactSearchView<Dependencies: CompactSearchDependencies,
                          SearchResultsManagerType: SearchResultsManageable>: View {
     
     @State private var navigationManager = NavigationManager()
     
-    let appStateManager: AppStateManagerType
-    let searchHistoryManager: SearchHistoryManager<AppStateManagerType>
+    let dependencies: Dependencies
+    
+    let searchHistoryManager: SearchHistoryManager<Dependencies.AppStateManagerType>
     let searchResultsManager: SearchResultsManagerType
+    
+    init(dependencies: Dependencies, searchResultsManager: SearchResultsManagerType) {
+        self.dependencies = dependencies
+        self.searchHistoryManager = .init(appStateManager: dependencies.appStateManager)
+        self.searchResultsManager = searchResultsManager
+    }
     
     var body: some View {
         NavigationStack(path: $navigationManager.path) {

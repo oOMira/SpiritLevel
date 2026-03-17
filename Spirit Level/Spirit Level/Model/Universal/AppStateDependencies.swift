@@ -1,13 +1,12 @@
 import Foundation
 
-typealias AppDependenciesProtocol = HasAppStateManager & HasAppStartRepository & HasSearchResultsManager & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
+typealias AppDependenciesProtocol = HasAppStateManager & HasAppStartRepository  & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
 
 // MARK: - Implementation
 
 @Observable
 final class AppDependencies<AppStateManagerType: AppStateManageable,
                             AppStartRepositoryType: AppStartManageable,
-                            SearchResultsManagerType: SearchResultsManageable,
                             InjectionRepositoryType: InjectionManageable,
                             LabResultsRepositoryType: LabResultsManageable,
                             TreatmentPlanRepositoryType: TreatmentPlanManageable,
@@ -15,7 +14,6 @@ final class AppDependencies<AppStateManagerType: AppStateManageable,
     
     var appStateManager: AppStateManagerType
     var appStartRepository: AppStartRepositoryType
-    var searchResultsManager: SearchResultsManagerType
     var injectionRepository: InjectionRepositoryType
     var labResultsRepository: LabResultsRepositoryType
     var treatmentPlanRepository: TreatmentPlanRepositoryType
@@ -23,14 +21,12 @@ final class AppDependencies<AppStateManagerType: AppStateManageable,
     
     init(appStateManager: AppStateManagerType,
          appStartRepository: AppStartRepositoryType,
-         searchResultsManager: SearchResultsManagerType,
          injectionRepository: InjectionRepositoryType,
          labResultsRepository: LabResultsRepositoryType,
          treatmentPlanRepository: TreatmentPlanRepositoryType,
          hormoneLevelManager: HormoneLevelManagerType) {
         self.appStateManager = appStateManager
         self.appStartRepository = appStartRepository
-        self.searchResultsManager = searchResultsManager
         self.injectionRepository = injectionRepository
         self.labResultsRepository = labResultsRepository
         self.treatmentPlanRepository = treatmentPlanRepository

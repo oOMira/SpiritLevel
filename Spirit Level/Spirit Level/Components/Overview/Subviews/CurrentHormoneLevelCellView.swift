@@ -3,8 +3,36 @@ import Charts
 
 typealias CurrentHormoneLevelCellDependencies = HasInjectionRepository & HasHormoneLevelManager
 
+@Observable
 final class CurrentHormoneLevelCellViewModel<Dependencies: CurrentHormoneLevelCellDependencies> {
     var dependencies: Dependencies
+    
+    var appStartDate: Date = Date()
+    
+    var hasInjections: Bool {
+        !dependencies.injectionRepository.allItems.isEmpty
+    }
+    
+    var values: [(x: Date, y: Double)] {
+        ClosedRange.xDomain.compactMap { day -> (x: Date, y: Double)? in
+            let injections = dependencies.injectionRepository.allItems.filter { $0.date.start <= appStartDate }
+            guard !injections.isEmpty else { return nil }
+            let date = Calendar.current.date(byAdding: .day, value: day, to: appStartDate) ?? appStartDate
+            let level = dependencies.hormoneLevelManager.levelForInjections(injections, at: date)
+            return (x: date, y: level)
+        }
+    }
+    
+    var xDomain: ClosedRange<Date> {
+        let minX = ClosedRange.xDomain.lowerBound.addDaysToDate(appStartDate)
+        let maxX = ClosedRange.xDomain.upperBound.addDaysToDate(appStartDate)
+        return (minX...maxX)
+    }
+    
+    var yDomain: ClosedRange<Double> {
+        let dataMax = values.map(\.y).max() ?? 100
+        return 0...(dataMax + 100)
+    }
     
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -20,28 +48,9 @@ struct CurrentHormoneLevelCellView<Dependencies: CurrentHormoneLevelCellDependen
     init(viewModel: CurrentHormoneLevelCellViewModel<Dependencies>) {
         self.viewModel = viewModel
     }
-    
-    // TODO: clean up, move to outside of body to help with perfromance, fully test voice over
+
     var body: some View {
-        let injections = viewModel.dependencies.injectionRepository.allItems.filter { $0.date.start <= appData.appStartDate.start }
-        
-        // TODO: finde better default values
-        let maxX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.upperBound, to: appData.appStartDate) ?? .init()
-        let minX = Calendar.current.date(byAdding: .day, value: ClosedRange.xDomain.lowerBound, to: appData.appStartDate) ?? .init()
-        
-        let values: [(x: Date, y: Double)] = ClosedRange.xDomain.compactMap { day -> (x: Date, y: Double)? in
-            guard !injections.isEmpty else { return nil }
-            let date = Calendar.current.date(byAdding: .day, value: day, to: appData.appStartDate) ?? appData.appStartDate
-            let level = viewModel.dependencies.hormoneLevelManager.levelForInjections(injections, at: date)
-            return (x: date, y: level)
-        }
-        
-        var yDomain: ClosedRange<Double> {
-            let dataMax = values.map(\.y).max() ?? 100
-            return 0...(dataMax + 100)
-        }
-        
-        Chart(values.enumerated(), id: \.offset) {
+        Chart(viewModel.values.enumerated(), id: \.offset) {
             LineMark(
                 x: .value("Date", $1.x),
                 y: .value("Concentration", $1.y)
@@ -50,23 +59,28 @@ struct CurrentHormoneLevelCellView<Dependencies: CurrentHormoneLevelCellDependen
             .accessibilityLabel("Simulated hormone level")
             .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram  pr milliliter on \($1.x, format: .dateTime.day().month().year())")
         }
-        .chartYScale(domain: yDomain)
-        .chartXScale(domain: minX...maxX)
-        .opacity(injections.isEmpty ? 0.6 : 1.0)
+        .onAppear { viewModel.appStartDate = appData.appStartDate }
+        .onChange(of: appData.appStartDate, { oldValue, newValue in
+            viewModel.appStartDate = newValue
+        })
+        .chartXScale(domain: viewModel.xDomain)
+        .chartYScale(domain: viewModel.yDomain)
+        .opacity(viewModel.hasInjections ? 1.0 : 0.6)
         .accessibilityLabel("Chart showing simulated hormone levels based on logged injections")
         .frame(height: chartHeight)
         .overlay {
-            if injections.isEmpty {
-                VStack {
-                    Text(.noInjectionsTitle)
-                        .font(.headline)
-                    Text(.noInjectionsMessage)
-                        .multilineTextAlignment(.center)
-                }
-                .accessibilityElement(children: .combine)
-            }
+            if !viewModel.hasInjections { emptyOverlay }
         }
-
+    }
+    
+    var emptyOverlay: some View {
+        VStack {
+            Text(.noInjectionsTitle)
+                .font(.headline)
+            Text(.noInjectionsMessage)
+                .multilineTextAlignment(.center)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -82,6 +96,12 @@ struct InjectionPoint: Identifiable {
 
 private extension CGFloat {
     static let chartHeight: Self = 200
+}
+
+private extension Int {
+    func addDaysToDate(_ date: Date) -> Date {
+        Calendar.current.date(byAdding: .day, value: self, to: date) ?? date
+    }
 }
 
 private extension ClosedRange where Bound == Int {

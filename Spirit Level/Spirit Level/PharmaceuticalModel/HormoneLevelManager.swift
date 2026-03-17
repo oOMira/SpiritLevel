@@ -51,15 +51,18 @@ protocol PlannedInjectionsManagable {
     func getPlannedInjectionsList(till date: Date) -> [(date: Date, plan: TreatmentPlan)]
 }
 
+// TODO: Cleanup
 extension PlannedInjectionsManagable {
     func getPlannedInjectionsList(till date: Date) -> [(date: Date, plan: TreatmentPlan)] {
-        let treatmentPlans = dependencies.treatmentPlanRepository.allItems
-        let sortedSelf = treatmentPlans.sorted { $0.firstInjectionDate.start < $1.firstInjectionDate.start }
-        return (0..<treatmentPlans.count).compactMap { index -> [(date: Date, plan: TreatmentPlan)]? in
+        let sortedtreatmentPlans = dependencies.treatmentPlanRepository.allItems
+            .sorted { $0.firstInjectionDate.start < $1.firstInjectionDate.start }
+        
+        return (0..<sortedtreatmentPlans.count).compactMap { index in
             var currentArray = [(date: Date, plan: TreatmentPlan)]()
-            let currentPlan = sortedSelf[index]
+            
+            let currentPlan = sortedtreatmentPlans[index]
             let startDate = currentPlan.firstInjectionDate.start
-            let endDate = sortedSelf.element(at: index + 1)?.firstInjectionDate.start ?? date.start
+            let endDate = sortedtreatmentPlans.element(at: index + 1)?.firstInjectionDate.start ?? date.start
             var currentDate = startDate
             while currentDate <= endDate && currentDate <= date.start {
                 currentArray.append((currentDate, currentPlan))
@@ -70,23 +73,3 @@ extension PlannedInjectionsManagable {
         .flatMap { $0 }
     }
 }
-
-//extension Array where Element: TreatmentPlan {
-//    // TODO: Test performance and provide optimization or async verison if needed
-//    func getPlannedInjectionsList(till date: Date) -> [(date: Date, plan: TreatmentPlan)] {
-//        let sortedSelf = self.sorted { $0.firstInjectionDate.start < $1.firstInjectionDate.start }
-//        return (0..<count).compactMap { index -> [(date: Date, plan: TreatmentPlan)]? in
-//            var currentArray = [(date: Date, plan: TreatmentPlan)]()
-//            let currentPlan = sortedSelf[index]
-//            let startDate = currentPlan.firstInjectionDate.start
-//            let endDate = sortedSelf.element(at: index + 1)?.firstInjectionDate.start ?? date.start
-//            var currentDate = startDate
-//            while currentDate <= endDate && currentDate <= date.start {
-//                currentArray.append((currentDate, currentPlan))
-//                currentDate = Calendar.current.date(byAdding: .day, value: currentPlan.frequency, to: currentDate) ?? .distantFuture
-//            }
-//            return currentArray
-//        }
-//        .flatMap { $0 }
-//    }
-//}

@@ -11,6 +11,35 @@ final class NextInjectionCellViewModel<Dependencies: NextInjectionCellDependenci
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
+    
+    func getNextInjectionDate(till date: Date) -> Date? {
+        let startDate = date.start
+        
+        let latestPlan = dependencies.treatmentPlanRepository.allItems
+            .sorted { $0.firstInjectionDate.start > $1.firstInjectionDate.start }
+            .first
+        
+        guard let latestPlan else { return nil }
+
+        guard latestPlan.firstInjectionDate.start <= startDate else { return latestPlan.firstInjectionDate.start }
+        
+        let lastPlannedDateTillNow = getPlannedInjectionsList(till: date)
+            .sorted { $0.date.start > $1.date.start }
+            .first
+        
+        let lastInjection = dependencies.injectionRepository.allItems
+            .sorted { $0.date.start > $1.date.start }
+            .first
+                    
+        guard let lastPlannedDateTillNow else { return startDate }
+        guard let lastInjectionDate = lastInjection?.date.start else { return latestPlan.firstInjectionDate.start }
+        guard let nextInjectionDate = Calendar.current.date(byAdding: .day,
+                                                            value: latestPlan.frequency,
+                                                            to: lastPlannedDateTillNow.date.start) else { return startDate }
+        
+        let loggedLastInjection = lastPlannedDateTillNow.date.start <= lastInjectionDate
+        return loggedLastInjection ? nextInjectionDate : lastPlannedDateTillNow.date
+    }
 }
 
 // MARK: - View
@@ -27,8 +56,7 @@ struct NextInjectionCellView<Dependencies: NextInjectionCellDependencies>: View 
     }
     
     var body: some View {
-        let injectionDate = getNextInjectionDate(till: appData.appStartDate)
-        if let injectionDate = injectionDate {
+        if let injectionDate = viewModel.getNextInjectionDate(till: appData.appStartDate) {
             HStack(spacing: 16) {
                 Image(systemName: "calendar")
                     .resizable()
@@ -54,20 +82,6 @@ struct NextInjectionCellView<Dependencies: NextInjectionCellDependencies>: View 
             .accessibilityElement(children: .combine)
             .padding()
         }
-    }
-}
-
-// MARK: - Helper
-
-private extension NextInjectionCellView {
-    // TODO: Untested and not readable
-    func getNextInjectionDate(till date: Date) -> Date? {
-        let sortedPlans = viewModel.dependencies.treatmentPlanRepository.allItems.sorted { $0.firstInjectionDate.start > $1.firstInjectionDate.start }
-        guard let latestPlan = sortedPlans.first else { return nil }
-        guard latestPlan.firstInjectionDate.start < date.start else { return latestPlan.firstInjectionDate.start }
-        let lastPlannedDateTillNow = viewModel.getPlannedInjectionsList(till: appData.appStartDate).sorted { $0.date.start > $1.date.start }.first?.date ?? date.start
-        guard let latestInjectionDate = viewModel.dependencies.injectionRepository.allItems.sorted(by: { $0.date.start > $1.date.start }).first?.date else { return latestPlan.firstInjectionDate.start }
-        return (latestInjectionDate < lastPlannedDateTillNow) ? lastPlannedDateTillNow : Calendar.current.date(byAdding: .day, value: latestPlan.frequency, to: lastPlannedDateTillNow.start) ?? date.start
     }
 }
 

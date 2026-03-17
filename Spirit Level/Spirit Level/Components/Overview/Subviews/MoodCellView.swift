@@ -66,13 +66,12 @@ struct MoodCellView<Dependencies: MoodCellDependencies>: View {
     }
     
     var mood: Mood {
-        .unclear
-//        let isFalling = hormoneManager.isLevelFalling(injections: injectionRepository.allItems, date: .now) ?? false
-//        if injectionRepository.allItems.isEmpty {
-//            return .unclear
-//        } else {
-//            return  isFalling ? .sad : .happy
-//        }
+        let isFalling = viewModel.dependencies.hormoneLevelManager.isLevelFalling(injections: viewModel.dependencies.injectionRepository.allItems, date: .now) ?? false
+        if viewModel.dependencies.injectionRepository.allItems.isEmpty {
+            return .unclear
+        } else {
+            return  isFalling ? .sad : .happy
+        }
     }
 }
 

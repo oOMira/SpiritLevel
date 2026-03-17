@@ -48,6 +48,10 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable>: View {
             .listRowSeparator(.hidden)
             .listRowInsets(.vertical, 0)
         }
+        
+        Section("All Features") {
+            Text("All Items")
+        }
     }
 }
 

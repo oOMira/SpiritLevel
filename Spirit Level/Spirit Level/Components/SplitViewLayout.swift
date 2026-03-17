@@ -1,8 +1,10 @@
 import SwiftUI
 
-struct SplitViewLayout<DependenciesType: AppDependenciesProtocol>: View {
+struct SplitViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
     
     @Bindable var dependencies: DependenciesType
+    
+    var searchManager: SearchManagerType
     
     @State private var activeSheet: ShortcutFeature? = nil
     
@@ -30,25 +32,17 @@ struct SplitViewLayout<DependenciesType: AppDependenciesProtocol>: View {
             }
         } detail: {
             if dependencies.appStateManager.selectedTab == -1 {
-                CompactSearchView(appStateManager: dependencies.appStateManager,
-                                  searchHistoryManager: .init(appStateManager: dependencies.appStateManager),
-                                  searchResultsManager: dependencies.searchResultsManager)
+                CompactSearchView(dependencies: dependencies,
+                                  searchResultsManager: searchManager)
             } else {
                 let selectedAppArea = enumeratedAppAreas[dependencies.appStateManager.selectedTab].element
                 switch selectedAppArea {
                 case .overview:
                     OverviewContentView(dependencies: dependencies)
                 case .statistics:
-                    StatisticsView(injectionRepository: dependencies.injectionRepository,
-                                   labResultsRepository: dependencies.labResultsRepository,
-                                   hormoneLevelManager: dependencies.hormoneLevelManager)
+                    StatisticsView(dependencies: dependencies)
                 case .settings:
-                    SettingsView(appStartRepository: dependencies.appStartRepository,
-                                 appStateRepository: dependencies.appStateManager,
-                                 injectionRepository: dependencies.injectionRepository,
-                                 labResultsRepository: dependencies.labResultsRepository,
-                                 treatmentPlanRepository: dependencies.treatmentPlanRepository,
-                                 hormoneLevelManager: dependencies.hormoneLevelManager)
+                    SettingsView(dependencies: dependencies)
                 }
             }
         }

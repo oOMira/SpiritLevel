@@ -2,6 +2,7 @@ import SwiftUI
 
 typealias AchievementsViewDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
 
+@Observable
 final class AchievementsViewModel<Dependencies: AchievementsViewDependencies>: AchievementsManageable {
     var dependencies: Dependencies
     
@@ -50,6 +51,7 @@ struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
                     }
                     .fontWeight(isDone ? .bold : .regular)
                 }
+                .animation(.easeInOut, value: isDone)
                 .accessibilityElement(children: .combine)
                 .accessibilityValue(isDone ? "Completed" : "Not completed")
             }

@@ -17,7 +17,6 @@ struct MyApp: App {
     
     let appDependencies: AppDependencies<AppStateRepository,
                                          AppStartRepository,
-                                         SearchResultsManager,
                                          InjectionRepository,
                                          LabResultsRepository,
                                          TreatmentPlanRepository,
@@ -41,23 +40,16 @@ struct MyApp: App {
         
         let hormoneLevelManager: HormoneLevelManager = .init()
         
-        let defaultItems = SearchResultsManager.getDefaultItems(
-            appStateManager: appStateRepository,
-            appStartRepository: appStartRepository,
-            injectionRepository: injectionRepository,
-            labResultsRepository: labResultsRepository,
-            treatmentPlanRepository: treatmentPlanRepository,
-            hormoneManager: hormoneLevelManager
-        )
-        self.searchResultsManager = SearchResultsManager(items: defaultItems)
         Self.logFirstAppStart(in: appStartRepository)
-        self.appDependencies = .init(appStateManager: appStateRepository,
-                                     appStartRepository: appStartRepository,
-                                     searchResultsManager: searchResultsManager,
-                                     injectionRepository: injectionRepository,
-                                     labResultsRepository: labResultsRepository,
-                                     treatmentPlanRepository: treatmentPlanRepository,
-                                     hormoneLevelManager: hormoneLevelManager)
+        let appDependencies = AppDependencies(appStateManager: appStateRepository,
+                                              appStartRepository: appStartRepository,
+                                              injectionRepository: injectionRepository,
+                                              labResultsRepository: labResultsRepository,
+                                              treatmentPlanRepository: treatmentPlanRepository,
+                                              hormoneLevelManager: hormoneLevelManager)
+        let defaultItems = SearchResultsManager.getDefaultItems(dependencies: appDependencies)
+        self.searchResultsManager = SearchResultsManager(items: defaultItems)
+        self.appDependencies = appDependencies
     }
     
     static func logFirstAppStart(in repository: AppStartManageable) {

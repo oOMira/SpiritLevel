@@ -36,27 +36,15 @@ final class SearchResultsManager: SearchResultsManageable {
 }
 
 extension SearchResultsManager {
+    typealias SearchResultsDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
+    
     @MainActor
-    static func getDefaultItems(appStateManager: AppStateRepository,
-                                appStartRepository: AppStartRepository,
-                                injectionRepository: InjectionRepository,
-                                labResultsRepository: LabResultsRepository,
-                                treatmentPlanRepository: TreatmentPlanRepository,
-                                hormoneManager: HormoneLevelManager) -> [SearchItem] {
+    static func getDefaultItems<Dependencies: SearchResultsDependencies>(dependencies: Dependencies) -> [SearchItem] {
         [
-            AppArea.getSearchItems(appStateManager: appStateManager,
-                                   appStartRepository: appStartRepository,
-                                   injectionRepository: injectionRepository,
-                                   labResultsRepository: labResultsRepository,
-                                   treatmentPlanRepository: treatmentPlanRepository,
-                                   hormoneManager: hormoneManager),
-            OverviewFeature.getSearchItems(hormoneManager: hormoneManager,
-                                           injectionRepository: injectionRepository,
-                                           treatmentPlanRepository: treatmentPlanRepository),
-            StatisticsFeature.getSearchItems(injectionRepository: injectionRepository,
-                                             labResultsRepository: labResultsRepository,
-                                             hormoneLevelManager: hormoneManager),
-            SettingsFeature.getSearchItems(treatmentPlanRepository: treatmentPlanRepository)
+            OverviewFeature.getSearchItems(dependencies: dependencies),
+            AppArea.getSearchItems(dependencies: dependencies),
+            StatisticsFeature.getSearchItems(dependencies: dependencies),
+            SettingsFeature.getSearchItems(dependencies: dependencies)
         ].flatMap { $0 }
     }
 }

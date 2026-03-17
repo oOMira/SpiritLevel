@@ -1,8 +1,9 @@
 import SwiftUI
 
-struct TabViewLayout<DependenciesType: AppDependenciesProtocol>: View {
+struct TabViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
     
     @Bindable var dependencies: DependenciesType
+    var searchResultsManager: SearchManagerType
     
     var body: some View {
         TabView(selection: $dependencies.appStateManager.selectedTab) {
@@ -14,21 +15,14 @@ struct TabViewLayout<DependenciesType: AppDependenciesProtocol>: View {
                     NavigationStack {
                         switch area {
                         case .overview: Overview(dependencies: dependencies)
-                        case .statistics: StatisticsView(injectionRepository: dependencies.injectionRepository,
-                                                         labResultsRepository: dependencies.labResultsRepository,
-                                                         hormoneLevelManager: dependencies.hormoneLevelManager)
-                        case .settings: SettingsView(appStartRepository: dependencies.appStartRepository,
-                                                     appStateRepository: dependencies.appStateManager,
-                                                     injectionRepository: dependencies.injectionRepository,
-                                                     labResultsRepository: dependencies.labResultsRepository,
-                                                     treatmentPlanRepository: dependencies.treatmentPlanRepository,
-                                                     hormoneLevelManager: dependencies.hormoneLevelManager)
+                        case .statistics: StatisticsView(dependencies: dependencies)
+                        case .settings: SettingsView(dependencies: dependencies)
                         }
                     }
                 }
             }
             Tab(.searchTitle, systemImage: .magnifyingglass, value: -1, role: .search) {
-                SearchView(dependencies: dependencies)
+                SearchView(dependencies: dependencies, searchManager: searchResultsManager)
             }
         }
     }

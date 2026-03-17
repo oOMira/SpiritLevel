@@ -2,6 +2,7 @@ import SwiftUI
 
 typealias AchievementsCellDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
 
+@Observable
 final class AchievementsCellViewModel<Dependencies: AchievementsCellDependencies>: AchievementsManageable {
     var dependencies: Dependencies
     
@@ -75,6 +76,7 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
             }
             .grayscale(isDone ? 0.0 : 1.0)
             .contentShape(.accessibility, roundedRectangle)
+            .animation(.easeInOut(duration: 0.5), value: isDone)
     }
     
     private func accessibilityDescriptionAction(achievement: Achievement, isDone: Bool) {

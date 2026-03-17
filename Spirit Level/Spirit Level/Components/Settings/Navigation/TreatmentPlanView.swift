@@ -1,5 +1,7 @@
 import SwiftUI
 
+typealias TreatmentPlanDependencies = HasTreatmentPlanRepository & HasHormoneLevelManager
+
 @Observable
 class TreatmentPlanStore {
     static let shared = TreatmentPlanStore()
@@ -16,23 +18,20 @@ struct TreatmentPlanConfiguration: Hashable {
     var visible: Bool
 }
 
-struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                         HormoneLevelManagerType: HormoneLevelManageable>: View {
+struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     private let historyAnimation = "historyAnimation"
 
     @Namespace var animationNamespace
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var showsTreatmentPlanHistory: Bool = false
     
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
+    let dependencies: Dependencies
     
     @Bindable private var store: TreatmentPlanStore
-    var activeTreatmentPlan: TreatmentPlan? { treatmentPlanRepository.latest }
+    var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.latest }
     
-    init(treatmentPlanRepository: TreatmentPlanRepositoryType, hormoneLevelManager: HormoneLevelManagerType, store: TreatmentPlanStore = .shared) {
-        self.treatmentPlanRepository = treatmentPlanRepository
-        self.hormoneLevelManager = hormoneLevelManager
+    init(dependencies: Dependencies, store: TreatmentPlanStore = .shared) {
+        self.dependencies = dependencies
         self.store = store
     }
     
@@ -41,7 +40,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             Section {
                 NavigationLink(destination: {
                     SelectTreatmentPlan(activePlan: activeTreatmentPlan,
-                                        treatmentRepository: treatmentPlanRepository,
+                                        treatmentRepository: dependencies.treatmentPlanRepository,
                                         treatmentPlanStore: $store)
                 }, label: {
                     if let activeTreatmentPlan {
@@ -61,7 +60,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
                     }
                 }
                 .pickerStyle(.segmented)
-                TreatmentPlanCellSimulationView(hormoneManager: hormoneLevelManager,
+                TreatmentPlanCellSimulationView(hormoneManager: dependencies.hormoneLevelManager,
                                                 store: store,
                                                 simulationStyle: simulationStyle)
                 ForEach(store.planConfigurations.enumerated(), id: \.element) { index, element in
@@ -97,7 +96,7 @@ struct TreatmentPlanView<TreatmentPlanRepositoryType: TreatmentPlanManageable,
             })
         }
         .sheet(isPresented: $showsTreatmentPlanHistory, content: {
-            TreatmentPlanHistory(treatmentPlanRepository: treatmentPlanRepository)
+            TreatmentPlanHistory(treatmentPlanRepository: dependencies.treatmentPlanRepository)
                 .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
         })
     }

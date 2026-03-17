@@ -1,29 +1,33 @@
 import SwiftUI
 
-struct SettingsView<AppStartRepositoryType: AppStartManageable,
-                    AppStateRepositoryType: AppStateManageable,
-                    InjectionRepositoryType: InjectionManageable,
-                    LabResultsRepositoryType: LabResultsManageable,
-                    TreatmentPlanRepositoryType: TreatmentPlanManageable,
-                    HormoneLevelManagerType: HormoneLevelManageable>: View {
+// MARK: - View
+
+struct SettingsView<Dependencies: SettingsDependencies>: View {
+    
+    let dependencies: Dependencies
+    
+    var body: some View {
+        SettingsContentView(dependencies: dependencies)
+    }
+}
+
+struct SettingsContentView<Dependencies: SettingsDependencies>: View {
     @Environment(\.dismiss) private var dismiss
     
+    @Bindable private var viewModel: SettingsContentViewModel<Dependencies>
     @State private var isShowingSheet: Bool = false
     
-    let appStartRepository: AppStartRepositoryType
-    let appStateRepository: AppStateRepositoryType
-    let injectionRepository: InjectionRepositoryType
-    let labResultsRepository: LabResultsRepositoryType
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    let hormoneLevelManager: HormoneLevelManagerType
+    init(dependencies: Dependencies) {
+        self.viewModel = .init(dependencies: dependencies)
+    }
     
     var body: some View {
         List {
             Section {
                 NavigationLink {
-                    TreatmentPlanView(treatmentPlanRepository: treatmentPlanRepository, hormoneLevelManager: hormoneLevelManager)
+                    TreatmentPlanView(dependencies: viewModel.dependencies)
                 } label: {
-                    TreatmentPlanCellView(treatmentPlanRepository: treatmentPlanRepository)
+                    TreatmentPlanCellView(treatmentPlanRepository: viewModel.dependencies.treatmentPlanRepository)
                 }
             }
             
@@ -54,11 +58,7 @@ struct SettingsView<AppStartRepositoryType: AppStartManageable,
         }
         .navigationTitle(.settingsNavigationTitle)
         .sheet(isPresented: $isShowingSheet) {
-            DeleteSheet(appStartRepository: appStartRepository,
-                        appStateRepository: appStateRepository,
-                        injectionsRepository: injectionRepository,
-                        treatmentPlanRepository: treatmentPlanRepository,
-                        labResultsReportRepository: labResultsRepository)
+            DeleteSheet(dependencies: viewModel.dependencies)
         }
     }
 }
