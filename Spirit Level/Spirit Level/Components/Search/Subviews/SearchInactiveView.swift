@@ -4,7 +4,7 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable,
                           SearchManagerType: SearchResultsManageable>: View {
     @State var expanded: Bool = true
     
-    @Environment(NavigationManager.self) var navigationManager: NavigationManager
+    @Binding var path: NavigationPath
     @Binding var activeSheet: ShortcutFeature?
     var appStateManager: AppStateManagerType
     var searchManager: SearchManagerType
@@ -18,7 +18,7 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable,
             VStack(spacing: 12) {
                 ForEach(navigationItems) { item in
                     SearchSuggestionCellView(appArea: item, pressed: {
-                        navigationManager.path.append(item)
+                        path.append(item)
                     })
                     .buttonStyle(.plain)
                     .contentShape(.accessibility, .rect)
@@ -92,32 +92,34 @@ private extension Int {
 
 #Preview("Light Mode") {
     @Previewable @State var activeSheet: ShortcutFeature?
+    @Previewable @State var path = NavigationPath()
     let deps = Mocks.appDependencies
     let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
     List {
-        SearchInactiveView(activeSheet: $activeSheet,
+        SearchInactiveView(path: $path,
+                           activeSheet: $activeSheet,
                            appStateManager: deps.appStateManager,
                            searchManager: searchManager,
                            navigationItems: AppArea.allCases,
                            actionItems: ShortcutFeature.allCases)
     }
     .listStyle(.plain)
-    .environment(NavigationManager())
     .preferredColorScheme(.light)
 }
 
 #Preview("Dark Mode") {
     @Previewable @State var activeSheet: ShortcutFeature?
+    @Previewable @State var path = NavigationPath()
     let deps = Mocks.appDependencies
     let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
     List {
-        SearchInactiveView(activeSheet: $activeSheet,
+        SearchInactiveView(path: $path,
+                           activeSheet: $activeSheet,
                            appStateManager: deps.appStateManager,
                            searchManager: searchManager,
                            navigationItems: AppArea.allCases,
                            actionItems: ShortcutFeature.allCases)
     }
     .listStyle(.plain)
-    .environment(NavigationManager())
     .preferredColorScheme(.dark)
 }

@@ -51,7 +51,7 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
     private func achievementCell(_ achievement: Achievement) -> some View {
         let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
         
-        return achievement.image
+        return (achievement.image ?? SystemImage.photo.image)
             .resizable()
             .scaledToFit()
             .containerRelativeFrame(.horizontal) { containerSize, _ in

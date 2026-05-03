@@ -1,0 +1,47 @@
+{
+  "configurations" : [
+    {
+      "id" : "0914FA0D-A79A-429A-B365-F779EE0184CC",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Spirit Level.xcodeproj",
+          "identifier" : "FA771C292F567FE20071AC25",
+          "name" : "Spirit Level"
+        }
+      ]
+    },
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Spirit Level.xcodeproj",
+      "identifier" : "FA771C292F567FE20071AC25",
+      "name" : "Spirit Level"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Spirit Level.xcodeproj",
+        "identifier" : "FA771C422F567FE30071AC25",
+        "name" : "Spirit LevelUITests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Spirit Level.xcodeproj",
+        "identifier" : "FA771C382F567FE30071AC25",
+        "name" : "Spirit LevelTests"
+      }
+    }
+  ],
+  "version" : 1
+}

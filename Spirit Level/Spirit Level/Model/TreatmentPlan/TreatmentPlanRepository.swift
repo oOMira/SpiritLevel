@@ -2,7 +2,8 @@ import Foundation
 import SwiftData
 
 protocol TreatmentPlanManageable: Repository where ItemType == TreatmentPlan {
-    var latest: ItemType? { get }
+    func getLatest(till date: Date) -> ItemType?
+    func getLatest() -> ItemType?
 }
 
 protocol HasTreatmentPlanRepository: AnyObject, Observable {
@@ -18,8 +19,14 @@ final class TreatmentPlanRepository: TreatmentPlanManageable, SwiftDataManageabl
     var modelContext: ModelContext
     var allItems: [TreatmentPlan] = []
     
-    var latest: TreatmentPlan? {
-        allItems.max(by: { $0.firstInjectionDate < $1.firstInjectionDate })
+    func getLatest(till date: Date) -> TreatmentPlan? {
+        allItems
+            .filter { $0.firstInjectionDate <= date }
+            .max(by: { $0.firstInjectionDate < $1.firstInjectionDate })
+    }
+    
+    func getLatest() -> TreatmentPlan? {
+        getLatest(till: .now)
     }
     
     init(modelContext: ModelContext) {

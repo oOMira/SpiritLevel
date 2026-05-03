@@ -18,7 +18,7 @@ final class OverviewContentViewModel<Dependencies: OverviewDependencies> {
 
         self.reminders = [
             TreatmentPlanReminderConfiguration(
-                showsCell: dependencies.treatmentPlanRepository.latest == nil,
+                showsCell: dependencies.treatmentPlanRepository.getLatest() == nil,
                 action: { [weak self] configuration in
                     self?.visibleReminder = configuration
                 })

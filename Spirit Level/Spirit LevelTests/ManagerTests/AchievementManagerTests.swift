@@ -2,8 +2,8 @@ import Testing
 import Foundation
 @testable import Spirit_Level
 
-@MainActor
-struct AchievementManagerTests {
+@Suite("Achievement Manager", .tags(.treatmentPlans, .injections, .labResults))
+@MainActor struct AchievementManagerTests {
 
     // MARK: - General Tests
 
@@ -22,8 +22,8 @@ struct AchievementManagerTests {
         }
         let finishedCount = isDoneArray.count(where: { $0 })
         let unfinishedCount = isDoneArray.count(where: { !$0 })
-        #expect(finishedCount == 1)
-        #expect(unfinishedCount == Achievement.allCases.count - 1)
+        #expect(finishedCount == 1, "Only one achievement should be done on fresh start")
+        #expect(unfinishedCount == Achievement.allCases.count - 1, "All but one achievement should be incomplete on fresh start")
     }
 
     @Test("All achievements completed")
@@ -35,8 +35,8 @@ struct AchievementManagerTests {
         }
         let finishedCount = isDoneArray.count(where: { $0 })
         let unfinishedCount = isDoneArray.count(where: { !$0 })
-        #expect(finishedCount == Achievement.allCases.count)
-        #expect(unfinishedCount == 0)
+        #expect(finishedCount == Achievement.allCases.count, "All achievements should be completed")
+        #expect(unfinishedCount == 0, "No achievement should be incomplete when all are done")
     }
 
     @Test("No achievements completed")
@@ -48,31 +48,27 @@ struct AchievementManagerTests {
         }
         let finishedCount = isDoneArray.count(where: { $0 })
         let unfinishedCount = isDoneArray.count(where: { !$0 })
-        #expect(finishedCount == 0)
-        #expect(unfinishedCount == Achievement.allCases.count)
+        #expect(finishedCount == 0, "No achievement should be completed")
+        #expect(unfinishedCount == Achievement.allCases.count, "All achievements should be incomplete when none are done")
     }
 
     // MARK: - Streak Achievements
 
     // TODO: Update streak to count only once per date
-    @Test("Streak achievement", arguments: [
-        (Achievement.sStreak, 5),
-        (.mStreak, 10),
-        (.lStreak, 25)
-    ])
-    func streakAchievement(_ testCase: (Achievement, Int)) throws {
-        let (achievement, threshold) = testCase
+    @Test("Streak achievement", arguments: StreakArgument.all)
+    func streakAchievement(_ testCase: StreakArgument) throws {
         let now = Date()
-        let notDoneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: threshold - 1))
-        let doneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: threshold))
-        let moreThanDoneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: threshold + 1))
+        let notDoneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: testCase.threshold - 1))
+        let doneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: testCase.threshold))
+        let moreThanDoneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: testCase.threshold + 1))
         
-        #expect(!notDoneManager.isAchievementDone(achievement, date: now))
-        #expect(doneManager.isAchievementDone(achievement, date: now))
-        #expect(moreThanDoneManager.isAchievementDone(achievement, date: now))
+        #expect(!notDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should not be done below threshold")
+        #expect(doneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done at threshold")
+        #expect(moreThanDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done above threshold")
     }
     
-    @Test("Streak achievment - injection not on time") func testStreakInjectionWrongTime() throws {
+    @Test("Streak achievment - injection not on time")
+    func testStreakInjectionWrongTime() throws {
         let now = Date()
         let yesterday = try #require(Calendar.current.date(byAdding: .day, value: -1, to: now)).start
 
@@ -91,10 +87,11 @@ struct AchievementManagerTests {
         let manager = MockAchievementManager(dependencies: dependencies)
         
         let isDone = manager.isAchievementDone(.sStreak, date: now)
-        #expect(!isDone)
+        #expect(!isDone, "Injections streak should not count late injection")
     }
     
-    @Test("Streak achievment - injection without plan") func testStreakInjectionWithoutPlan() {
+    @Test("Streak achievment - injection without plan")
+    func testStreakInjectionWithoutPlan() {
         let now = Date()
         let injections: [Injection] = [.init(ester: .enanthate, dosage: 1.0, date: now)]
         let dependencies = AppDependenciesMock(appStateManager: .init(),
@@ -106,27 +103,20 @@ struct AchievementManagerTests {
         let manager = MockAchievementManager(dependencies: dependencies)
         
         let isDone = manager.isAchievementDone(.sStreak, date: now)
-        #expect(!isDone)
+        #expect(!isDone, "Injections streak should not count without a plan")
     }
 
     // MARK: - Time Achievements
 
-    @Test("Time achievement", arguments: [
-        (Achievement.sTime, 0),
-        (.mTime, -6),
-        (.lTime, -12),
-        (.xlTime, -24)
-    ])
-    func timeAchievement(_ testCase: (Achievement, Int)) throws {
-        let (achievement, threshold) = testCase
+    @Test("Time achievement", arguments: TimeArgument.all)
+    func timeAchievement(_ testCase: TimeArgument) throws {
         let now = Date()
         
-        let thresholdDate = try #require(Calendar.current.date(byAdding: .month, value: threshold, to: now))
+        let thresholdDate = try #require(Calendar.current.date(byAdding: .month, value: testCase.monthsOffset, to: now))
         let notDoneDate = try #require(Calendar.current.date(byAdding: .month, value: 1, to: thresholdDate))
         let notYetDoneDate = try #require(Calendar.current.date(byAdding: .day, value: 1, to: thresholdDate))
         let justDoneDate = try #require(Calendar.current.date(byAdding: .day, value: -1, to: thresholdDate))
         let doneDate = try #require(Calendar.current.date(byAdding: .month, value: -1, to: thresholdDate))
-        
         
         let notDoneManager = MockAchievementManager(dependencies: makeTimeDependencies(appStart: notDoneDate))
         let notYetDoneManager = MockAchievementManager(dependencies: makeTimeDependencies(appStart: notYetDoneDate))
@@ -134,52 +124,95 @@ struct AchievementManagerTests {
         let justDoneManager = MockAchievementManager(dependencies: makeTimeDependencies(appStart: justDoneDate))
         let doneManager = MockAchievementManager(dependencies: makeTimeDependencies(appStart: doneDate))
         
-        #expect(!notDoneManager.isAchievementDone(achievement, date: now))
-        #expect(!notYetDoneManager.isAchievementDone(achievement, date: now))
-        #expect(thresholdManager.isAchievementDone(achievement, date: now))
-        #expect(justDoneManager.isAchievementDone(achievement, date: now))
-        #expect(doneManager.isAchievementDone(achievement, date: now))
+        #expect(!notDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should not be done before threshold")
+        #expect(!notYetDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should not be done one day before threshold")
+        #expect(thresholdManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done at threshold")
+        #expect(justDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done one day after threshold")
+        #expect(doneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done well after threshold")
     }
 
     // MARK: - Injection Count Achievements
 
-    @Test("Injection achievement", arguments: [
-        (Achievement.firstInjection, 1),
-        (.sInjection, 10),
-        (.mInjection, 25),
-        (.lInjection, 50)
-    ])
-    func injectionCountAchievement(_ testCase: (Achievement, Int)) throws {
-        let (achievement, threshold) = testCase
+    @Test("Injection achievement", arguments: InjectionArgument.all)
+    func injectionCountAchievement(_ testCase: InjectionArgument) throws {
         let now = Date()
 
-        let notDoneManager = MockAchievementManager(dependencies: makeInjectionDependencies(count: threshold - 1))
-        let doneManager = MockAchievementManager(dependencies: makeInjectionDependencies(count: threshold))
-        let moreThanDoneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: threshold + 1))
+        let notDoneManager = MockAchievementManager(dependencies: makeInjectionDependencies(count: testCase.threshold - 1))
+        let doneManager = MockAchievementManager(dependencies: makeInjectionDependencies(count: testCase.threshold))
+        let moreThanDoneManager = MockAchievementManager(dependencies: try makeStreakDependencies(onTimeCount: testCase.threshold + 1))
         
-        #expect(!notDoneManager.isAchievementDone(achievement, date: now))
-        #expect(doneManager.isAchievementDone(achievement, date: now))
-        #expect(moreThanDoneManager.isAchievementDone(achievement, date: now))
+        #expect(!notDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should not be done below threshold")
+        #expect(doneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done at threshold")
+        #expect(moreThanDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done above threshold")
     }
 
     // MARK: - Lab Result Achievements
 
-    @Test("Lab result achievement", arguments: [
-        (Achievement.firstLab, 1),
-        (.sLab, 5),
-        (.mLab, 10),
-        (.lLab, 15)
-    ])
-    func labResultAchievement(_ testCase: (Achievement, Int)) throws {
-        let (achievement, threshold) = testCase
+    @Test("Lab result achievement", arguments: LabResultArgument.all)
+    func labResultAchievement(_ testCase: LabResultArgument) throws {
         let now = Date()
-        let notDoneManager = MockAchievementManager(dependencies: makeLabDependencies(count: threshold - 1))
-        let doneManager = MockAchievementManager(dependencies: makeLabDependencies(count: threshold))
-        let moreThanDoneManager = MockAchievementManager(dependencies: makeLabDependencies(count: threshold + 1))
+        let notDoneManager = MockAchievementManager(dependencies: makeLabDependencies(count: testCase.threshold - 1))
+        let doneManager = MockAchievementManager(dependencies: makeLabDependencies(count: testCase.threshold))
+        let moreThanDoneManager = MockAchievementManager(dependencies: makeLabDependencies(count: testCase.threshold + 1))
         
-        #expect(!notDoneManager.isAchievementDone(achievement, date: now))
-        #expect(doneManager.isAchievementDone(achievement, date: now))
-        #expect(moreThanDoneManager.isAchievementDone(achievement, date: now))
+        #expect(!notDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should not be done below threshold")
+        #expect(doneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done at threshold")
+        #expect(moreThanDoneManager.isAchievementDone(testCase.achievement, date: now), "\(testCase.achievement) should be done above threshold")
+    }
+}
+
+// MARK: - Test Arguments
+
+extension AchievementManagerTests {
+    struct StreakArgument: CustomTestStringConvertible, Sendable {
+        let achievement: Achievement
+        let threshold: Int
+        var testDescription: String { "\(achievement)" }
+
+        static let all: [StreakArgument] = [
+            .init(achievement: .sStreak, threshold: 5),
+            .init(achievement: .mStreak, threshold: 10),
+            .init(achievement: .lStreak, threshold: 25)
+        ]
+    }
+
+    struct TimeArgument: CustomTestStringConvertible, Sendable {
+        let achievement: Achievement
+        let monthsOffset: Int
+        var testDescription: String { "\(achievement)" }
+
+        static let all: [TimeArgument] = [
+            .init(achievement: .sTime, monthsOffset: 0),
+            .init(achievement: .mTime, monthsOffset: -6),
+            .init(achievement: .lTime, monthsOffset: -12),
+            .init(achievement: .xlTime, monthsOffset: -24)
+        ]
+    }
+
+    struct InjectionArgument: CustomTestStringConvertible, Sendable {
+        let achievement: Achievement
+        let threshold: Int
+        var testDescription: String { "\(achievement)" }
+
+        static let all: [InjectionArgument] = [
+            .init(achievement: .firstInjection, threshold: 1),
+            .init(achievement: .sInjection, threshold: 10),
+            .init(achievement: .mInjection, threshold: 25),
+            .init(achievement: .lInjection, threshold: 50)
+        ]
+    }
+
+    struct LabResultArgument: CustomTestStringConvertible, Sendable {
+        let achievement: Achievement
+        let threshold: Int
+        var testDescription: String { "\(achievement)" }
+
+        static let all: [LabResultArgument] = [
+            .init(achievement: .firstLab, threshold: 1),
+            .init(achievement: .sLab, threshold: 5),
+            .init(achievement: .mLab, threshold: 10),
+            .init(achievement: .lLab, threshold: 15)
+        ]
     }
 }
 

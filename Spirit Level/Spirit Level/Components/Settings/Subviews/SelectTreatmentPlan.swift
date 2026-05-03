@@ -60,7 +60,7 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
             }
             Section {
                 Button(action: {
-                    if let latest = treatmentRepository.latest, latest.firstInjectionDate >= Calendar.current.startOfDay(for: .now) {
+                    if let latest = treatmentRepository.getLatest(), latest.firstInjectionDate >= Calendar.current.startOfDay(for: .now) {
                         do {
                             try treatmentRepository.delete(item: latest)
                         } catch {

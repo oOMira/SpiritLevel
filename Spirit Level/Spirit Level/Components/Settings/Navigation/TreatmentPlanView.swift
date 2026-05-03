@@ -29,7 +29,7 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     let dependencies: Dependencies
     
     @Bindable private var store: TreatmentPlanStore
-    var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.latest }
+    var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.getLatest() }
     
     init(dependencies: Dependencies, store: TreatmentPlanStore = .shared) {
         self.dependencies = dependencies

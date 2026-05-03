@@ -27,7 +27,7 @@ struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
             ForEach(Achievement.allCases) { achievement in
                 let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
                 HStack {
-                    achievement.image
+                    (achievement.image ?? SystemImage.photo.image)
                         .resizable()
                         .scaledToFit()
                         .clipShape(RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous))
@@ -64,7 +64,7 @@ struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
 // MARK: - Helper
 
 extension AchievementsView {
-    func getImageOpacity(isDone: Bool) ->  Double {
+    private func getImageOpacity(isDone: Bool) ->  Double {
         if accessibilityDifferentiateWithoutColor {
             return .mediumOpacity
         } else {
@@ -72,7 +72,7 @@ extension AchievementsView {
         }
     }
     
-    func achievementRotor(done: Bool) -> some AccessibilityRotorContent {
+    private func achievementRotor(done: Bool) -> some AccessibilityRotorContent {
         ForEach(Achievement.allCases) { achievement in
             if viewModel.isAchievementDone(achievement, date: appData.appStartDate) == done {
                 AccessibilityRotorEntry(achievement.name, id: achievement.id)
@@ -80,7 +80,7 @@ extension AchievementsView {
         }
     }
     
-    func getAccessibilityOverlay(isDone: Bool) -> some View {
+    private func getAccessibilityOverlay(isDone: Bool) -> some View {
         Image(systemName: isDone ? .systemImage.checkmarkCircle.name : .systemImage.xCircle.name)
             .resizable()
             .scaledToFit()

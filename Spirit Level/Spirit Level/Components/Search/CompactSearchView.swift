@@ -5,7 +5,7 @@ typealias CompactSearchDependencies = HasAppStateManager
 struct CompactSearchView<Dependencies: CompactSearchDependencies,
                          SearchResultsManagerType: SearchResultsManageable>: View {
     
-    @State private var navigationManager = NavigationManager()
+    @State private var path = NavigationPath()
     
     let dependencies: Dependencies
     
@@ -19,7 +19,7 @@ struct CompactSearchView<Dependencies: CompactSearchDependencies,
     }
     
     var body: some View {
-        NavigationStack(path: $navigationManager.path) {
+        NavigationStack(path: $path) {
             List {
                 SearchActiveView(searchHistoryManager: searchHistoryManager,
                                  searchManager: searchResultsManager)
@@ -43,7 +43,6 @@ struct CompactSearchView<Dependencies: CompactSearchDependencies,
             }
             .selectedSearchItemDestination()
         }
-        .environment(navigationManager)
     }
 }
 

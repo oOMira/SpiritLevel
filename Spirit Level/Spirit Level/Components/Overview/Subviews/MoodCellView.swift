@@ -14,15 +14,15 @@ final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
     }
 
     func getMood(at date: Date) -> Mood {
-        let frequency = dependencies.treatmentPlanRepository.latest?.frequency
+        let frequency = dependencies.treatmentPlanRepository.getLatest()?.frequency
         guard let lastInjection = dependencies.injectionRepository.last,
               let nextInjection = Calendar.current.date(byAdding: .day,
                                                         value: frequency ?? lastInjection.ester.defaultRhythm,
-                                                        to: lastInjection.date) else { return .unclear }
+                                                        to: lastInjection.date.start) else { return .unclear }
 
         let tMax = lastInjection.ester.configuration.tMax * 24 * 60 * 60
         
-        let injectionDate = lastInjection.date
+        let injectionDate = lastInjection.date.start
         let risingMid = injectionDate.addingTimeInterval(tMax / 2)
         let peak = injectionDate.addingTimeInterval(tMax)
         let fallingMid = peak.addingTimeInterval(nextInjection.timeIntervalSince(peak) / 2)
@@ -44,32 +44,43 @@ final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
         default: .unclear
         }
     }
+    
+    func getLottiRresourceName(for mood: Mood) -> String {
+        switch mood {
+        case .happy: "smilecat"
+        case .sad: "cryingcat"
+        case .unclear: "smileycat"
+        case .pouting: "poutingcat"
+        case .confident: "heartcat"
+        case .unsure: "smileycat"
+        }
+    }
 }
 
 // MARK: - View
 
 struct MoodCellView<Dependencies: MoodCellDependencies>: View {
+    @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var moodSize: CGFloat = 200
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     @State private var playing: Bool = false
     
-    let viewModel: MoodCellViewModel<Dependencies>
-    let date: Date = .now
-    
+    var viewModel: MoodCellViewModel<Dependencies>
+
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
     }
 
     var body: some View {
-        let currentMood = viewModel.getMood(at: date)
+        let mood = viewModel.getMood(at: appData.appStartDate)
         return VStack(alignment: .center) {
-            LottieView(animation: .named(currentMood.resourceName))
+            LottieView(animation: .named(viewModel.getLottiRresourceName(for: mood)))
                 .playbackMode(lottiePlaybackMode)
                 .animationDidFinish { _ in
                     if reduceMotion { playing = false }
                 }
                 .reloadAnimationTrigger(playing, showPlaceholder: false)
-                .grayscale(currentMood == .unclear ? 1 : 0)
+                .grayscale(mood == .unclear ? 1 : 0)
                 .shadow(radius: 2)
                 .onTapGesture {
                     if reduceMotion { playing = true }
@@ -80,7 +91,7 @@ struct MoodCellView<Dependencies: MoodCellDependencies>: View {
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isImage)
-        .accessibilityLabel("Emoji style image of a cat in a \(currentMood.rawValue) mood")
+        .accessibilityLabel("Emoji style image of a cat in a \(mood.rawValue) mood")
     }
     
     // MARK: - Helper
@@ -94,21 +105,6 @@ struct MoodCellView<Dependencies: MoodCellDependencies>: View {
             }
         } else {
             .playing(.fromProgress(0, toProgress: 1, loopMode: .loop))
-        }
-    }
-}
-
-// MARK: - Mood+Helper
-
-private extension Mood {
-    var resourceName: String {
-        switch self {
-        case .happy: "smilecat"
-        case .sad: "cryingcat"
-        case .unclear: "smileycat"
-        case .pouting: "poutingcat"
-        case .confident: "heartcat"
-        case .unsure: "smileycat"
         }
     }
 }
