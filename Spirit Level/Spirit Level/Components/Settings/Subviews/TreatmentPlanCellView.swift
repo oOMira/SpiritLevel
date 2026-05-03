@@ -4,7 +4,7 @@ struct TreatmentPlanCellView<TreatmentPlanRepositoryType: TreatmentPlanManageabl
     let treatmentPlanRepository: TreatmentPlanRepositoryType
     
     var body: some View {
-        if let treatmentPlan = treatmentPlanRepository.latest {
+        if let treatmentPlan = treatmentPlanRepository.getLatest() {
             let treatmentPlanDescription = "\(treatmentPlan.dosage.formatted(.number.precision(.fractionLength(1)))) mg \(treatmentPlan.ester.shortName) every \(treatmentPlan.frequency) days"
             HStack {
                 Image(systemName: .planIcon)

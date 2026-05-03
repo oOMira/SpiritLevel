@@ -8,8 +8,14 @@ class TreatmentPlanMock: TreatmentPlanManageable {
 
     var allItems: [TreatmentPlan]
 
-    var latest: TreatmentPlan? {
-        allItems.max(by: { $0.firstInjectionDate < $1.firstInjectionDate })
+    func getLatest(till date: Date) -> TreatmentPlan? {
+        allItems
+            .filter { $0.firstInjectionDate.start <= date.start }
+            .max(by: { $0.firstInjectionDate.start < $1.firstInjectionDate.start })
+    }
+
+    func getLatest() -> TreatmentPlan? {
+        getLatest(till: .now)
     }
 
     func add(item: TreatmentPlan) throws {

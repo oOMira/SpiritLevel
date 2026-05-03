@@ -1,0 +1,42 @@
+{
+  "configurations" : [
+    {
+      "id" : "9B1D7774-107C-4354-BE8C-E8DB4334A465",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Spirit Level.xcodeproj",
+          "identifier" : "FA771C292F567FE20071AC25",
+          "name" : "Spirit Level"
+        }
+      ]
+    },
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "skippedTags" : {
+        "mode" : "or",
+        "tags" : [
+          ".swiftData",
+          ".resources",
+          ".userDefaults"
+        ]
+      },
+      "target" : {
+        "containerPath" : "container:Spirit Level.xcodeproj",
+        "identifier" : "FA771C382F567FE30071AC25",
+        "name" : "Spirit LevelTests"
+      }
+    }
+  ],
+  "version" : 2
+}

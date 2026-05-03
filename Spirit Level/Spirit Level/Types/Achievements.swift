@@ -21,11 +21,9 @@ enum Achievement: String, Identifiable, CaseIterable {
 }
 
 extension Achievement {
-    var image: Image {
-        if let uiImage = UIImage(named: imageName, in: .main, with: nil) {
-            return Image(uiImage: uiImage)
-        }
-        return Image(systemName: "photo")
+    var image: Image? {
+        guard let uiImage = UIImage(named: imageName, in: .main, with: nil) else { return nil }
+        return Image(uiImage: uiImage)
     }
 
     var imageName: String {

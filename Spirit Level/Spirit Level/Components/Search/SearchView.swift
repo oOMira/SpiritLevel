@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
 
-    @State private var navManager = NavigationManager()
+    @State private var path = NavigationPath()
     
     let dependencies: DependenciesType
     var searchManager: SearchManagerType
@@ -11,13 +11,14 @@ struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: 
     @State private var isSearching: Bool = false
 
     var body: some View {
-        NavigationStack(path: $navManager.path) {
+        NavigationStack(path: $path) {
             List {
                 if isSearching {
                     SearchActiveView(searchHistoryManager: .init(appStateManager: dependencies.appStateManager),
                                      searchManager: searchManager)
                 } else {
-                    SearchInactiveView(activeSheet: $activeSheet,
+                    SearchInactiveView(path: $path,
+                                       activeSheet: $activeSheet,
                                        appStateManager: dependencies.appStateManager,
                                        searchManager: searchManager,
                                        navigationItems: AppArea.allCases,
@@ -55,7 +56,6 @@ struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: 
             }
             .selectedSearchItemDestination()
         }
-        .environment(navManager)
     }
 }
 
