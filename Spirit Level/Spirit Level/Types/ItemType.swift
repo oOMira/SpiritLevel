@@ -4,4 +4,3 @@ enum ItemType {
     case navigation
     case content
 }
-

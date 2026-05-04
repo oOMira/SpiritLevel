@@ -12,7 +12,3 @@ extension SystemImage {
     var image: Image { .init(systemName: rawValue) }
     var name: String { rawValue }
 }
-        
-extension String {
-    typealias systemImage = SystemImage
-}

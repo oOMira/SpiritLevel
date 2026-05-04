@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct TreatmentPlanHistory<TreatmentPlanRepositoryType: TreatmentPlanManageable>: View {
+struct TreatmentPlanHistory<TreatmentPlanRepo: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
+    let treatmentPlanRepository: TreatmentPlanRepo
     @State private var showDeleteFailedAlert = false
     @State private var editMode: EditMode = .inactive
-    
+
     var body: some View {
         let allItems = treatmentPlanRepository.allItems
         NavigationStack {
@@ -17,8 +17,17 @@ struct TreatmentPlanHistory<TreatmentPlanRepositoryType: TreatmentPlanManageable
                         VStack(alignment: .leading, spacing: 4) {
                             Text(item.name)
                                 .font(.headline)
-                            Text(String(format: "%.1f mg %@ every %d days", item.dosage, item.ester.name, item.frequency))
-                            Text("First injection on \(item.firstInjectionDate, format: .dateTime.day().month().year())")
+                            Text(
+                                String(
+                                    format: "%.1f mg %@ every %d days",
+                                    item.dosage,
+                                    item.ester.name,
+                                    item.frequency
+                                )
+                            )
+                            Text(
+                                "First injection on \(item.firstInjectionDate, format: .dateTime.day().month().year())"
+                            )
                         }
                         .accessibilityElement(children: .combine)
                     }
@@ -41,21 +50,21 @@ struct TreatmentPlanHistory<TreatmentPlanRepositoryType: TreatmentPlanManageable
                         EditButton()
                     }
                 }
-                
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         dismiss()
                     }, label: {
                         Label(.closeButtonTitle, systemImage: .xMarkImage)
                     })
-                    
+
                 }
             }
-            .alert(.deleteFailedAlertTitle, isPresented: $showDeleteFailedAlert, actions: {
+            .alert(.deleteFailedAlertTitle, isPresented: $showDeleteFailedAlert) {
                 Button("OK", role: .cancel) { showDeleteFailedAlert.toggle() }
-            }, message: {
+            } message: {
                 Text(.deleteFailedAlertMessage)
-            })
+            }
             .environment(\.editMode, $editMode)
             .onChange(of: allItems.isEmpty) { _, newValue in
                 guard editMode.isEditing == true, newValue else { return }
@@ -75,7 +84,8 @@ private extension LocalizedStringResource {
     static let closeButtonTitle: Self = "Close"
     static let navigationBarTitle: Self = "History"
     static let deleteFailedAlertTitle: Self = "Failed to delete"
-    static let deleteFailedAlertMessage: Self = "An error occurred while trying to delete the treatment plan. Please try again later."
+    static let deleteFailedAlertMessage: Self =
+        "An error occurred while trying to delete the treatment plan. Please try again later."
 }
 
 // MARK: - Previews

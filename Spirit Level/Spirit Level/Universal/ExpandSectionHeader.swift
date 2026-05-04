@@ -3,7 +3,7 @@ import SwiftUI
 struct ExpandableSectionHeader: View {
     let title: LocalizedStringResource
     @Binding var expanded: Bool
-    
+
     var body: some View {
         Button(action: {
             withAnimation { expanded.toggle() }
@@ -17,7 +17,7 @@ struct ExpandableSectionHeader: View {
             }
         })
         .accessibilityValue(expanded ? "expanded" : "collapsed")
-        .accessibilityHint("Double tap to toggle")
+        .accessibilityHint("Double-tap to toggle.")
         .buttonStyle(.plain)
     }
 }

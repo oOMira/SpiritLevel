@@ -1,14 +1,14 @@
 import SwiftUI
 import OSLog
 
-struct LogInjectionView<InjectionRepositoryType: InjectionManageable>: View {
+struct LogInjectionView<InjectionRepo: InjectionManageable>: View {
     @Environment(\.dismiss) private var dismiss
     @State private var dose: Double = 5
     @State private var injectionDate: Date = Date()
     @State private var selectedEster: Ester = .enanthate
     @State private var showsSavingErrorAlert: Bool = false
-    
-    let injectionRepository: InjectionRepositoryType
+
+    let injectionRepository: InjectionRepo
 
     var body: some View {
         NavigationStack {
@@ -20,11 +20,11 @@ struct LogInjectionView<InjectionRepositoryType: InjectionManageable>: View {
                         }
                     }
                     .accessibilityElement(children: .combine)
-                    
+
                     AccessibleDosagePicker(dosage: $dose)
                     AccessibleDatePicker(title: "Injection Date", selectedDate: $injectionDate)
                 }
-                
+
                 Section {
                     Button(action: {
                         do {
@@ -41,7 +41,7 @@ struct LogInjectionView<InjectionRepositoryType: InjectionManageable>: View {
                             .frame(maxWidth: .infinity)
                     })
                 }
-                
+
             }
             .alert("Error Saving Data", isPresented: $showsSavingErrorAlert) {
                 Button("OK", role: .cancel) { showsSavingErrorAlert.toggle() }

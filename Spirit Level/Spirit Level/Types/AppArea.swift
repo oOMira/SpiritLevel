@@ -4,7 +4,7 @@ enum AppArea: String, CaseIterable, SearchableItem {
     case overview
     case statistics
     case settings
-    
+
     var itemType: ItemType { .navigation }
 
     var label: LocalizedStringResource {
@@ -14,7 +14,7 @@ enum AppArea: String, CaseIterable, SearchableItem {
         case .settings: "Settings"
         }
     }
-    
+
     var systemImageName: String {
         switch self {
         case .overview: "house"

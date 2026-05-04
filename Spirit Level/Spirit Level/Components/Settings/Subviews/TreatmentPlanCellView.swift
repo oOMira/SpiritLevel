@@ -1,11 +1,15 @@
 import SwiftUI
 
-struct TreatmentPlanCellView<TreatmentPlanRepositoryType: TreatmentPlanManageable>: View {
-    let treatmentPlanRepository: TreatmentPlanRepositoryType
-    
+struct TreatmentPlanCellView<TreatmentPlanRepo: TreatmentPlanManageable>: View {
+    let treatmentPlanRepository: TreatmentPlanRepo
+
     var body: some View {
         if let treatmentPlan = treatmentPlanRepository.getLatest() {
-            let treatmentPlanDescription = "\(treatmentPlan.dosage.formatted(.number.precision(.fractionLength(1)))) mg \(treatmentPlan.ester.shortName) every \(treatmentPlan.frequency) days"
+            let doseDescription = treatmentPlan.dosage.formatted(
+                .number.precision(.fractionLength(1))
+            )
+            let treatmentPlanDescription =
+                "\(doseDescription) mg \(treatmentPlan.ester.shortName) every \(treatmentPlan.frequency) days"
             HStack {
                 Image(systemName: .planIcon)
                     .font(.title2)
@@ -22,12 +26,12 @@ struct TreatmentPlanCellView<TreatmentPlanRepositoryType: TreatmentPlanManageabl
             .accessibilityElement(children: .combine)
             .accessibilityLabel(.treatmentPlanTitle)
             .accessibilityValue(treatmentPlanDescription)
-            .accessibilityHint("selected treatment plan, double tap to configure")
+            .accessibilityHint("Selected treatment plan. Double-tap to configure.")
         } else {
             TreatmentPlanMissingView()
         }
     }
-    
+
 }
 
 private extension TreatmentPlanCellView {

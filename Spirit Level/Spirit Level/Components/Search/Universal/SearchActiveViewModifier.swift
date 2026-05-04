@@ -3,9 +3,9 @@ import SwiftUI
 // MARK: - ViewModifier
 
 struct SearchActiveViewModifier {
-    
+
     // MARK: SearchItem
-    
+
     struct SearchItemSelected: ViewModifier {
         func body(content: Content) -> some View {
             content

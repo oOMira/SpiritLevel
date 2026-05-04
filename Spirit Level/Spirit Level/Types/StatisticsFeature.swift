@@ -4,9 +4,9 @@ enum StatisticsFeature: String, CaseIterable, SearchableItem {
     case chart
     case injections
     case labResults
-    
+
     var itemType: ItemType { .content }
-    
+
     var label: LocalizedStringResource {
         switch self {
         case .chart: "Hormone Level Chart"
@@ -14,7 +14,7 @@ enum StatisticsFeature: String, CaseIterable, SearchableItem {
         case .labResults: "Lab Results"
         }
     }
-    
+
     var systemImageName: String {
         switch self {
         case .chart: "chart.line.uptrend.xyaxis"

@@ -1,19 +1,24 @@
 import SwiftUI
 import OSLog
 
-typealias DeleteSheetDependencies = HasAppStartRepository & HasAppStateManager & HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository
+typealias DeleteSheetDependencies =
+    HasAppStartRepository &
+    HasAppStateManager &
+    HasInjectionRepository &
+    HasTreatmentPlanRepository &
+    HasLabResultsRepository
 
 struct DeleteSheet<Dependencies: DeleteSheetDependencies>: View {
-    
+
     @Environment(\.dismiss) private var dismiss
     @State private var showsDeleteErrorAlert: Bool = false
-    
+
     @State private var deleteFirstStart: Bool = false
     @State private var deleteAppConfiguration: Bool = false
     @State private var deleteAppLogData: Bool = false
-    
+
     let dependencies: Dependencies
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -22,17 +27,17 @@ struct DeleteSheet<Dependencies: DeleteSheetDependencies>: View {
                         DeleteElement(title: .deleteAppStart,
                                       description: .deleteAppStartDescription,
                                       isOn: $deleteFirstStart)
-                        
+
                         DeleteElement(title: .deleteAppConfiguration,
                                       description: .deleteAppConfigurationDescription,
                                       isOn: $deleteAppConfiguration)
-                        
+
                         DeleteElement(title: .deleteDataTitle,
                                       description: .deleteDataDescription,
                                       isOn: $deleteAppLogData)
                     }
                     .accessibilityElement(children: .contain)
-                    
+
                     Button(action: {
                         deleteButtonPressed()
                     }, label: {
@@ -64,7 +69,7 @@ struct DeleteSheet<Dependencies: DeleteSheetDependencies>: View {
             }
         }
     }
-    
+
     private func deleteButtonPressed() {
         var shouldDismiss = true
         if deleteFirstStart { dependencies.appStartRepository.firstAppStart = nil }
@@ -75,7 +80,7 @@ struct DeleteSheet<Dependencies: DeleteSheetDependencies>: View {
         }
         if deleteAppLogData {
             do {
-                // deleteAll() called in single lines to enable better debugging
+                // Call `deleteAll()` on separate lines to make debugging easier.
                 try dependencies.injectionRepository.deleteAll()
                 try dependencies.treatmentPlanRepository.deleteAll()
                 try dependencies.labResultsRepository.deleteAll()
@@ -93,18 +98,28 @@ struct DeleteSheet<Dependencies: DeleteSheetDependencies>: View {
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let deleteErrorMessage: Self = "There was an issue deleting the data. Please try again later."
+    static let deleteErrorMessage: Self =
+        "There was an issue deleting the data. Please try again later."
     static let deleteErrorTitle: Self = "Error Deleting Data"
     static let okButtonTitle: Self = "OK"
-    static let deleteAppStart: Self = "Delete First App Start"
-    static let deleteAppStartDescription: Self = "This will delete the date of the first app start. This information is only relevant for achievements"
+    static let deleteAppStart: Self = "Delete First Launch Date"
+    static let deleteAppStartDescription: Self =
+        "This will delete the date of the first app launch. This information is only relevant for achievements."
     static let deleteAppConfiguration: Self = "Delete App Data"
-    static let deleteAppConfigurationDescription: Self = "This will delete things like closed or expanded sections and other small things that are not critical for the app to work but make the experience more personal."
+    static let deleteAppConfigurationDescription: Self =
+        """
+        This will delete things like closed or expanded sections and other small things that are not \
+        critical for the app to work but make the experience more personal.
+        """
     static let deleteDataTitle: Self = "Delete Data"
     static let deleteButtonTitle: Self = "Delete"
     static let closeLabelTitle: Self = "Close"
     static let deleteDataNavigationTitle: Self = "Delete Data"
-    static let deleteDataDescription: Self = "This will delete all logged data like injections, lab results other things that you have logged in the app."
+    static let deleteDataDescription: Self =
+        """
+        This will delete all logged data, including injections, lab results, and other \
+        items you have logged in the app.
+        """
 }
 
 private extension String {

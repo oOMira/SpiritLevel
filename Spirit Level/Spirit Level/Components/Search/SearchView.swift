@@ -3,10 +3,10 @@ import SwiftUI
 struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
 
     @State private var path = NavigationPath()
-    
+
     let dependencies: DependenciesType
     var searchManager: SearchManagerType
-    
+
     @State private var activeSheet: ShortcutFeature?
     @State private var isSearching: Bool = false
 
@@ -42,7 +42,8 @@ struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: 
             )
             .autocorrectionDisabled(true)
             .onSubmit(of: .search) {
-                SearchHistoryManager(appStateManager: dependencies.appStateManager).addToHistory(searchManager.searchText)
+                SearchHistoryManager(appStateManager: dependencies.appStateManager)
+                    .addToHistory(searchManager.searchText)
             }
             .activeSheetDestination(activeSheet: $activeSheet,
                                     injectionRepository: dependencies.injectionRepository,
@@ -63,7 +64,7 @@ struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: 
 
 private extension View {
     func activeSheetDestination<T: InjectionManageable, U: LabResultsManageable>(
-        activeSheet: Binding<ShortcutFeature?>, 
+        activeSheet: Binding<ShortcutFeature?>,
         injectionRepository: T,
         labResultsRepository: U
     ) -> some View {
@@ -73,7 +74,6 @@ private extension View {
             activeSheet: activeSheet))
     }
 }
-
 
 // MARK: - Constants
 

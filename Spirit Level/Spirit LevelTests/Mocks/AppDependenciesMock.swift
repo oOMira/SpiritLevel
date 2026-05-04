@@ -13,13 +13,13 @@ extension AppDependenciesMock {
         )
     }
 
-    static var tone: AppDependenciesMock {
+    static var many: AppDependenciesMock {
         .init(
             appStateManager: .init(),
             appStartRepository: .existing,
-            injectionRepository: .tone,
-            labResultsRepository: .tone,
-            treatmentPlanRepository: .tone,
+            injectionRepository: .many,
+            labResultsRepository: .many,
+            treatmentPlanRepository: .many,
             hormoneLevelManager: HormoneLevelManager()
         )
     }

@@ -27,7 +27,7 @@ extension LabResultsMock {
         return .init(allItems: [item])
     }
 
-    static var tone: LabResultsMock {
+    static var many: LabResultsMock {
         let date = Date()
         let items = (0...50).map {
             LabResult(concentration: CGFloat($0) * 10.0, date: date)

@@ -1,11 +1,15 @@
 import SwiftUI
 
-typealias AchievementsViewDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository
+typealias AchievementsViewDependencies =
+    HasInjectionRepository &
+    HasTreatmentPlanRepository &
+    HasLabResultsRepository &
+    HasAppStartRepository
 
 @Observable
 final class AchievementsViewModel<Dependencies: AchievementsViewDependencies>: AchievementsManageable {
     var dependencies: Dependencies
-    
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -15,13 +19,13 @@ struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = .baseChartHeight
-    
+
     let viewModel: AchievementsViewModel<Dependencies>
-    
+
     init(viewModel: AchievementsViewModel<Dependencies>) {
         self.viewModel = viewModel
     }
-                                              
+
     var body: some View {
         List {
             ForEach(Achievement.allCases) { achievement in
@@ -64,14 +68,14 @@ struct AchievementsView<Dependencies: AchievementsViewDependencies>: View {
 // MARK: - Helper
 
 extension AchievementsView {
-    private func getImageOpacity(isDone: Bool) ->  Double {
+    private func getImageOpacity(isDone: Bool) -> Double {
         if accessibilityDifferentiateWithoutColor {
             return .mediumOpacity
         } else {
             return isDone ? .highOpacity : .mediumOpacity
         }
     }
-    
+
     private func achievementRotor(done: Bool) -> some AccessibilityRotorContent {
         ForEach(Achievement.allCases) { achievement in
             if viewModel.isAchievementDone(achievement, date: appData.appStartDate) == done {
@@ -79,9 +83,9 @@ extension AchievementsView {
             }
         }
     }
-    
+
     private func getAccessibilityOverlay(isDone: Bool) -> some View {
-        Image(systemName: isDone ? .systemImage.checkmarkCircle.name : .systemImage.xCircle.name)
+        Image(systemName: isDone ? SystemImage.checkmarkCircle.name : SystemImage.xCircle.name)
             .resizable()
             .scaledToFit()
             .frame(maxWidth: .infinity, alignment: .center)
@@ -111,9 +115,9 @@ extension Double {
 private extension LocalizedStringResource {
     static let navigationTitle: Self = "Achievements"
     static let completedAccessibilityRotor: Self = "Completed achievements"
-    static let incompletedAccessibilityRotor: Self = "Not completed achievements"
+    static let incompletedAccessibilityRotor: Self = "Incomplete achievements"
     static let completed: Self = "Completed"
-    static let incompleted: Self = "Not completed"
+    static let incompleted: Self = "Incomplete"
 }
 
 // MARK: - Previews

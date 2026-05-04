@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AcknowledgementView: View {
+struct AcknowledgmentView: View {
     private let configuration: Configuration
 
     init(acknowledgment: Acknowledgment) {
@@ -16,7 +16,7 @@ struct AcknowledgementView: View {
                     Text(configuration.copyrightText)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Text(configuration.licenceText)
+                    Text(configuration.licenseText)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Link(destination: configuration.sourceLink) {
@@ -27,9 +27,9 @@ struct AcknowledgementView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityElement(children: .combine)
-                
+
                 Divider()
-                
+
                 Text(configuration.fullText)
                     .font(.system(.caption, design: .monospaced))
                     .contentShape(.accessibility, RoundedRectangle(cornerRadius: 8))
@@ -38,34 +38,35 @@ struct AcknowledgementView: View {
             .padding(.horizontal)
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Acknowledgement")
+        .navigationTitle("Acknowledgment")
     }
 }
 
-extension AcknowledgementView {
+extension AcknowledgmentView {
     struct Configuration: Identifiable {
         let id = UUID()
         let name: String
         let copyrightText: String
-        let licenceText: String
+        let licenseText: String
         let sourceLink: URL
-        let fullLicenceURL: URL
+        let fullLicenseURL: URL
         let fullText: String
 
         init(name: String,
              copyrightText: String,
-             licenceText: String,
-             licenceLink: URL,
-             fullLicenceURL: URL) {
+             licenseText: String,
+             licenseLink: URL,
+             fullLicenseURL: URL) {
             self.name = name
             self.copyrightText = copyrightText
-            self.licenceText = licenceText
-            self.sourceLink = licenceLink
-            self.fullLicenceURL = fullLicenceURL
+            self.licenseText = licenseText
+            self.sourceLink = licenseLink
+            self.fullLicenseURL = fullLicenseURL
             do {
-                self.fullText = try String(contentsOf: fullLicenceURL, encoding: .utf8)
+                self.fullText = try String(contentsOf: fullLicenseURL, encoding: .utf8)
             } catch {
-                self.fullText = "Could not resolve \(fullLicenceURL.absoluteString). Check out directly for more information."
+                self.fullText =
+                    "Could not open \(fullLicenseURL.absoluteString). View it directly for more information."
             }
         }
     }
@@ -76,14 +77,14 @@ extension AcknowledgementView {
 #if DEBUG
 #Preview("Light Mode") {
     NavigationStack {
-        AcknowledgementView(acknowledgment: .lottie)
+        AcknowledgmentView(acknowledgment: .lottie)
     }
     .preferredColorScheme(.light)
 }
 
 #Preview("Dark Mode") {
     NavigationStack {
-        AcknowledgementView(acknowledgment: .lottie)
+        AcknowledgmentView(acknowledgment: .lottie)
     }
     .preferredColorScheme(.dark)
 }

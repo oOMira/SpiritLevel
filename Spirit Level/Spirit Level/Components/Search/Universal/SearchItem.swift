@@ -9,11 +9,10 @@ enum SearchItem {
 
 // MARK: - SearchItem+SearchableItem
 
-// TODO: fix raw values
 extension SearchItem: SearchableItem {
     init?(rawValue: String) { nil }
     var rawValue: String { feature.rawValue }
-    
+
     var configuration: any NavigationConfigurationProvidable {
         switch self {
         case let .navigation(configuration): configuration
@@ -22,7 +21,7 @@ extension SearchItem: SearchableItem {
         case let .settings(configuration): configuration
         }
     }
-    
+
     var feature: any SearchableItem { configuration.feature }
 
     var itemType: ItemType { feature.itemType }
@@ -43,7 +42,7 @@ protocol NavigationConfigurationProvidable {
 struct NavigationConfiguration<FeatureType: SearchableItem>: NavigationConfigurationProvidable {
     let feature: FeatureType
     private let destination: () -> AnyView
-    
+
     init<V: View>(feature: FeatureType, @ViewBuilder destination: @escaping () -> V) {
         var embedInList: Bool {
             switch feature.itemType {
@@ -64,7 +63,7 @@ struct NavigationConfiguration<FeatureType: SearchableItem>: NavigationConfigura
             }
         }
     }
-    
+
     @ViewBuilder
     func getDestination() -> AnyView {
         destination()

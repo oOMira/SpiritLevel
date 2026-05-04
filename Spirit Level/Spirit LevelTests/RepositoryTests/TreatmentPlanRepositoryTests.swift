@@ -7,16 +7,16 @@ import SwiftData
 @MainActor
 struct TreatmentPlanRepositoryTests: ModelContextMockable {
     let repo = TreatmentPlanRepository(modelContext: Self.getMockModelContext(for: TreatmentPlan.self))
-    
+
     @Test("No treatment plan set up")
     func testEmpty() async throws {
         #expect(repo.allItems.count == 0, "TreatmentPlanRepository should return no treatment plans when empty")
     }
 
-    @Test("Setup treatment plan")
+    @Test("Set up treatment plan")
     func testAddTreatmentPlan() async throws {
         let name = "treatmentPlan"
-        let ester =  Ester.valerate
+        let ester = Ester.valerate
         let frequency = 3
         let dosage = 3.0
         let date = Date()
@@ -34,7 +34,7 @@ struct TreatmentPlanRepositoryTests: ModelContextMockable {
         #expect(repo.allItems.first?.firstInjectionDate == date, "TreatmentPlanRepository should return set first injection date after add")
     }
 
-    @Test("Setup many treatment plans")
+    @Test("Set up many treatment plans")
     func testAddManyTreatmentPlans() throws {
         let firstStoredDate = Date.now
         let secondStoredDate = try #require(Calendar.current.date(byAdding: .day, value: -1, to: firstStoredDate))

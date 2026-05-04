@@ -12,8 +12,8 @@ extension InjectionManageable {
 }
 
 protocol HasInjectionRepository: AnyObject, Observable {
-    associatedtype InjectionRepositoryType: InjectionManageable
-    var injectionRepository: InjectionRepositoryType { get set }
+    associatedtype InjectionRepo: InjectionManageable
+    var injectionRepository: InjectionRepo { get set }
 }
 
 // MARK: - InjectionRepository
@@ -23,13 +23,13 @@ final class InjectionRepository: InjectionManageable, SwiftDataManageable {
     var observationTask: Task<Void, Never>?
     var modelContext: ModelContext
     var allItems: [Injection] = []
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         observeModelContext()
         refresh()
     }
-    
+
     @MainActor deinit { observationTask?.cancel() }
 }
 

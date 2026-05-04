@@ -2,10 +2,10 @@ import SwiftUI
 
 struct SearchSuggestionCellView: View {
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-    
+
     let appArea: AppArea
     let pressed: () -> Void
-    
+
     var body: some View {
         Button(action: {
             pressed()
@@ -23,7 +23,11 @@ struct SearchSuggestionCellView: View {
             }
             .background(
                 RoundedRectangle(cornerRadius: .cornerRadius, style: .continuous)
-                    .fill(appArea.accentColor.opacity(.backgroundOpacity(increasedContrast:colorSchemeContrast == .increased)))
+                    .fill(
+                        appArea.accentColor.opacity(
+                            .backgroundOpacity(increasedContrast: colorSchemeContrast == .increased)
+                        )
+                    )
             )
         })
     }

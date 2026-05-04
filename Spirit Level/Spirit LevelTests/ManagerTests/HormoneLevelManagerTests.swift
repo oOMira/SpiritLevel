@@ -5,5 +5,5 @@ import Foundation
 @Suite("Hormone Level Manager")
 @MainActor
 struct HormoneLevelManagerTests {
-    
+
 }

@@ -6,9 +6,9 @@ import SwiftData
 @Suite("Lab Results Repository", .tags(.swiftData, .labResults, .repository))
 @MainActor
 struct LabResultsRepositoryTests: ModelContextMockable {
-    
+
     let repo = LabResultsRepository(modelContext: Self.getMockModelContext(for: LabResult.self))
-    
+
     @Test("No lab results logged")
     func testEmpty() async throws {
         #expect(repo.allItems.count == 0, "LabResultsRepository should return no lab results when empty")

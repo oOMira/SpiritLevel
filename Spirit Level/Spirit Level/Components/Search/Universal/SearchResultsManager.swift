@@ -1,7 +1,5 @@
 import SwiftUI
 
-// TODO: Refactor and test
-
 // MARK: - SearchResultsManageable
 
 protocol SearchResultsManageable: AnyObject, Observable {
@@ -20,17 +18,17 @@ protocol HasSearchResultsManager: AnyObject, Observable {
 @Observable
 final class SearchResultsManager: SearchResultsManageable {
     private(set) var items: [SearchItem]
-    
+
     var searchText: String
-    
+
     var filteredItems: [SearchItem] {
         guard !searchText.isEmpty else { return items }
-        
+
         return items.filter {
             String(localized: $0.label).localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     init(items: [SearchItem], searchText: String = "") {
         self.items = items
         self.searchText = searchText
@@ -38,10 +36,18 @@ final class SearchResultsManager: SearchResultsManageable {
 }
 
 extension SearchResultsManager {
-    typealias SearchResultsDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
-    
+    typealias SearchResultsDependencies =
+        HasAppStateManager &
+        HasAppStartRepository &
+        HasInjectionRepository &
+        HasLabResultsRepository &
+        HasTreatmentPlanRepository &
+        HasHormoneLevelManager
+
     @MainActor
-    static func getDefaultItems<Dependencies: SearchResultsDependencies>(dependencies: Dependencies) -> [SearchItem] {
+    static func getDefaultItems<Dependencies: SearchResultsDependencies>(
+        dependencies: Dependencies
+    ) -> [SearchItem] {
         [
             OverviewFeature.getSearchItems(dependencies: dependencies),
             AppArea.getSearchItems(dependencies: dependencies),

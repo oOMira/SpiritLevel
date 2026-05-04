@@ -5,7 +5,7 @@ import Foundation
 @Suite("Trend Tests")
 @MainActor
 struct TrendTests {
-    
+
     @Test("Identifiable")
     func testIdentifiable() {
         let ids = Trend.allCases.map { $0.id }

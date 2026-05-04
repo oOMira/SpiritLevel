@@ -3,9 +3,9 @@ import SwiftUI
 // MARK: - View
 
 struct SettingsView<Dependencies: SettingsDependencies>: View {
-    
+
     let dependencies: Dependencies
-    
+
     var body: some View {
         SettingsContentView(dependencies: dependencies)
     }
@@ -13,14 +13,14 @@ struct SettingsView<Dependencies: SettingsDependencies>: View {
 
 struct SettingsContentView<Dependencies: SettingsDependencies>: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     @Bindable private var viewModel: SettingsContentViewModel<Dependencies>
     @State private var isShowingSheet: Bool = false
-    
+
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
     }
-    
+
     var body: some View {
         List {
             Section {
@@ -30,21 +30,21 @@ struct SettingsContentView<Dependencies: SettingsDependencies>: View {
                     TreatmentPlanCellView(treatmentPlanRepository: viewModel.dependencies.treatmentPlanRepository)
                 }
             }
-            
+
             Section(.supportSectionTitle) {
                 SupportCellView()
             }
-            
+
             Section("Used Resources") {
                 ForEach(Acknowledgment.allCases) { acknowledgment in
                     NavigationLink {
-                        AcknowledgementView(acknowledgment: acknowledgment)
+                        AcknowledgmentView(acknowledgment: acknowledgment)
                     } label: {
                         Text(acknowledgment.navigationTitle)
                     }
                 }
             }
-            
+
             Section {
                 Button {
                     isShowingSheet.toggle()

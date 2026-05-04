@@ -2,16 +2,16 @@ import SwiftUI
 
 enum Trend: String, CaseIterable, Identifiable {
     var id: String { rawValue }
-    
-    case up
-    case down
+
+    case rising
+    case falling
     case stable
     case unclear
-    
+
     var image: Image {
         switch self {
-        case .down: .init(systemName: .downArrow)
-        case .up: .init(systemName: .upArrow)
+        case .falling: .init(systemName: .downArrow)
+        case .rising: .init(systemName: .upArrow)
         case .stable: .init(systemName: .stableArrow)
         case .unclear: .init(systemName: .questionMark)
         }

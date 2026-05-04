@@ -26,9 +26,9 @@
       "skippedTags" : {
         "mode" : "or",
         "tags" : [
-          ".swiftData",
           ".resources",
-          ".userDefaults"
+          ".userDefaults",
+          ".swiftData"
         ]
       },
       "target" : {

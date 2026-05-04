@@ -5,9 +5,9 @@ enum SettingsFeature: String, CaseIterable, SearchableItem {
     case support
     case data
     case deleteData
-    
+
     var itemType: ItemType { .content }
-    
+
     var label: LocalizedStringResource {
         switch self {
         case .plan: "Plan"
@@ -16,7 +16,7 @@ enum SettingsFeature: String, CaseIterable, SearchableItem {
         case .deleteData: "Delete Data"
         }
     }
-    
+
     var systemImageName: String {
         switch self {
         case .plan: "calendar"

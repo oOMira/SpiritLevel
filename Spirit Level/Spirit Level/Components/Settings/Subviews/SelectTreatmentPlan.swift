@@ -1,22 +1,22 @@
 import SwiftUI
 import OSLog
 
-struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: View {
+struct SelectTreatmentPlan<TreatmentPlanRepo: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss
     private let activePlan: TreatmentPlan?
     @State private var currentActivePlan: TreatmentPlan
     @State private var selectedDate: Date = .now
     @State private var showsSavingErrorAlert = false
     @Bindable private var treatmentPlanStore: TreatmentPlanStore
-    
-    let treatmentRepository: TreatmentRepositoryType
-    
+
+    let treatmentRepository: TreatmentPlanRepo
+
     var allTreatmentPlans: [TreatmentPlan] {
         treatmentPlanStore.planConfigurations.compactMap(\.plan)
     }
-    
+
     init(activePlan: TreatmentPlan?,
-         treatmentRepository: TreatmentRepositoryType,
+         treatmentRepository: TreatmentPlanRepo,
          treatmentPlanStore: Bindable<TreatmentPlanStore>) {
         let plans = treatmentPlanStore.wrappedValue.planConfigurations.compactMap(\.plan)
         if let activePlan, let firstPlan = plans.first {
@@ -28,7 +28,7 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
         self.treatmentRepository = treatmentRepository
         self._treatmentPlanStore = treatmentPlanStore
     }
-    
+
     var body: some View {
         List {
             if let activePlanName = activePlan?.name {
@@ -60,7 +60,8 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
             }
             Section {
                 Button(action: {
-                    if let latest = treatmentRepository.getLatest(), latest.firstInjectionDate >= Calendar.current.startOfDay(for: .now) {
+                    if let latest = treatmentRepository.getLatest(),
+                       latest.firstInjectionDate >= Calendar.current.startOfDay(for: .now) {
                         do {
                             try treatmentRepository.delete(item: latest)
                         } catch {
@@ -101,12 +102,12 @@ struct SelectTreatmentPlan<TreatmentRepositoryType: TreatmentPlanManageable>: Vi
 
 private extension LocalizedStringResource {
     static let createNewPlanNavigationTitle: Self = "Create New Plan"
-    static let activePlanTitle: Self = "Current Active Plan"
+    static let activePlanTitle: Self = "Current Plan"
     static let navigationTitle: Self = "Select Plan"
     static let choosePlanSectionTitle: Self = "Choose Plan"
-    static let createOwnPlanLink: Self = "Create own plan"
+    static let createOwnPlanLink: Self = "Create your own plan"
     static let configurationSectionTitle: Self = "Configuration"
-    static let setSelectedButtonTitle: Self = "Set selected"
+    static let setSelectedButtonTitle: Self = "Set Selected"
     static let createOwnPlanNavigationTitle: Self = "Create your own plan"
     static let startSectionTitle: Self = "Start"
     static let firstInjectionDateLabel: Self = "First Injection Date"

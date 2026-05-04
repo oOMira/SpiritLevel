@@ -3,7 +3,7 @@ import SwiftUI
 final class ContentViewModel<Dependencies: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable> {
     var dependencies: Dependencies
     var searchManager: SearchManagerType
-    
+
     init(dependencies: Dependencies, searchManager: SearchManagerType) {
         self.dependencies = dependencies
         self.searchManager = searchManager
@@ -12,21 +12,21 @@ final class ContentViewModel<Dependencies: AppDependenciesProtocol, SearchManage
 
 struct ContentView<DependenciesType: AppDependenciesProtocol,
                    SearchManagerType: SearchResultsManageable>: View {
-    
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let viewModel: ContentViewModel<DependenciesType, SearchManagerType>
-    
+
     init(dependencies: DependenciesType, searchManager: SearchManagerType) {
         self.viewModel = .init(dependencies: dependencies, searchManager: searchManager)
     }
-    
+
     init(dependencies: DependenciesType) where SearchManagerType == SearchResultsManager {
         let defaultItems = SearchResultsManager.getDefaultItems(dependencies: dependencies)
         let searchResultsManager = SearchResultsManager(items: defaultItems)
         self.init(dependencies: dependencies, searchManager: searchResultsManager)
     }
-    
+
     var body: some View {
         if horizontalSizeClass == .compact {
             TabViewLayout(dependencies: viewModel.dependencies, searchResultsManager: viewModel.searchManager)
@@ -35,7 +35,6 @@ struct ContentView<DependenciesType: AppDependenciesProtocol,
         }
     }
 }
-
 
 // MARK: - Constants
 

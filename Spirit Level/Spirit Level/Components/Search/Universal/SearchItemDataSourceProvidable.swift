@@ -3,10 +3,17 @@ import SwiftUI
 // MARK: - AppArea+SearchItems
 
 extension AppArea {
-    typealias GetSearchItemsDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
-    
-    static func getSearchItems<Dependencies: GetSearchItemsDependencies>(dependencies: Dependencies) -> [SearchItem] {
-        
+    typealias GetSearchItemsDependencies =
+        HasAppStateManager &
+        HasAppStartRepository &
+        HasInjectionRepository &
+        HasLabResultsRepository &
+        HasTreatmentPlanRepository &
+        HasHormoneLevelManager
+
+    static func getSearchItems<Dependencies: GetSearchItemsDependencies>(
+        dependencies: Dependencies
+    ) -> [SearchItem] {
         Self.allCases.compactMap { area in
             var configuration: NavigationConfiguration<AppArea>? {
                 switch area {
@@ -26,11 +33,9 @@ extension AppArea {
 
 // MARK: - OverviewFeature+SearchItems
 
-// TODO: - fix search
-
 extension OverviewFeature {
     typealias GetSearchItemsDependencies = HasHormoneLevelManager & HasInjectionRepository & HasTreatmentPlanRepository
-    
+
     @MainActor
     static func getSearchItems<Dependencies: GetSearchItemsDependencies>(dependencies: Dependencies) -> [SearchItem] {
         Self.allCases.compactMap { feature in
@@ -55,7 +60,7 @@ extension OverviewFeature {
 
 extension StatisticsFeature {
     typealias GetSearchItemsDependencies = HasInjectionRepository & HasLabResultsRepository & HasHormoneLevelManager
-    
+
     @MainActor
     static func getSearchItems<Dependencies: GetSearchItemsDependencies>(dependencies: Dependencies) -> [SearchItem] {
         Self.allCases.compactMap { feature in
@@ -63,9 +68,13 @@ extension StatisticsFeature {
                 switch feature {
                 case .chart: return nil
                 case .injections:
-                    return .init(feature: feature) { InjectionsView(injectionRepository: dependencies.injectionRepository) }
+                    return .init(feature: feature) {
+                        InjectionsView(injectionRepository: dependencies.injectionRepository)
+                    }
                 case .labResults:
-                    return .init(feature: feature) { LabResultsView(labResultsRepository: dependencies.labResultsRepository) }
+                    return .init(feature: feature) {
+                        LabResultsView(labResultsRepository: dependencies.labResultsRepository)
+                    }
                 }
             }
             guard let configuration else { return nil }
@@ -78,15 +87,20 @@ extension StatisticsFeature {
 
 extension SettingsFeature {
     typealias GetSearchItemsDependencies = HasTreatmentPlanRepository
-    
-    static func getSearchItems<Dependencies: GetSearchItemsDependencies>(dependencies: Dependencies) -> [SearchItem] {
-        
+
+    static func getSearchItems<Dependencies: GetSearchItemsDependencies>(
+        dependencies: Dependencies
+    ) -> [SearchItem] {
         Self.allCases.compactMap { feature in
             var configuration: NavigationConfiguration<SettingsFeature>? {
                 switch feature {
                 case .deleteData: return nil
                 case .plan:
-                    return .init(feature: feature) { TreatmentPlanCellView(treatmentPlanRepository: dependencies.treatmentPlanRepository) }
+                    return .init(feature: feature) {
+                        TreatmentPlanCellView(
+                            treatmentPlanRepository: dependencies.treatmentPlanRepository
+                        )
+                    }
                 case .support:
                     return .init(feature: feature) { SupportCellView() }
                 case .data:
@@ -94,7 +108,7 @@ extension SettingsFeature {
                         Section("Used Resources") {
                             ForEach(Acknowledgment.allCases) { acknowledgment in
                                 NavigationLink {
-                                    AcknowledgementView(acknowledgment: acknowledgment)
+                                    AcknowledgmentView(acknowledgment: acknowledgment)
                                 } label: {
                                     Text(acknowledgment.navigationTitle)
                                 }

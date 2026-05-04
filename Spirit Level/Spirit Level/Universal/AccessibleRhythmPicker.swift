@@ -6,13 +6,13 @@ import SwiftUI
 struct AccessibleRhythmPicker: View {
     /// The injection frequency in days.
     @Binding private var rhythm: Int
-    
+
     /// Creates a rhythm picker bound to the given frequency value.
     /// - Parameter rhythm: A binding to the injection frequency in days.
     init(rhythm: Binding<Int>) {
         self._rhythm = rhythm
     }
-    
+
     var body: some View {
         Stepper("Repeat every \(rhythm) days", value: $rhythm, in: .rhythmRange)
             .accessibilityElement(children: .combine)

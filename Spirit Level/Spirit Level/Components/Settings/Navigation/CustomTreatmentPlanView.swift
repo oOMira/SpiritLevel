@@ -10,7 +10,7 @@ struct CustomTreatmentPlanView: View {
 
     let buttonAction: (TreatmentPlan) -> Void
     let buttonTitle: LocalizedStringResource
-    
+
     init(addButtonTitle: LocalizedStringResource, action: @escaping (TreatmentPlan) -> Void) {
         let ester = Ester.allCases.first ?? .enanthate
         self.dose = ester.defaultDose
@@ -18,7 +18,7 @@ struct CustomTreatmentPlanView: View {
         self.buttonAction = action
         self.buttonTitle = addButtonTitle
     }
-    
+
     var body: some View {
         List {
             Section(.configurationSectionTitle) {
@@ -31,7 +31,7 @@ struct CustomTreatmentPlanView: View {
                 }
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isButton)
-                .accessibilityHint("double tap to edit name")
+                .accessibilityHint("Double-tap to edit the name.")
 
                 Picker(.esterLabel, selection: $selectedEster) {
                     ForEach(Ester.allCases) { ester in
@@ -44,7 +44,7 @@ struct CustomTreatmentPlanView: View {
                 AccessibleDosagePicker(dosage: $dose)
                 AccessibleRhythmPicker(rhythm: $rhythm)
             }
-            
+
             Section {
                 Button(buttonTitle, action: {
                     guard !treatmentPlanName.isEmpty else {
@@ -63,7 +63,7 @@ struct CustomTreatmentPlanView: View {
         .alert("Empty Name", isPresented: $showEmptyNameAlert) {
             Button("OK", role: .cancel) { showEmptyNameAlert.toggle() }
         } message: {
-            Text("The alias field can not be empty")
+            Text("The alias field cannot be empty.")
         }
     }
 }
@@ -74,7 +74,7 @@ private extension LocalizedStringResource {
     static let addButtonTitle: Self = "Add"
     static let configurationSectionTitle: Self = "Configuration"
     static let nameLabel: Self = "Name"
-    static let enterAliasPlaceholder: Self = "Enter Alias"
+    static let enterAliasPlaceholder: Self = "Enter alias"
     static let esterLabel: Self = "Ester"
 }
 
@@ -92,7 +92,7 @@ private extension CGFloat {
 #Preview("Light Mode") {
     NavigationStack {
         CustomTreatmentPlanView(addButtonTitle: "Add", action: { _ in })
-            .navigationTitle("Add new simulation")
+            .navigationTitle("Add New Simulation")
     }
     .preferredColorScheme(.light)
 }
@@ -100,7 +100,7 @@ private extension CGFloat {
 #Preview("Dark Mode") {
     NavigationStack {
         CustomTreatmentPlanView(addButtonTitle: "Add", action: { _ in })
-            .navigationTitle("Add new simulation")
+            .navigationTitle("Add New Simulation")
     }
     .preferredColorScheme(.dark)
 }

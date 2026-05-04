@@ -1,10 +1,10 @@
 import SwiftUI
 import OSLog
 
-struct LabResultsView<LabResultsRepositoryType: LabResultsManageable>: View {
+struct LabResultsView<LabResultsRepo: LabResultsManageable>: View {
     @State private var showsDeleteError: Bool = false
-    let labResultsRepository: LabResultsRepositoryType
-    
+    let labResultsRepository: LabResultsRepo
+
     var body: some View {
         let labResults = labResultsRepository.allItems
         List {
@@ -12,7 +12,7 @@ struct LabResultsView<LabResultsRepositoryType: LabResultsManageable>: View {
                 Text(.noLabResultsHint)
             } else {
                 ForEach(labResults) { labResult in
-                    Text("\(labResult.concentration.formatted(.number.precision(.fractionLength(0)))) pg on \(labResult.date, format: .dateTime.day().month().year())")
+                    Text(labResultDescription(for: labResult))
                 }
                 .onDelete { offsets in
                     offsets.forEach {
@@ -42,12 +42,23 @@ struct LabResultsView<LabResultsRepositoryType: LabResultsManageable>: View {
     }
 }
 
+private extension LabResultsView {
+    func labResultDescription(for labResult: LabResult) -> String {
+        let formattedConcentration = labResult.concentration.formatted(
+            .number.precision(.fractionLength(0))
+        )
+        let formattedDate = labResult.date.formatted(.dateTime.day().month().year())
+        return "\(formattedConcentration) pg/mL on \(formattedDate)"
+    }
+}
+
 // MARK: - Constants
 
 private extension LocalizedStringResource {
     static let noLabResultsHint: Self = "No lab results logged yet"
-    static let showsDeleteErrorTitle: Self = "Error deleting lab results"
-    static let showsDeleteErrorMessage: Self = "There was an error deleting a lab result from database. Please try again later."
+    static let showsDeleteErrorTitle: Self = "Error Deleting Lab Result"
+    static let showsDeleteErrorMessage: Self =
+        "There was an error deleting a lab result from the database. Please try again later."
     static let okButtonTitle: Self = "OK"
 }
 

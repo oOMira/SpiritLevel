@@ -25,17 +25,17 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     @Namespace var animationNamespace
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var showsTreatmentPlanHistory: Bool = false
-    
+
     let dependencies: Dependencies
-    
+
     @Bindable private var store: TreatmentPlanStore
     var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.getLatest() }
-    
+
     init(dependencies: Dependencies, store: TreatmentPlanStore = .shared) {
         self.dependencies = dependencies
         self.store = store
     }
-    
+
     var body: some View {
         List {
             Section {
@@ -46,10 +46,10 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
                 }, label: {
                     if let activeTreatmentPlan {
                         Text(activeTreatmentPlan.name)
-                            .accessibilityHint("active treatment plan, double tap to select a different one")
+                            .accessibilityHint("Active treatment plan. Double-tap to select a different one.")
                     } else {
                         Text(.noActiveTreatmentPlan)
-                            .accessibilityHint("double tap to select a treatment plan")
+                            .accessibilityHint("Double-tap to select a treatment plan.")
                     }
                 })
             }
@@ -77,11 +77,11 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
                     }
                 }
             }, header: {
-                Text("Estimated E2 in pg/ml")
+                Text("Estimated E2 in pg/mL")
             }, footer: {
                 Text(.medicalDisclaimer)
             })
-            
+
             Section(.addSimulationSectionTitle) {
                 NavigationLink(destination: {
                     CustomTreatmentPlanView(addButtonTitle: "Add", action: { plan in
@@ -114,10 +114,10 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
 
 enum SimulationStyle: String, Identifiable, Hashable, CaseIterable {
     var id: String { rawValue }
-    
+
     case firstInjection
     case stable
-    
+
     var label: LocalizedStringResource {
         switch self {
         case .firstInjection: .firstInjectionLabel
@@ -133,7 +133,7 @@ private extension Array where Element == TreatmentPlanConfiguration {
 // MARK: - Constants
 
 private extension LocalizedStringResource {
-    static let addNewSimulationNavigationBar: Self = "Add new simulation"
+    static let addNewSimulationNavigationBar: Self = "Add New Simulation"
     static let noActiveTreatmentPlan: Self = "No active treatment plan"
     static let navigationTitle: Self = "Treatment Plan"
     static let simulationSectionTitle: Self = "Simulation"
@@ -143,8 +143,8 @@ private extension LocalizedStringResource {
     static let enanthateVisibleToggle: Self = "Enanthate visible"
     static let valerateVisibleToggle: Self = "Valerate visible"
     static let addSimulationSectionTitle: Self = "Add Simulation"
-    static let addSimulationLabel: Self = "Add new simulation"
-    static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
+    static let addSimulationLabel: Self = "Add New Simulation"
+    static let medicalDisclaimer: Self = "This is not medical advice, but a rough estimate."
 }
 
 // MARK: - Previews

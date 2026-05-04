@@ -11,8 +11,8 @@ protocol AppStateManageable: Observable, AnyObject {
 }
 
 protocol HasAppStateManager: AnyObject, Observable {
-    associatedtype AppStateManagerType: AppStateManageable
-    var appStateManager: AppStateManagerType { get set }
+    associatedtype AppStateMgr: AppStateManageable
+    var appStateManager: AppStateMgr { get set }
 }
 
 // MARK: - AppStateManager
@@ -20,9 +20,9 @@ protocol HasAppStateManager: AnyObject, Observable {
 @Observable
 final class AppStateRepository: AppStateManageable {
     static let shared = AppStateRepository()
-    
+
     private let userDefaults: UserDefaults
-    
+
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         selectedAchievement = userDefaults.string(forKey: "selectedAchievement")
@@ -30,7 +30,7 @@ final class AppStateRepository: AppStateManageable {
         isMoodExpanded = userDefaults.bool(forKey: "moodExpanded")
         searchHistoryData = userDefaults.string(forKey: "searchHistory") ?? "[]"
     }
-    
+
     var selectedAchievement: String? {
         didSet { userDefaults.set(selectedAchievement, forKey: "selectedAchievement") }
     }

@@ -17,4 +17,5 @@ I was playing around with different hormone planners for feminizing HRT with inj
 ### Dependencies
 
 - [Lottie](https://github.com/airbnb/lottie-spm) (4.6.0+) — used for animated illustrations
+- [SwiftLintPlugins](https://github.com/SimplyDanny/SwiftLintPlugins) (0.63.2+) — used for linting
 

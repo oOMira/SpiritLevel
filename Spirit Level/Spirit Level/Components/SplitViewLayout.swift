@@ -1,20 +1,20 @@
 import SwiftUI
 
 struct SplitViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
-    
+
     @Bindable var dependencies: DependenciesType
-    
+
     var searchManager: SearchManagerType
-    
-    @State private var activeSheet: ShortcutFeature? = nil
-    
+
+    @State private var activeSheet: ShortcutFeature?
+
     var body: some View {
         let enumeratedAppAreas = Array(AppArea.allCases.enumerated())
         NavigationSplitView {
             List(selection: $dependencies.appStateManager.selectedTab.toOptional()) {
                 Label("Search", systemImage: "magnifyingglass")
                     .tag(-1)
-                ForEach(enumeratedAppAreas, id: \.offset) { index, area in
+                ForEach(enumeratedAppAreas, id: \.offset) { _, area in
                     Label(area.label, systemImage: area.systemImageName)
                 }
             }
@@ -54,12 +54,12 @@ struct SplitViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerT
 private struct ShortcutFeatureView: View {
     private let allFeatures: [ShortcutFeature]
     @Binding private var activeSheet: ShortcutFeature?
-    
+
     init(allFeatures: [ShortcutFeature], activeSheet: Binding<ShortcutFeature?>) {
         self.allFeatures = allFeatures
         self._activeSheet = activeSheet
     }
-    
+
     var body: some View {
         VStack(spacing: 8) {
             ForEach(ShortcutFeature.allCases) { feature in
@@ -73,7 +73,7 @@ private struct ShortcutFeatureView: View {
                 .buttonBorderShape(.roundedRectangle)
                 .tint(feature.buttonColor)
                 .padding(.horizontal, 16)
-                
+
                 switch feature {
                 case .logLab:
                     button.buttonStyle(.bordered)

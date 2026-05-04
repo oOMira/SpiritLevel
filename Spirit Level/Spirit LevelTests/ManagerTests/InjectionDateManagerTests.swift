@@ -5,5 +5,5 @@ import Foundation
 @Suite("Injection Date Manager")
 @MainActor
 struct InjectionDateManagerTests {
-    
+
 }

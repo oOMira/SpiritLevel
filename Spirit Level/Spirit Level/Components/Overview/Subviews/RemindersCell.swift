@@ -17,7 +17,7 @@ extension RemindersCell {
 struct RemindersCell: View {
     @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 20
     let configuration: Configuration
-    
+
     init(configuration: Configuration) {
         self.configuration = configuration
     }
@@ -83,7 +83,7 @@ struct RemindersCell: View {
             title: "Set up notifications",
             description: "Get reminders for your injections",
             action: { print("Tapped") },
-            dismissAction: { print("dismiss tapped") } )
+            dismissAction: { print("dismiss tapped") })
         )
         .preferredColorScheme(.dark)
     }

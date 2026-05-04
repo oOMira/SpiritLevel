@@ -9,7 +9,7 @@ struct SystemImageTests {
     func testName(_ systemImage: SystemImage) {
         #expect(!systemImage.name.isEmpty)
     }
-    
+
     @Test("Image Exists", .tags(.resources), arguments: SystemImage.allCases)
     func testImageExists(_ systemImage: SystemImage) {
         #expect(UIImage(systemName: systemImage.name) != nil)

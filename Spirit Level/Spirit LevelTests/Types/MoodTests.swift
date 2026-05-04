@@ -5,7 +5,7 @@ import Foundation
 @Suite("Mood Tests")
 @MainActor
 struct MoodTests {
-    
+
     @Test("Identifiable")
     func testIdentifiable() {
         let ids = Mood.allCases.map { $0.id }
