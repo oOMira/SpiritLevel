@@ -1,17 +1,17 @@
 import SwiftUI
 
-struct SearchHistoryView<AppStateManagerType: AppStateManageable>: View {
-    private var searchHistoryManager: SearchHistoryManager<AppStateManagerType>
+struct SearchHistoryView<AppStateMgr: AppStateManageable>: View {
+    private var searchHistoryManager: SearchHistoryManager<AppStateMgr>
     @Binding private var searchText: String
-    
-    init(searchHistoryManager: SearchHistoryManager<AppStateManagerType>, searchText: Binding<String>) {
+
+    init(searchHistoryManager: SearchHistoryManager<AppStateMgr>, searchText: Binding<String>) {
         self.searchHistoryManager = searchHistoryManager
         self._searchText = searchText
     }
-    
+
     var body: some View {
         let isSearchHistoryEmpty = searchHistoryManager.searchHistory.isEmpty
-        
+
         HStack {
             Text("Recent Searches")
                 .font(.headline)
@@ -28,7 +28,7 @@ struct SearchHistoryView<AppStateManagerType: AppStateManageable>: View {
             .disabled(isSearchHistoryEmpty)
         }
         .listRowSeparator(.hidden)
-        
+
         if isSearchHistoryEmpty {
             Text(.emptyHistoryMessage)
                 .frame(maxWidth: .infinity, alignment: .leading)

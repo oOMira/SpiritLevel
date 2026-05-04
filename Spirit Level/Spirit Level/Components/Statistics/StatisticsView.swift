@@ -3,13 +3,13 @@ import SwiftUI
 // MARK: - View
 
 struct StatisticsView<Dependencies: StatisticsDependencies>: View {
-    
+
     @Bindable private var viewModel: StatisticsContentViewModel<Dependencies>
-    
+
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
     }
-    
+
     var body: some View {
         List {
             ForEach(StatisticsFeature.allCases) { feature in
@@ -30,18 +30,20 @@ struct StatisticsView<Dependencies: StatisticsDependencies>: View {
                             let injections = viewModel.dependencies.injectionRepository.allItems
                             return Array(injections.prefix(.maxElementsToShow))
                         }
-                        
+
                         if displayedInjections.isEmpty {
                             Text("No injections logged yet")
                         } else {
                             ForEach(displayedInjections) { injection in
-                                Text("\(injection.dosage, specifier: .dosageFormat) mg \(injection.ester.shortName) on \(injection.date, format: .dateTime.day().month().year())")
+                                Text(injectionDescription(for: injection))
                             }
                         }
                     }, header: {
-                        NavigationSectionHeaderView(title: .injectionsSectionTitle, destination: {
-                            InjectionsView(injectionRepository: viewModel.dependencies.injectionRepository)
-                        })
+                        NavigationSectionHeaderView(title: .injectionsSectionTitle) {
+                            InjectionsView(
+                                injectionRepository: viewModel.dependencies.injectionRepository
+                            )
+                        }
                     })
                 case .labResults:
                     Section(content: {
@@ -54,18 +56,36 @@ struct StatisticsView<Dependencies: StatisticsDependencies>: View {
                             Text("No results logged yet")
                         } else {
                             ForEach(displayedLabResults) { labResult in
-                                Text("\(labResult.concentration.formatted(.number.precision(.fractionLength(0)))) pg on \(labResult.date, format: .dateTime.day().month().year())")
+                                Text(labResultDescription(for: labResult))
                             }
                         }
                     }, header: {
-                        NavigationSectionHeaderView(title: .labResultsSectionTitle, destination: {
-                            LabResultsView(labResultsRepository: viewModel.dependencies.labResultsRepository)
-                        })
+                        NavigationSectionHeaderView(title: .labResultsSectionTitle) {
+                            LabResultsView(
+                                labResultsRepository: viewModel.dependencies.labResultsRepository
+                            )
+                        }
                     })
                 }
             }
         }
         .navigationTitle(.navigationTitle)
+    }
+}
+
+private extension StatisticsView {
+    func injectionDescription(for injection: Injection) -> String {
+        let formattedDose = String(format: String.dosageFormat, injection.dosage)
+        let formattedDate = injection.date.formatted(.dateTime.day().month().year())
+        return "\(formattedDose) mg \(injection.ester.shortName) on \(formattedDate)"
+    }
+
+    func labResultDescription(for labResult: LabResult) -> String {
+        let formattedConcentration = labResult.concentration.formatted(
+            .number.precision(.fractionLength(0))
+        )
+        let formattedDate = labResult.date.formatted(.dateTime.day().month().year())
+        return "\(formattedConcentration) pg on \(formattedDate)"
     }
 }
 
@@ -78,7 +98,8 @@ private extension LocalizedStringResource {
     static let labResultsSectionTitle: Self = "Lab Results"
     static let showMoreButton: Self = "Show more"
     static let chartSectionTitle: Self = "Hormone Level Chart"
-    static let medicalDisclaimer: Self = "This is no medical advice but a rough estimation"
+    static let medicalDisclaimer: Self =
+        "This is no medical advice but a rough estimation"
     static let visualizationTitle: Self = "Visualization"
 }
 
@@ -109,4 +130,3 @@ private extension String {
     .preferredColorScheme(.dark)
 }
 #endif
-

@@ -1,6 +1,5 @@
 import SwiftUI
 
-// TODO: different style for Landscape
 struct CompactQuickActionsControl: View {
     let actions: [ActionConfiguration]
 
@@ -33,10 +32,10 @@ struct CompactQuickActionsControl: View {
 extension CompactQuickActionsControl {
     struct ActionConfiguration: Identifiable {
         var id: ShortcutFeature.ID { feature.id }
-        
+
         let feature: ShortcutFeature
         let action: () -> Void
-        
+
         init(feature: ShortcutFeature, action: @escaping () -> Void) {
             self.feature = feature
             self.action = action
@@ -69,5 +68,3 @@ private extension CGFloat {
     })
     .preferredColorScheme(.dark)
 }
-
-

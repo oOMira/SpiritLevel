@@ -6,7 +6,7 @@ enum OverviewFeature: String, CaseIterable, SearchableItem, Hashable, Identifiab
     case currentLevel
     case nextInjection
     case achievements
-    
+
     var id: String { rawValue }
     var itemType: ItemType { .content }
 
@@ -19,7 +19,7 @@ enum OverviewFeature: String, CaseIterable, SearchableItem, Hashable, Identifiab
         case .achievements: "Achievements"
         }
     }
-    
+
     var systemImageName: String {
         switch self {
         case .reminders: "clock"

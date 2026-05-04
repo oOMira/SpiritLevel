@@ -1,10 +1,10 @@
 import SwiftUI
 import OSLog
 
-struct InjectionsView<InjectionRepositoryType: InjectionManageable>: View {
+struct InjectionsView<InjectionRepo: InjectionManageable>: View {
     @State private var showsDeleteError: Bool = false
-    let injectionRepository: InjectionRepositoryType
-    
+    let injectionRepository: InjectionRepo
+
     var body: some View {
         let injections = injectionRepository.allItems
         List {
@@ -12,7 +12,7 @@ struct InjectionsView<InjectionRepositoryType: InjectionManageable>: View {
                 Text(.noInjectionsMessage)
             } else {
                 ForEach(injections) { injection in
-                    Text("\(injection.dosage, specifier: .dosageFormat) mg \(injection.ester.shortName) on \(injection.date, format: .dateTime.day().month().year())")
+                    Text(injectionDescription(for: injection))
                 }
                 .onDelete { offsets in
                     offsets.forEach {
@@ -44,11 +44,20 @@ struct InjectionsView<InjectionRepositoryType: InjectionManageable>: View {
     }
 }
 
+private extension InjectionsView {
+    func injectionDescription(for injection: Injection) -> String {
+        let formattedDose = String(format: String.dosageFormat, injection.dosage)
+        let formattedDate = injection.date.formatted(.dateTime.day().month().year())
+        return "\(formattedDose) mg \(injection.ester.shortName) on \(formattedDate)"
+    }
+}
+
 // MARK: - Constants
 
 private extension LocalizedStringResource {
     static let showsDeleteErrorTitle: Self = "Error deleting injection"
-    static let showsDeleteErrorMessage: Self = "There was an error deleting injection from database. Please try again later."
+    static let showsDeleteErrorMessage: Self =
+        "There was an error deleting injection from database. Please try again later."
     static let okButtonTitle: Self = "OK"
     static let noInjectionsMessage: Self = "No injections logged yet"
 }
@@ -72,4 +81,3 @@ private extension String {
     }
     .preferredColorScheme(.dark)
 }
-

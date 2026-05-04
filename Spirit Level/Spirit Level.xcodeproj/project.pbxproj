@@ -119,6 +119,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				FA13AD7D2FA8F553001BCEE8 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FA771C2C2F567FE20071AC25 /* Spirit Level */,
@@ -211,6 +212,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				FADF56BD2F568282002578DB /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				FA13AC8F2FA8F0AF001BCEE8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FA771C2B2F567FE20071AC25 /* Products */;
@@ -275,6 +277,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		FA13AD7D2FA8F553001BCEE8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = FA13AD7C2FA8F553001BCEE8 /* SwiftLintBuildToolPlugin */;
+		};
 		FA771C3B2F567FE30071AC25 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FA771C292F567FE20071AC25 /* Spirit Level */;
@@ -615,6 +621,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		FA13AC8F2FA8F0AF001BCEE8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.63.2;
+			};
+		};
 		FADF56BD2F568282002578DB /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
@@ -626,6 +640,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		FA13AD7C2FA8F553001BCEE8 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA13AC8F2FA8F0AF001BCEE8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
 		FADF56BE2F568282002578DB /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FADF56BD2F568282002578DB /* XCRemoteSwiftPackageReference "lottie-spm" */;

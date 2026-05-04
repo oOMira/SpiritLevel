@@ -3,12 +3,12 @@ import SwiftUI
 struct NavigationSectionHeaderView<Destination: View>: View {
     private let title: LocalizedStringResource
     private let destination: Destination
-    
+
     init(title: LocalizedStringResource, @ViewBuilder destination: () -> Destination) {
         self.title = title
         self.destination = destination()
     }
-    
+
     var body: some View {
         NavigationLink(destination: destination, label: {
             HStack {

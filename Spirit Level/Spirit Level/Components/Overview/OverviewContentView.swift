@@ -5,11 +5,11 @@ import SwiftUI
 struct OverviewContentView<Dependencies: OverviewDependencies>: View {
     @Namespace var animationNamespace
     @Bindable private var viewModel: OverviewContentViewModel<Dependencies>
-    
+
     init(dependencies: Dependencies) {
         self.viewModel = .init(dependencies: dependencies)
     }
-    
+
     var body: some View {
         List(OverviewFeature.allCases) { feature in
             // MARK: Content
@@ -89,12 +89,12 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
 private struct RemindersSectionHeader: View {
     private let title: LocalizedStringResource
     private let clearAction: () -> Void
-    
+
     init(title: LocalizedStringResource, clearAction: @escaping () -> Void) {
         self.title = title
         self.clearAction = clearAction
     }
-    
+
     var body: some View {
         HStack {
             Text(title)
@@ -116,7 +116,7 @@ private extension OverviewContentViewModel.ReminderConfiguration {
             guard let self else { return }
             self.action(self)
         }
-        
+
         return .init(systemImageName: systemImageName,
                      title: title,
                      description: description,

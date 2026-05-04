@@ -7,7 +7,7 @@ typealias NextInjectionCellDependencies = HasInjectionRepository & HasTreatmentP
 @Observable
 final class NextInjectionCellViewModel<Dependencies: NextInjectionCellDependencies>: InjectionDateManageable {
     var dependencies: Dependencies
-    
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -16,16 +16,16 @@ final class NextInjectionCellViewModel<Dependencies: NextInjectionCellDependenci
 // MARK: - View
 
 struct NextInjectionCellView<Dependencies: NextInjectionCellDependencies>: View {
-    
+
     @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var imageWidth: CGFloat = 30
-    
+
     private var viewModel: NextInjectionCellViewModel<Dependencies>
-    
+
     init(viewModel: NextInjectionCellViewModel<Dependencies>) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         if let injectionDate = viewModel.getNextInjectionDate(till: appData.appStartDate) {
             HStack(spacing: 16) {

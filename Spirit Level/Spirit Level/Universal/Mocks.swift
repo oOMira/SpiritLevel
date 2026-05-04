@@ -5,7 +5,16 @@ import SwiftData
 struct Mocks {
     static let modelContainer: ModelContainer = {
         let config = ModelConfiguration()
-        return try! ModelContainer(for: Injection.self,LabResult.self, TreatmentPlan.self, configurations: config)
+        do {
+            return try ModelContainer(
+                for: Injection.self,
+                LabResult.self,
+                TreatmentPlan.self,
+                configurations: config
+            )
+        } catch {
+            fatalError("Failed to create mock model container: \(error)")
+        }
     }()
 }
 #endif

@@ -1,14 +1,14 @@
 import SwiftUI
 import OSLog
 
-struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
+struct LogLabResultView<LabResultsRepo: LabResultsManageable>: View {
     @Environment(\.dismiss) private var dismiss
     @State private var labResultDate = Date()
     @State private var concentration: String = ""
     @State private var showsSavingErrorAlert: Bool = false
     @State private var showsEmptyConcentrationAlert: Bool = false
-    
-    let labResultsRepository: LabResultsRepositoryType
+
+    let labResultsRepository: LabResultsRepo
 
     var body: some View {
         NavigationStack {
@@ -38,7 +38,7 @@ struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
                             .frame(maxWidth: .infinity)
                     })
                 }
-                
+
             }
             .alert("Invalid Concentration", isPresented: $showsEmptyConcentrationAlert) {
                 Button("OK", role: .cancel) { showsEmptyConcentrationAlert.toggle() }
@@ -50,7 +50,7 @@ struct LogLabResultView<LabResultsRepositoryType: LabResultsManageable>: View {
             } message: {
                 Text("There was an error saving data. Please try again later.")
             }
-            
+
             .navigationTitle(.navigationTitle)
             .toolbar {
                 ToolbarItem(placement: .destructiveAction) {

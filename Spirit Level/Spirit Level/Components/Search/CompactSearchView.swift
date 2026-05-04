@@ -3,21 +3,21 @@ import SwiftUI
 typealias CompactSearchDependencies = HasAppStateManager
 
 struct CompactSearchView<Dependencies: CompactSearchDependencies,
-                         SearchResultsManagerType: SearchResultsManageable>: View {
-    
+                         SearchResultsMgr: SearchResultsManageable>: View {
+
     @State private var path = NavigationPath()
-    
+
     let dependencies: Dependencies
-    
-    let searchHistoryManager: SearchHistoryManager<Dependencies.AppStateManagerType>
-    let searchResultsManager: SearchResultsManagerType
-    
-    init(dependencies: Dependencies, searchResultsManager: SearchResultsManagerType) {
+
+    let searchHistoryManager: SearchHistoryManager<Dependencies.AppStateMgr>
+    let searchResultsManager: SearchResultsMgr
+
+    init(dependencies: Dependencies, searchResultsManager: SearchResultsMgr) {
         self.dependencies = dependencies
         self.searchHistoryManager = .init(appStateManager: dependencies.appStateManager)
         self.searchResultsManager = searchResultsManager
     }
-    
+
     var body: some View {
         NavigationStack(path: $path) {
             List {

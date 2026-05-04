@@ -3,7 +3,7 @@ import SwiftUI
 struct ExpandableSectionHeader: View {
     let title: LocalizedStringResource
     @Binding var expanded: Bool
-    
+
     var body: some View {
         Button(action: {
             withAnimation { expanded.toggle() }

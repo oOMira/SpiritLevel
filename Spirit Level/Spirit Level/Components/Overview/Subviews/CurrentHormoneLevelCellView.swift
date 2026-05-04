@@ -7,32 +7,35 @@ typealias CurrentHormoneLevelCellDependencies = HasInjectionRepository & HasHorm
 final class CurrentHormoneLevelCellViewModel<Dependencies: CurrentHormoneLevelCellDependencies> {
     var dependencies: Dependencies
     var appStartDate = Date()
-    
+
     var hasInjections: Bool {
         !dependencies.injectionRepository.allItems.isEmpty
     }
-    
+
     var values: [(x: Date, y: Double)] {
         ClosedRange.xDomain.compactMap { day -> (x: Date, y: Double)? in
-            let injections = dependencies.injectionRepository.allItems.filter { $0.date.start <= appStartDate }
+            let injections = dependencies.injectionRepository.allItems.filter {
+                $0.date.start <= appStartDate
+            }
             guard !injections.isEmpty else { return nil }
-            let date = Calendar.current.date(byAdding: .day, value: day, to: appStartDate) ?? appStartDate
+            let date = Calendar.current.date(byAdding: .day, value: day, to: appStartDate)
+                ?? appStartDate
             let level = dependencies.hormoneLevelManager.levelForInjections(injections, at: date)
             return (x: date, y: level)
         }
     }
-    
+
     var xDomain: ClosedRange<Date> {
         let minX = ClosedRange.xDomain.lowerBound.addDaysToDate(appStartDate)
         let maxX = ClosedRange.xDomain.upperBound.addDaysToDate(appStartDate)
         return (minX...maxX)
     }
-    
+
     var yDomain: ClosedRange<Double> {
         let dataMax = values.map(\.y).max() ?? 100
         return 0...(dataMax + 100)
     }
-    
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -41,9 +44,9 @@ final class CurrentHormoneLevelCellViewModel<Dependencies: CurrentHormoneLevelCe
 struct CurrentHormoneLevelCellView<Dependencies: CurrentHormoneLevelCellDependencies>: View {
     @Environment(AppData.self) var appData: AppData
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 180
-    
+
     private var viewModel: CurrentHormoneLevelCellViewModel<Dependencies>
-    
+
     init(viewModel: CurrentHormoneLevelCellViewModel<Dependencies>) {
         self.viewModel = viewModel
     }
@@ -65,23 +68,28 @@ struct CurrentHormoneLevelCellView<Dependencies: CurrentHormoneLevelCellDependen
                 .lineStyle(StrokeStyle(lineWidth: 2.5))
                 .interpolationMethod(.catmullRom)
                 .accessibilityLabel("Simulated hormone level")
-                .accessibilityValue("\($1.y.formatted(.number.precision(.fractionLength(0)))) picogram per milliliter on \($1.x, format: .dateTime.day().month().year())")
+                .accessibilityValue(
+                    accessibilityValue(for: $1.y, at: $1.x)
+                )
             }
             .onAppear { viewModel.appStartDate = appData.appStartDate }
-            .onChange(of: appData.appStartDate, { oldValue, newValue in
+            .onChange(of: appData.appStartDate, { _, newValue in
                 viewModel.appStartDate = newValue
             })
             .chartXScale(domain: viewModel.xDomain)
             .chartYScale(domain: viewModel.yDomain)
             .opacity(viewModel.hasInjections ? 1.0 : 0.6)
-            .accessibilityLabel("Chart showing simulated hormone levels based on logged injections")
+            .accessibilityLabel(
+                "Chart showing simulated hormone levels based on logged injections"
+            )
             .frame(height: chartHeight)
             .overlay {
                 if !viewModel.hasInjections { emptyOverlay }
             }
-        }.accessibilityElement(children: .contain)
+        }
+        .accessibilityElement(children: .contain)
     }
-    
+
     var emptyOverlay: some View {
         VStack {
             Text(.noInjectionsTitle)
@@ -90,6 +98,14 @@ struct CurrentHormoneLevelCellView<Dependencies: CurrentHormoneLevelCellDependen
                 .multilineTextAlignment(.center)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+private extension CurrentHormoneLevelCellView {
+    func accessibilityValue(for level: Double, at date: Date) -> String {
+        let formattedLevel = level.formatted(.number.precision(.fractionLength(0)))
+        let formattedDate = date.formatted(.dateTime.day().month().year())
+        return "\(formattedLevel) picogram per milliliter on \(formattedDate)"
     }
 }
 

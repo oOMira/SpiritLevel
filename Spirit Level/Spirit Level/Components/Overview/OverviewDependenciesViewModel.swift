@@ -1,18 +1,24 @@
 import SwiftUI
 
-typealias OverviewDependencies = HasAppStateManager & HasAppStartRepository & HasInjectionRepository & HasLabResultsRepository & HasTreatmentPlanRepository & HasHormoneLevelManager
+typealias OverviewDependencies =
+    HasAppStateManager &
+    HasAppStartRepository &
+    HasInjectionRepository &
+    HasLabResultsRepository &
+    HasTreatmentPlanRepository &
+    HasHormoneLevelManager
 
 @Observable
 final class OverviewContentViewModel<Dependencies: OverviewDependencies> {
     var reminders: [ReminderConfiguration]
-    var visibleReminder: ReminderConfiguration? = nil
+    var visibleReminder: ReminderConfiguration?
     var dependencies: Dependencies
-    
+
     init(dependencies: Dependencies, reminders: [ReminderConfiguration]) {
         self.dependencies = dependencies
         self.reminders = reminders
     }
-    
+
     convenience init(dependencies: Dependencies) {
         self.init(dependencies: dependencies, reminders: [])
 
@@ -24,7 +30,7 @@ final class OverviewContentViewModel<Dependencies: OverviewDependencies> {
                 })
         ]
     }
-    
+
     func clearAllReminders() {
         withAnimation { reminders.forEach { $0.showsCell = false } }
     }
@@ -42,7 +48,7 @@ extension OverviewContentViewModel {
         var dismissAction: () -> Void { { [weak self] in
             withAnimation { self?.showsCell = false }
         } }
-        
+
         init(showsCell: Bool,
              systemImageName: String,
              title: LocalizedStringResource,
@@ -54,7 +60,7 @@ extension OverviewContentViewModel {
             self.description = description
             self.action = action
         }
-        
+
         static func == (lhs: ReminderConfiguration, rhs: ReminderConfiguration) -> Bool {
             lhs.id == rhs.id
         }
@@ -63,11 +69,11 @@ extension OverviewContentViewModel {
             hasher.combine(id)
         }
     }
-    
+
     final class TreatmentPlanReminderConfiguration: ReminderConfiguration {
         convenience init(showsCell: Bool, action: @escaping (OverviewContentViewModel.ReminderConfiguration) -> Void) {
             self.init(showsCell: showsCell,
-                  systemImageName: .systemImage.calendar.name,
+                  systemImageName: SystemImage.calendar.name,
                   title: .getStartedTitle,
                   description: .getStartedDescription,
                   action: action)

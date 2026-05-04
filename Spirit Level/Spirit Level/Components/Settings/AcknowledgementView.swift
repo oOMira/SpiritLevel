@@ -27,9 +27,9 @@ struct AcknowledgementView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityElement(children: .combine)
-                
+
                 Divider()
-                
+
                 Text(configuration.fullText)
                     .font(.system(.caption, design: .monospaced))
                     .contentShape(.accessibility, RoundedRectangle(cornerRadius: 8))
@@ -65,7 +65,8 @@ extension AcknowledgementView {
             do {
                 self.fullText = try String(contentsOf: fullLicenceURL, encoding: .utf8)
             } catch {
-                self.fullText = "Could not resolve \(fullLicenceURL.absoluteString). Check out directly for more information."
+                self.fullText =
+                    "Could not resolve \(fullLicenceURL.absoluteString). Check out directly for more information."
             }
         }
     }

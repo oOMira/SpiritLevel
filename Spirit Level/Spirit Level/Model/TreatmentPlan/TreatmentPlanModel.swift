@@ -9,7 +9,7 @@ class TreatmentPlan: Identifiable, Hashable {
     var frequency: Int
     var dosage: Double
     var firstInjectionDate: Date
-    
+
     var ester: Ester {
         get { Ester(rawValue: esterRawValue) ?? .valerate }
         set { esterRawValue = newValue.rawValue }

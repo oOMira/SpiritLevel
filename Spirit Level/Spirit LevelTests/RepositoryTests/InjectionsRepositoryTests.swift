@@ -7,7 +7,7 @@ import SwiftData
 @MainActor
 struct InjectionsRepositoryTests: ModelContextMockable {
     let repo = InjectionRepository(modelContext: Self.getMockModelContext(for: Injection.self))
-    
+
     @Test("No injection logged")
     func testEmpty() async throws {
         #expect(repo.allItems.count == 0, "InjectionRepository should return no injections when empty")

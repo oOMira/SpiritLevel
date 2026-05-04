@@ -1,12 +1,17 @@
 import SwiftUI
 
-typealias AchievementsCellDependencies = HasInjectionRepository & HasTreatmentPlanRepository & HasLabResultsRepository & HasAppStartRepository & HasAppStateManager
+typealias AchievementsCellDependencies =
+    HasInjectionRepository &
+    HasTreatmentPlanRepository &
+    HasLabResultsRepository &
+    HasAppStartRepository &
+    HasAppStateManager
 
 @Observable
 final class AchievementsCellViewModel<Dependencies: AchievementsCellDependencies>: AchievementsManageable {
     var dependencies: Dependencies
     let achievements = Achievement.allCases
-    
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -18,14 +23,16 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
     @Environment(AppData.self) var appData: AppData
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     let viewModel: AchievementsCellViewModel<Dependencies>
-    
+
     init(viewModel: AchievementsCellViewModel<Dependencies>) {
         self.viewModel = viewModel
     }
-    
-    private let roundedRectangle = RoundedRectangle(cornerRadius: .cornerRadius,
-                                            style: .continuous)
-    
+
+    private let roundedRectangle = RoundedRectangle(
+        cornerRadius: .cornerRadius,
+        style: .continuous
+    )
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: .contentSpacing) {
@@ -47,10 +54,10 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
         .padding(.vertical)
         .scrollClipDisabled(true)
     }
-    
+
     private func achievementCell(_ achievement: Achievement) -> some View {
         let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
-        
+
         return (achievement.image ?? SystemImage.photo.image)
             .resizable()
             .scaledToFit()
@@ -59,7 +66,12 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
             }
             .aspectRatio(1, contentMode: .fit)
             .clipShape(roundedRectangle)
-            .shadow(color: .shadowColor, radius: .shadowRadius, x: .xShadowOffset, y: .yShadowOffset)
+            .shadow(
+                color: .shadowColor,
+                radius: .shadowRadius,
+                x: .xShadowOffset,
+                y: .yShadowOffset
+            )
             .accessibilityIgnoresInvertColors()
             .accessibilityRemoveTraits([.isImage, .isButton])
             .accessibilityLabel(achievement.name)
@@ -80,7 +92,7 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
             .contentShape(.accessibility, roundedRectangle)
             .animation(.easeInOut(duration: 0.5), value: isDone)
     }
-    
+
     private func accessibilityDescriptionAction(achievement: Achievement, isDone: Bool) {
         let imageDescription = isDone
             ? achievement.imageDescription
@@ -90,24 +102,28 @@ struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
             argument: imageDescription
         )
     }
-    
+
     private func accessibilityOverlay(isDone: Bool) -> some View {
         GeometryReader { proxy in
-            Image(systemName: isDone ? .systemImage.checkmarkCircle.name : .systemImage.xCircle.name)
+            Image(systemName: isDone ? SystemImage.checkmarkCircle.name : SystemImage.xCircle.name)
                 .resizable()
                 .scaledToFit()
                 .frame(width: proxy.size.width / 4.0,
                        height: proxy.size.height / 4.0)
                 .padding(8)
-                .shadow(color: Color(uiColor: .systemBackground),
-                        radius: 5, x: 0, y: 0)
+                .shadow(
+                    color: Color(uiColor: .systemBackground),
+                    radius: 5,
+                    x: 0,
+                    y: 0
+                )
                 .frame(maxWidth: .infinity,
                        maxHeight: .infinity,
                        alignment: .bottomTrailing)
                 .accessibilityHidden(true)
         }
     }
-    
+
     private func contentMargin(for scrollViewWidth: CGFloat) -> CGFloat {
         let diff = scrollViewWidth - imageEdgeSize
         return diff > imageEdgeSize ? 0 : max(0, diff / 2)

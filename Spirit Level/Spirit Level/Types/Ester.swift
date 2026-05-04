@@ -3,9 +3,9 @@ import Foundation
 enum Ester: String, CaseIterable, Identifiable, Codable, Hashable {
     case enanthate
     case valerate
-    
+
     var id: String { rawValue }
-    
+
     var configuration: Configuration {
         switch self {
         case .enanthate:
@@ -14,11 +14,11 @@ enum Ester: String, CaseIterable, Identifiable, Codable, Hashable {
                 .init(name: "Valerate", cMax: 410, tMax: 2, tHalf: 3)
         }
     }
-        
+
     var name: String {
         configuration.name
     }
-    
+
     var shortName: String {
         switch self {
         case .enanthate: "EE"
@@ -44,7 +44,7 @@ extension Ester {
         case .valerate: 5
         }
     }
-    
+
     var defaultRhythm: Int {
         switch self {
         case .enanthate: 10

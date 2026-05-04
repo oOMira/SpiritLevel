@@ -7,7 +7,7 @@ import SwiftUI
 struct AccessibleDosagePicker: View {
     /// The current dosage in milligrams.
     @Binding var dosage: Double
-    
+
     var body: some View {
         HStack {
             Text("\(LocalizedStringResource.dosageLabel):")
@@ -23,12 +23,12 @@ struct AccessibleDosagePicker: View {
         .accessibilityLabel(.dosageLabel)
         .accessibilityValue("\(dosage, specifier: .dosageFormat) mg")
     }
-    
+
     /// Increases the dosage by one step (0.1 mg).
     private func increase() {
         dosage += .doseStep
     }
-    
+
     /// Decreases the dosage by one step (0.1 mg).
     private func decrease() {
         dosage -= .doseStep

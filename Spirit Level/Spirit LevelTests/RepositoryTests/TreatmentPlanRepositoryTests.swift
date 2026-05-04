@@ -7,7 +7,7 @@ import SwiftData
 @MainActor
 struct TreatmentPlanRepositoryTests: ModelContextMockable {
     let repo = TreatmentPlanRepository(modelContext: Self.getMockModelContext(for: TreatmentPlan.self))
-    
+
     @Test("No treatment plan set up")
     func testEmpty() async throws {
         #expect(repo.allItems.count == 0, "TreatmentPlanRepository should return no treatment plans when empty")

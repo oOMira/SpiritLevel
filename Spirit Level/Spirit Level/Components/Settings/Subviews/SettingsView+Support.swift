@@ -8,7 +8,7 @@ struct SupportCellView: View {
                 .init(url: .inspirationURL!, title: .inspirationTitle),
                 .init(url: .feedbackURL!, title: .feedbackTitle)
             ]
-            
+
             ForEach(configurations) { configuration in
                 Cell(configuration: configuration)
             }
@@ -19,7 +19,7 @@ struct SupportCellView: View {
 extension SupportCellView {
     struct Cell: View {
         let configuration: Configuration
-        
+
         var body: some View {
             Link(destination: configuration.url) {
                 HStack {
@@ -35,7 +35,7 @@ extension SupportCellView {
 extension SupportCellView.Cell {
     struct Configuration: Identifiable {
         let id = UUID()
-        
+
         let url: URL
         let title: LocalizedStringResource
     }
@@ -47,7 +47,7 @@ private extension URL {
     static let githubURL = URL(string: "https://github.com/oomira")
     static let inspirationURL = URL(string: "https://github.com/tiliaqt/transkit")
     static let feedbackURL = URL(string: "mailto:feedback@example.email")
-    
+
 }
 
 private extension LocalizedStringResource {

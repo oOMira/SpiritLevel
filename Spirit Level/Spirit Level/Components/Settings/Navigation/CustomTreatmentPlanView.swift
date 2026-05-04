@@ -10,7 +10,7 @@ struct CustomTreatmentPlanView: View {
 
     let buttonAction: (TreatmentPlan) -> Void
     let buttonTitle: LocalizedStringResource
-    
+
     init(addButtonTitle: LocalizedStringResource, action: @escaping (TreatmentPlan) -> Void) {
         let ester = Ester.allCases.first ?? .enanthate
         self.dose = ester.defaultDose
@@ -18,7 +18,7 @@ struct CustomTreatmentPlanView: View {
         self.buttonAction = action
         self.buttonTitle = addButtonTitle
     }
-    
+
     var body: some View {
         List {
             Section(.configurationSectionTitle) {
@@ -44,7 +44,7 @@ struct CustomTreatmentPlanView: View {
                 AccessibleDosagePicker(dosage: $dose)
                 AccessibleRhythmPicker(rhythm: $rhythm)
             }
-            
+
             Section {
                 Button(buttonTitle, action: {
                     guard !treatmentPlanName.isEmpty else {

@@ -25,17 +25,17 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     @Namespace var animationNamespace
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var showsTreatmentPlanHistory: Bool = false
-    
+
     let dependencies: Dependencies
-    
+
     @Bindable private var store: TreatmentPlanStore
     var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.getLatest() }
-    
+
     init(dependencies: Dependencies, store: TreatmentPlanStore = .shared) {
         self.dependencies = dependencies
         self.store = store
     }
-    
+
     var body: some View {
         List {
             Section {
@@ -81,7 +81,7 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
             }, footer: {
                 Text(.medicalDisclaimer)
             })
-            
+
             Section(.addSimulationSectionTitle) {
                 NavigationLink(destination: {
                     CustomTreatmentPlanView(addButtonTitle: "Add", action: { plan in
@@ -114,10 +114,10 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
 
 enum SimulationStyle: String, Identifiable, Hashable, CaseIterable {
     var id: String { rawValue }
-    
+
     case firstInjection
     case stable
-    
+
     var label: LocalizedStringResource {
         switch self {
         case .firstInjection: .firstInjectionLabel

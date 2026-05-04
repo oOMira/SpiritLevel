@@ -1,7 +1,5 @@
 import SwiftUI
 
-// TODO: Disable future injections and past plans
-
 /// A date picker with built-in accessibility support that normalizes dates to the start of day.
 ///
 /// Wraps `DatePicker` and adds a formatted VoiceOver value and interaction hint.
@@ -12,13 +10,17 @@ struct AccessibleDatePicker: View {
     let title: LocalizedStringResource
     /// The currently selected date.
     @Binding private var selectedDate: Date
-    
+
     /// Creates an accessible date picker.
     /// - Parameters:
     ///   - title: The localized label for the picker.
     ///   - selectedDate: A binding to the selected date value.
     ///   - range: The allowed date range. Defaults to the full range of representable dates.
-    init(title: LocalizedStringResource, selectedDate: Binding<Date>, range: ClosedRange<Date> = Date.distantPast...Date.distantFuture) {
+    init(
+        title: LocalizedStringResource,
+        selectedDate: Binding<Date>,
+        range: ClosedRange<Date> = Date.distantPast...Date.distantFuture
+    ) {
         self.title = title
         self._selectedDate = selectedDate
         self.range = (range.lowerBound.start...range.upperBound.start)

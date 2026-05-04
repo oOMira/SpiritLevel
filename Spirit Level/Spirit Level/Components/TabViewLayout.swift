@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct TabViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerType: SearchResultsManageable>: View {
-    
+
     @Bindable var dependencies: DependenciesType
     var searchResultsManager: SearchManagerType
-    
+
     var body: some View {
         TabView(selection: $dependencies.appStateManager.selectedTab) {
             let enumeratedAppAreas = Array(AppArea.allCases.enumerated())

@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct SearchActiveView<SearchManagerType: SearchResultsManageable,
-                        AppStateManagerType: AppStateManageable>: View {
+                        AppStateMgr: AppStateManageable>: View {
 
-    var searchHistoryManager: SearchHistoryManager<AppStateManagerType>
+    var searchHistoryManager: SearchHistoryManager<AppStateMgr>
     @Bindable var searchManager: SearchManagerType
-    
+
     // MARK: - View
 
     var body: some View {

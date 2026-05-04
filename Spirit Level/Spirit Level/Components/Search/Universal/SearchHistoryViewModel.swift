@@ -1,16 +1,14 @@
 import SwiftUI
 
-// TODO: Refactor
-
 @MainActor
 @Observable
-final class SearchHistoryManager<AppStateManagerType: AppStateManageable> {
-    var appStateManager: AppStateManagerType
-    
-    init(appStateManager: AppStateManagerType) {
+final class SearchHistoryManager<AppStateMgr: AppStateManageable> {
+    var appStateManager: AppStateMgr
+
+    init(appStateManager: AppStateMgr) {
         self.appStateManager = appStateManager
     }
-    
+
     var searchHistory: [String] {
         (try? JSONDecoder().decode([String].self, from: Data(appStateManager.searchHistoryData.utf8))) ?? []
     }

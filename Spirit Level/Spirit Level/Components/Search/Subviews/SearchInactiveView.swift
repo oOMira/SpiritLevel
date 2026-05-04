@@ -1,17 +1,17 @@
 import SwiftUI
 
-struct SearchInactiveView<AppStateManagerType: AppStateManageable,
+struct SearchInactiveView<AppStateMgr: AppStateManageable,
                           SearchManagerType: SearchResultsManageable>: View {
     @State var expanded: Bool = true
-    
+
     @Binding var path: NavigationPath
     @Binding var activeSheet: ShortcutFeature?
-    var appStateManager: AppStateManagerType
+    var appStateManager: AppStateMgr
     var searchManager: SearchManagerType
-    
+
     let navigationItems: [AppArea]
     let actionItems: [ShortcutFeature]
-    
+
     var body: some View {
         // MARK: Navigation Section
         Section(.navigationTitle) {
@@ -27,7 +27,7 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable,
             .listRowInsets(.vertical, 0)
             .listRowSeparator(.hidden)
         }
-        
+
         // MARK: Quick Action Section
         Section(.actionsTitle) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -52,7 +52,7 @@ struct SearchInactiveView<AppStateManagerType: AppStateManageable,
             .listRowSeparator(.hidden)
             .listRowInsets(.vertical, 0)
         }
-        
+
         // MARK: All Features
         Section(isExpanded: $expanded, content: {
             ForEach(searchManager.items) { item in

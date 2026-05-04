@@ -10,7 +10,7 @@ struct AccessibleNumberPicker: View {
     let placeholder: LocalizedStringResource
     /// The current numeric string value entered by the user.
     @Binding var value: String
-    
+
     var body: some View {
         VStack {
             Text(title)
@@ -18,7 +18,7 @@ struct AccessibleNumberPicker: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             TextField(placeholder, text: $value)
                 .keyboardType(.numberPad)
-                .onChange(of: value) { oldValue, newValue in
+                .onChange(of: value) { _, newValue in
                     let numbers = newValue.filter { $0.isNumber }
                     if numbers != newValue {
                         value = numbers

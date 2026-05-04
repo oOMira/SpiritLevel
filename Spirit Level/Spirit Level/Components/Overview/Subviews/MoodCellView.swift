@@ -8,7 +8,7 @@ typealias MoodCellDependencies = HasInjectionRepository & HasTreatmentPlanReposi
 @Observable
 final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
     let dependencies: Dependencies
-    
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -21,18 +21,18 @@ final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
                                                         to: lastInjection.date.start) else { return .unclear }
 
         let tMax = lastInjection.ester.configuration.tMax * 24 * 60 * 60
-        
+
         let injectionDate = lastInjection.date.start
         let risingMid = injectionDate.addingTimeInterval(tMax / 2)
         let peak = injectionDate.addingTimeInterval(tMax)
         let fallingMid = peak.addingTimeInterval(nextInjection.timeIntervalSince(peak) / 2)
-        
+
         let injections = dependencies.injectionRepository.allItems
         let isLevelFalling = dependencies.hormoneLevelManager.isLevelFallingForInjections(injections, at: date)
 
         return switch date {
         case injectionDate...risingMid:
-            isLevelFalling ? .unsure : .happy 
+            isLevelFalling ? .unsure : .happy
         case risingMid...peak:
             isLevelFalling ? .unsure : .confident
         case peak...fallingMid:
@@ -44,7 +44,7 @@ final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
         default: .unclear
         }
     }
-    
+
     func getLottiRresourceName(for mood: Mood) -> String {
         switch mood {
         case .happy: "smilecat"
@@ -64,7 +64,7 @@ struct MoodCellView<Dependencies: MoodCellDependencies>: View {
     @ScaledMetric(relativeTo: .body) private var moodSize: CGFloat = 200
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     @State private var playing: Bool = false
-    
+
     var viewModel: MoodCellViewModel<Dependencies>
 
     init(dependencies: Dependencies) {
@@ -93,9 +93,9 @@ struct MoodCellView<Dependencies: MoodCellDependencies>: View {
         .accessibilityAddTraits(.isImage)
         .accessibilityLabel("Emoji style image of a cat in a \(mood.rawValue) mood")
     }
-    
+
     // MARK: - Helper
-    
+
     var lottiePlaybackMode: Lottie.LottiePlaybackMode {
         if reduceMotion {
             if playing {
