@@ -45,9 +45,9 @@ struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: 
                 SearchHistoryManager(appStateManager: dependencies.appStateManager)
                     .addToHistory(searchManager.searchText)
             }
-            .activeSheetDestination(activeSheet: $activeSheet,
-                                    injectionRepository: dependencies.injectionRepository,
-                                    labResultsRepository: dependencies.labResultsRepository)
+            .quickActionsSheetDestination(activeSheet: $activeSheet,
+                                          injectionRepository: dependencies.injectionRepository,
+                                          labResultsRepository: dependencies.labResultsRepository)
             .navigationDestination(for: AppArea.self) { item in
                 switch item {
                 case .overview: Overview(dependencies: dependencies)
@@ -59,22 +59,6 @@ struct SearchView<DependenciesType: AppDependenciesProtocol, SearchManagerType: 
         }
     }
 }
-
-// MARK: - View Modifier
-
-private extension View {
-    func activeSheetDestination<T: InjectionManageable, U: LabResultsManageable>(
-        activeSheet: Binding<ShortcutFeature?>,
-        injectionRepository: T,
-        labResultsRepository: U
-    ) -> some View {
-        modifier(SearchInactiveViewModifier.SearchActiveActionsModifier(
-            injectionRepository: injectionRepository,
-            labResultsRepository: labResultsRepository,
-            activeSheet: activeSheet))
-    }
-}
-
 // MARK: - Constants
 
 private extension LocalizedStringResource {

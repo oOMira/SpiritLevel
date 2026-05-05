@@ -7,14 +7,15 @@ class AppData {
     var appStartDate: Date = Date()
 
     func refresh() {
-        appStartDate = Date()
+        appStartDate = Date.now
     }
 }
 
 @main
 struct MyApp: App {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var appData = AppData()
+    @State var appData = AppData()
+    @State var navigationManager = NavigationCoordinator.shared
 
     private let startupResult: AppStartupResult
 
@@ -81,7 +82,14 @@ struct MyApp: App {
             case let .success(context):
                 ContentView(dependencies: context.appDependencies)
                     .environment(appData)
-
+                    .quickActionsSheetDestination(
+                        activeSheet: $navigationManager.activeQuickAction,
+                        injectionRepository: context.appDependencies.injectionRepository,
+                        labResultsRepository: context.appDependencies.labResultsRepository
+                    )
+                    .onOpenURL { url in
+                        navigationManager.handle(url, appStateRepository: context.appDependencies.appStateManager)
+                    }
             case let .failure(error):
                 AppLaunchErrorView(error: error)
             }

@@ -22,14 +22,9 @@ struct SplitViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerT
                 ShortcutFeatureView(allFeatures: ShortcutFeature.allCases,
                                     activeSheet: $activeSheet)
             }
-            .sheet(item: $activeSheet) { sheet in
-                switch sheet {
-                case .logInjection: LogInjectionView(injectionRepository: dependencies.injectionRepository)
-                        .presentationDetents([.large])
-                case .logLab: LogLabResultView(labResultsRepository: dependencies.labResultsRepository)
-                        .presentationDetents([.large])
-                }
-            }
+            .quickActionsSheetDestination(activeSheet: $activeSheet,
+                                          injectionRepository: dependencies.injectionRepository,
+                                          labResultsRepository: dependencies.labResultsRepository)
         } detail: {
             if dependencies.appStateManager.selectedTab == -1 {
                 CompactSearchView(dependencies: dependencies,

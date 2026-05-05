@@ -8,6 +8,12 @@ I was playing around with different hormone planners for feminizing HRT with inj
 <img width="30%" hspace="8" alt="app screenshot showing a screen where you can configure treatment plans with simulated hormone levels for each." src="images/screenshot3.png" />
 </div>
 
+### Supported Platforms
+
+- iOS (tab view layout)
+- iPadOS (split view layout)
+- macOS (build for iPad)
+
 ### Requirements
 
 - Xcode 26 or later
@@ -19,3 +25,15 @@ I was playing around with different hormone planners for feminizing HRT with inj
 - [Lottie](https://github.com/airbnb/lottie-spm) (4.6.0+) — used for animated illustrations
 - [SwiftLintPlugins](https://github.com/SimplyDanny/SwiftLintPlugins) (0.63.2+) — used for linting
 
+### Deep linking
+
+- Overview tab — spiritlevel://tab/overview
+- Statistics tab — spiritlevel://tab/statistics
+- Settings tab — spiritlevel://tab/settings
+- Open log lab result — spiritlevel://quick/logLab
+- Open log injection — spiritlevel://quick/logInjection
+
+### App Intents
+
+- Open log lab result (shortcut and intent)
+- Open log injection (shortcut and intent)

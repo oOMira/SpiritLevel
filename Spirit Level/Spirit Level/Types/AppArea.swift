@@ -22,4 +22,13 @@ enum AppArea: String, CaseIterable, SearchableItem {
         case .settings: "gearshape"
         }
     }
+
+    var tabIndex: Int? {
+        Self.allCases.firstIndex(of: self) ?? nil
+    }
+
+    init?(tabIndex: Int) {
+        guard let area = Self.allCases.element(at: tabIndex) else { return nil }
+        self = area
+    }
 }
