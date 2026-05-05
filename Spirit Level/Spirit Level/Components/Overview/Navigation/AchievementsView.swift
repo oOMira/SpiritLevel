@@ -119,21 +119,3 @@ private extension LocalizedStringResource {
     static let completed: Self = "Completed"
     static let incompleted: Self = "Incomplete"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        AchievementsView(viewModel: .init(dependencies: Mocks.appDependencies))
-            .environment(AppData())
-            .preferredColorScheme(.light)
-    }
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        AchievementsView(viewModel: .init(dependencies: Mocks.appDependencies))
-            .environment(AppData())
-            .preferredColorScheme(.dark)
-    }
-}

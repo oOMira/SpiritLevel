@@ -55,19 +55,3 @@ private extension LocalizedStringResource {
 private extension CGFloat {
     static let iconHorizontalPadding: Self = 4
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    List {
-        TreatmentPlanCellView(treatmentPlanRepository: Mocks.treatmentPlanRepository)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        TreatmentPlanCellView(treatmentPlanRepository: Mocks.treatmentPlanRepository)
-    }
-    .preferredColorScheme(.dark)
-}

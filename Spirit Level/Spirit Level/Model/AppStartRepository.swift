@@ -29,13 +29,3 @@ final class AppStartRepository: AppStartManageable {
         self.firstAppStart = userDefaults.object(forKey: "firstAppStart") as? Date
     }
 }
-
-#if DEBUG
-extension Mocks {
-    static var appStart: AppStartRepository {
-        let userDefaults = UserDefaults(suiteName: #file)
-        userDefaults?.removePersistentDomain(forName: #file)
-        return AppStartRepository(userDefaults: userDefaults!)
-    }
-}
-#endif

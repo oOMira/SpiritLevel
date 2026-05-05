@@ -79,15 +79,3 @@ private extension String {
 private extension String {
     static let dosageFormat = "%.1f"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    LogInjectionView(injectionRepository: Mocks.injectionsRepository)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    LogInjectionView(injectionRepository: Mocks.injectionsRepository)
-        .preferredColorScheme(.dark)
-}

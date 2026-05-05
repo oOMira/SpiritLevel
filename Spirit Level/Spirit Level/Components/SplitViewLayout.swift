@@ -105,21 +105,3 @@ private extension ShortcutFeature {
         }
     }
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    SplitViewLayout(dependencies: deps, searchManager: searchManager)
-        .environment(AppData())
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    SplitViewLayout(dependencies: deps, searchManager: searchManager)
-        .environment(AppData())
-        .preferredColorScheme(.dark)
-}

@@ -65,19 +65,3 @@ private extension LocalizedStringResource {
 private extension String {
     static let dosageFormat: Self = "%.1f"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        InjectionsView(injectionRepository: Mocks.injectionsRepository)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        InjectionsView(injectionRepository: Mocks.injectionsRepository)
-    }
-    .preferredColorScheme(.dark)
-}

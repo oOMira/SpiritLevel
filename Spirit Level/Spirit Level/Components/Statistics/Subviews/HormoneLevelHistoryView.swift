@@ -127,17 +127,3 @@ private extension LocalizedStringResource {
     static let noInjectionsTitle: Self = "No Injections Logged"
     static let noInjectionsMessage: Self = "Log injections to see simulated hormone levels"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    HormoneLevelHistoryView(viewModel: .init(dependencies: Mocks.appDependencies))
-        .environment(AppData())
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    HormoneLevelHistoryView(viewModel: .init(dependencies: Mocks.appDependencies))
-        .environment(AppData())
-        .preferredColorScheme(.dark)
-}

@@ -61,19 +61,3 @@ private extension LocalizedStringResource {
         "There was an error deleting a lab result from the database. Please try again later."
     static let okButtonTitle: Self = "OK"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        LabResultsView(labResultsRepository: Mocks.labResultsRepository)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        LabResultsView(labResultsRepository: Mocks.labResultsRepository)
-    }
-    .preferredColorScheme(.dark)
-}

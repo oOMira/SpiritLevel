@@ -146,21 +146,3 @@ private extension LocalizedStringResource {
     static let addSimulationLabel: Self = "Add New Simulation"
     static let medicalDisclaimer: Self = "This is not medical advice, but a rough estimate."
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        TreatmentPlanView(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        TreatmentPlanView(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.dark)
-}

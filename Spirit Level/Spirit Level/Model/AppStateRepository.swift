@@ -47,13 +47,3 @@ final class AppStateRepository: AppStateManageable {
         didSet { userDefaults.set(searchHistoryData, forKey: "searchHistory") }
     }
 }
-
-#if DEBUG
-extension Mocks {
-    static var appState: AppStateRepository {
-        let userDefaults = UserDefaults(suiteName: #file)
-        userDefaults?.removePersistentDomain(forName: #file)
-        return AppStateRepository(userDefaults: userDefaults!)
-    }
-}
-#endif

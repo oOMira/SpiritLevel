@@ -79,15 +79,3 @@ private extension LocalizedStringResource {
 private extension String {
     static let xmarkIcon = "xmark"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    LogLabResultView(labResultsRepository: Mocks.labResultsRepository)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    LogLabResultView(labResultsRepository: Mocks.labResultsRepository)
-        .preferredColorScheme(.dark)
-}

@@ -37,11 +37,3 @@ final class TreatmentPlanRepository: TreatmentPlanManageable, SwiftDataManageabl
 
     @MainActor deinit { observationTask?.cancel() }
 }
-
-#if DEBUG
-extension Mocks {
-    static var treatmentPlanRepository: TreatmentPlanRepository {
-        return TreatmentPlanRepository(modelContext: modelContainer.mainContext)
-    }
-}
-#endif

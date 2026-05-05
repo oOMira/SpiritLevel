@@ -41,21 +41,3 @@ private extension LocalizedStringResource {
     static let moodTitle: Self = "Mood"
     static let accessibilityLabel: Self = "Quick Actions"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        Overview(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        Overview(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.dark)
-}

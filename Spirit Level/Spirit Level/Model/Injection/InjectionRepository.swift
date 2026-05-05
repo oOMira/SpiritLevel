@@ -32,11 +32,3 @@ final class InjectionRepository: InjectionManageable, SwiftDataManageable {
 
     @MainActor deinit { observationTask?.cancel() }
 }
-
-#if DEBUG
-extension Mocks {
-    static var injectionsRepository: InjectionRepository {
-        return InjectionRepository(modelContext: modelContainer.mainContext)
-    }
-}
-#endif

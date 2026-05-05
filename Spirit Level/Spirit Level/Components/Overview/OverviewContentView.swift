@@ -134,20 +134,3 @@ private extension LocalizedStringResource {
     static let navigationTitle: Self = "Overview"
     static let remindersSectionTitle: Self = "Reminders"
 }
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        OverviewContentView(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        OverviewContentView(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.dark)
-}

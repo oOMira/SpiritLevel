@@ -142,17 +142,3 @@ private extension CGFloat {
 private extension Color {
     static let shadowColor: Self = .black.opacity(0.2)
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    AchievementsCellView(viewModel: .init(dependencies: Mocks.appDependencies))
-        .environment(AppData())
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    AchievementsCellView(viewModel: .init(dependencies: Mocks.appDependencies))
-        .environment(AppData())
-        .preferredColorScheme(.dark)
-}

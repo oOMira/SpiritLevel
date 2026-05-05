@@ -31,28 +31,3 @@ struct SearchActiveView<SearchManagerType: SearchResultsManageable,
         }
     }
 }
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    NavigationStack {
-        List {
-            SearchActiveView(searchHistoryManager: SearchHistoryManager(appStateManager: deps.appStateManager),
-                             searchManager: searchManager)
-        }
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    NavigationStack {
-        List {
-            SearchActiveView(searchHistoryManager: SearchHistoryManager(appStateManager: deps.appStateManager),
-                             searchManager: searchManager)
-        }
-    }
-    .preferredColorScheme(.dark)
-}

@@ -120,21 +120,3 @@ private extension Int {
 private extension TimeInterval {
     static let interval = Double(ClosedRange.xDomain.upperBound) * 24 * 60 * 60
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    TreatmentPlanCellSimulationView(hormoneManager: Mocks.hormoneLevelManager,
-                                     store: .shared,
-                                     simulationStyle: .stable)
-    .environment(AppData())
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    TreatmentPlanCellSimulationView(hormoneManager: Mocks.hormoneLevelManager,
-                                     store: .shared,
-                                     simulationStyle: .stable)
-    .environment(AppData())
-    .preferredColorScheme(.dark)
-}

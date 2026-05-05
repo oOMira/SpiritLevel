@@ -24,11 +24,3 @@ final class LabResultsRepository: LabResultsManageable, SwiftDataManageable {
 
     @MainActor deinit { observationTask?.cancel() }
 }
-
-#if DEBUG
-extension Mocks {
-    static var labResultsRepository: LabResultsRepository {
-        return LabResultsRepository(modelContext: modelContainer.mainContext)
-    }
-}
-#endif

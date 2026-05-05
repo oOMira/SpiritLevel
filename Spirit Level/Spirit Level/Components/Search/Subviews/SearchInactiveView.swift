@@ -87,39 +87,3 @@ private extension CGFloat {
 private extension Int {
     static let horizontalCount: Self = 2
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    @Previewable @State var activeSheet: ShortcutFeature?
-    @Previewable @State var path = NavigationPath()
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    List {
-        SearchInactiveView(path: $path,
-                           activeSheet: $activeSheet,
-                           appStateManager: deps.appStateManager,
-                           searchManager: searchManager,
-                           navigationItems: AppArea.allCases,
-                           actionItems: ShortcutFeature.allCases)
-    }
-    .listStyle(.plain)
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    @Previewable @State var activeSheet: ShortcutFeature?
-    @Previewable @State var path = NavigationPath()
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    List {
-        SearchInactiveView(path: $path,
-                           activeSheet: $activeSheet,
-                           appStateManager: deps.appStateManager,
-                           searchManager: searchManager,
-                           navigationItems: AppArea.allCases,
-                           actionItems: ShortcutFeature.allCases)
-    }
-    .listStyle(.plain)
-    .preferredColorScheme(.dark)
-}

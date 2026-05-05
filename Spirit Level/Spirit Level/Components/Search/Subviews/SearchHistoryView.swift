@@ -48,23 +48,3 @@ struct SearchHistoryView<AppStateMgr: AppStateManageable>: View {
 private extension LocalizedStringResource {
     static let emptyHistoryMessage: Self = "No search history yet"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    @Previewable @State var searchText = ""
-    List {
-        SearchHistoryView(searchHistoryManager: SearchHistoryManager(appStateManager: Mocks.appState),
-                          searchText: $searchText)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    @Previewable @State var searchText = ""
-    List {
-        SearchHistoryView(searchHistoryManager: SearchHistoryManager(appStateManager: Mocks.appState),
-                          searchText: $searchText)
-    }
-    .preferredColorScheme(.dark)
-}

@@ -125,15 +125,3 @@ private extension LocalizedStringResource {
 private extension String {
     static let xMark = "xmark"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    DeleteSheet(dependencies: Mocks.appDependencies)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    DeleteSheet(dependencies: Mocks.appDependencies)
-        .preferredColorScheme(.dark)
-}

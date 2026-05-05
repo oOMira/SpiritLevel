@@ -113,23 +113,3 @@ private extension LocalizedStringResource {
     static let firstInjectionDateLabel: Self = "First Injection Date"
     static let setPlanButtonTitle: Self = "Set Plan"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    NavigationStack {
-        SelectTreatmentPlan(activePlan: nil,
-                            treatmentRepository: Mocks.treatmentPlanRepository,
-                            treatmentPlanStore: .init(wrappedValue: .shared))
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        SelectTreatmentPlan(activePlan: nil,
-                            treatmentRepository: Mocks.treatmentPlanRepository,
-                            treatmentPlanStore: .init(wrappedValue: .shared))
-    }
-    .preferredColorScheme(.dark)
-}

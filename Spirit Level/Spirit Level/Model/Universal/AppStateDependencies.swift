@@ -39,14 +39,3 @@ final class AppDependencies<AppStateMgr: AppStateManageable,
         self.hormoneLevelManager = hormoneLevelManager
     }
 }
-
-#if DEBUG
-extension Mocks {
-    static let appDependencies: AppDependencies = .init(appStateManager: Mocks.appState,
-                                                        appStartRepository: Mocks.appStart,
-                                                        injectionRepository: Mocks.injectionsRepository,
-                                                        labResultsRepository: Mocks.labResultsRepository,
-                                                        treatmentPlanRepository: Mocks.treatmentPlanRepository,
-                                                        hormoneLevelManager: Mocks.hormoneLevelManager)
-}
-#endif

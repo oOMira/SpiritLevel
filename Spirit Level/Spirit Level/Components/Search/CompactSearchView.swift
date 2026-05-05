@@ -45,19 +45,3 @@ struct CompactSearchView<Dependencies: CompactSearchDependencies,
         }
     }
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    CompactSearchView(dependencies: deps, searchResultsManager: searchManager)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    CompactSearchView(dependencies: deps, searchResultsManager: searchManager)
-        .preferredColorScheme(.dark)
-}

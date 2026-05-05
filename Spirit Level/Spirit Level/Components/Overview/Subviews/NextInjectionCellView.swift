@@ -62,21 +62,3 @@ extension LocalizedStringResource {
     static let noTreatmentPlanTitle: Self = "No Treatment Plan"
     static let noTreatmentPlanMessage: Self = "Please set up your plan to see your next injection date"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    List {
-        NextInjectionCellView(viewModel: .init(dependencies: Mocks.appDependencies))
-    }
-    .environment(AppData())
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    List {
-        NextInjectionCellView(viewModel: .init(dependencies: Mocks.appDependencies))
-    }
-    .environment(AppData())
-    .preferredColorScheme(.dark)
-}

@@ -45,17 +45,3 @@ extension LocalizedStringResource {
 extension String {
     static let magnifyingglass: Self = "magnifyingglass"
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    ContentView(dependencies: Mocks.appDependencies)
-        .environment(AppData())
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    ContentView(dependencies: Mocks.appDependencies)
-        .environment(AppData())
-        .preferredColorScheme(.dark)
-}

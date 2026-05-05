@@ -87,15 +87,3 @@ private extension LocalizedStringResource {
     static let deleteFailedAlertMessage: Self =
         "An error occurred while trying to delete the treatment plan. Please try again later."
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    TreatmentPlanHistory(treatmentPlanRepository: Mocks.treatmentPlanRepository)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    TreatmentPlanHistory(treatmentPlanRepository: Mocks.treatmentPlanRepository)
-        .preferredColorScheme(.dark)
-}

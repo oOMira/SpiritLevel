@@ -110,23 +110,3 @@ private extension Int {
 private extension String {
     static let dosageFormat: Self = "%.1f"
 }
-
-// MARK: - Previews
-
-#if DEBUG
-#Preview("Light Mode") {
-    NavigationStack {
-        StatisticsView(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        StatisticsView(dependencies: Mocks.appDependencies)
-    }
-    .environment(AppData())
-    .preferredColorScheme(.dark)
-}
-#endif

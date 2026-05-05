@@ -87,19 +87,3 @@ private extension LocalizedStringResource {
 private extension Int {
     static let maxHistoryItems: Self = 10
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    SearchView(dependencies: deps, searchManager: searchManager)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    SearchView(dependencies: deps, searchManager: searchManager)
-        .preferredColorScheme(.dark)
-}

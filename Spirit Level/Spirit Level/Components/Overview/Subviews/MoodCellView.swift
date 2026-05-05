@@ -108,15 +108,3 @@ struct MoodCellView<Dependencies: MoodCellDependencies>: View {
         }
     }
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    MoodCellView(dependencies: Mocks.appDependencies)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    MoodCellView(dependencies: Mocks.appDependencies)
-        .preferredColorScheme(.dark)
-}

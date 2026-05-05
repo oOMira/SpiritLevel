@@ -27,21 +27,3 @@ struct TabViewLayout<DependenciesType: AppDependenciesProtocol, SearchManagerTyp
         }
     }
 }
-
-// MARK: - Previews
-
-#Preview("Light Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    TabViewLayout(dependencies: deps, searchResultsManager: searchManager)
-        .environment(AppData())
-        .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    let deps = Mocks.appDependencies
-    let searchManager = SearchResultsManager(items: SearchResultsManager.getDefaultItems(dependencies: deps))
-    TabViewLayout(dependencies: deps, searchResultsManager: searchManager)
-        .environment(AppData())
-        .preferredColorScheme(.dark)
-}

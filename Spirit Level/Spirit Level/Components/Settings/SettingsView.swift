@@ -83,21 +83,3 @@ extension Acknowledgment {
         }
     }
 }
-
-// MARK: - Previews
-
-#if DEBUG
-#Preview("Light Mode") {
-    NavigationStack {
-        SettingsView(dependencies: Mocks.appDependencies)
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Dark Mode") {
-    NavigationStack {
-        SettingsView(dependencies: Mocks.appDependencies)
-    }
-    .preferredColorScheme(.dark)
-}
-#endif
