@@ -13,6 +13,7 @@ I was playing around with different hormone planners for feminizing HRT with inj
 - iOS (tab view layout)
 - iPadOS (split view layout)
 - macOS (build for iPad)
+- watchOS (health data)
 
 ### Requirements
 

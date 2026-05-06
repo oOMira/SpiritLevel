@@ -1,0 +1,33 @@
+{
+  "configurations" : [
+    {
+      "id" : "DB60F8A0-A94D-497F-81CC-5D46FE320A1D",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "HealthDataLogging",
+          "name" : "HealthDataLogging"
+        }
+      ]
+    },
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "HealthDataLoggingTests",
+        "name" : "HealthDataLoggingTests"
+      }
+    }
+  ],
+  "version" : 1
+}
