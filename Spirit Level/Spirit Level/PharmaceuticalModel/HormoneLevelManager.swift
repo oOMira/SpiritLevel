@@ -42,9 +42,3 @@ class HormoneLevelManager: HormoneLevelManageable {
         return pastLevel > currentLevel
     }
 }
-
-#if DEBUG
-extension Mocks {
-    static let hormoneLevelManager = HormoneLevelManager()
-}
-#endif

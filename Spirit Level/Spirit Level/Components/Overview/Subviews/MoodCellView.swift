@@ -25,7 +25,13 @@ final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
         let injectionDate = lastInjection.date.start
         let risingMid = injectionDate.addingTimeInterval(tMax / 2)
         let peak = injectionDate.addingTimeInterval(tMax)
-        let fallingMid = peak.addingTimeInterval(nextInjection.timeIntervalSince(peak) / 2)
+
+        let fallingMid: Date
+        if nextInjection < peak {
+            fallingMid = peak.addingTimeInterval(tMax * 2)
+        } else {
+            fallingMid = peak.addingTimeInterval(nextInjection.timeIntervalSince(peak) / 2)
+        }
 
         let injections = dependencies.injectionRepository.allItems
         let isLevelFalling = dependencies.hormoneLevelManager.isLevelFallingForInjections(injections, at: date)
@@ -37,9 +43,7 @@ final class MoodCellViewModel<Dependencies: MoodCellDependencies> {
             isLevelFalling ? .unsure : .confident
         case peak...fallingMid:
             isLevelFalling ? .pouting : .unsure
-        case fallingMid...nextInjection:
-            isLevelFalling ? .sad : .unsure
-        case nextInjection...Date.distantFuture:
+        case fallingMid...Date.distantFuture:
             isLevelFalling ? .sad : .unsure
         default: .unclear
         }

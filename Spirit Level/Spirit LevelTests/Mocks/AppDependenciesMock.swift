@@ -43,7 +43,7 @@ class AppDependenciesMock: AppDependenciesProtocol {
     var appStartRepository: AppStartRepositoryMock
     var injectionRepository: InjectionRepositoryMock
     var labResultsRepository: LabResultsMock
-    var treatmentPlanRepository: TreatmentPlanMock
+    var treatmentPlanRepository: TreatmentPlanManagerMock
     var hormoneLevelManager: HormoneLevelManager
 
     init(
@@ -51,7 +51,7 @@ class AppDependenciesMock: AppDependenciesProtocol {
         appStartRepository: AppStartRepositoryMock,
         injectionRepository: InjectionRepositoryMock,
         labResultsRepository: LabResultsMock,
-        treatmentPlanRepository: TreatmentPlanMock,
+        treatmentPlanRepository: TreatmentPlanManagerMock,
         hormoneLevelManager: HormoneLevelManager
     ) {
         self.appStateManager = appStateManager

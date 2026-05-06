@@ -1,7 +1,7 @@
 import Foundation
 @testable import Spirit_Level
 
-class TreatmentPlanMock: TreatmentPlanManageable {
+class TreatmentPlanManagerMock: TreatmentPlanManageable {
     init(allItems: [TreatmentPlan] = []) {
         self.allItems = allItems
     }
@@ -31,18 +31,18 @@ class TreatmentPlanMock: TreatmentPlanManageable {
     }
 }
 
-extension TreatmentPlanMock {
-    static var one: TreatmentPlanMock {
+extension TreatmentPlanManagerMock {
+    static var one: TreatmentPlanManagerMock {
         let item = TreatmentPlan(name: "Default", ester: .enanthate, frequency: 7, dosage: 1.0, firstInjectionDate: .distantPast)
         return .init(allItems: [item])
     }
 
-    static var many: TreatmentPlanMock {
+    static var many: TreatmentPlanManagerMock {
         let item1 = TreatmentPlan(name: "Plan A", ester: .enanthate, frequency: 7, dosage: 1.0, firstInjectionDate: .distantPast)
         let item2 = TreatmentPlan(name: "Plan B", ester: .valerate, frequency: 5, dosage: 2.0, firstInjectionDate: .init())
         let item3 = TreatmentPlan(name: "Plan C", ester: .enanthate, frequency: 14, dosage: 3.0, firstInjectionDate: .distantFuture)
         return .init(allItems: [item1, item2, item3])
     }
 
-    static var none: TreatmentPlanMock { .init() }
+    static var none: TreatmentPlanManagerMock { .init() }
 }

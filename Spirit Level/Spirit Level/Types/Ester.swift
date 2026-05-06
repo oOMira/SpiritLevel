@@ -30,6 +30,7 @@ enum Ester: String, CaseIterable, Identifiable, Codable, Hashable {
 extension Ester {
     struct Configuration: Identifiable {
         var id: String { name }
+        let dose: Double = 5.0
         let name: String
         let cMax: Double
         let tMax: Double

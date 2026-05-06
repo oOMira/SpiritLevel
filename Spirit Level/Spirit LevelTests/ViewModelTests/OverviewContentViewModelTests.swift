@@ -68,7 +68,7 @@ private extension OverviewContentViewModelTests.TreatmentPlanRemindersTests {
 }
 
 private extension OverviewContentViewModelTests.TreatmentPlanRemindersTests {
-    private func makeTimeDependencies(treatmentPlanRepository: TreatmentPlanMock) -> AppDependenciesMock {
+    private func makeTimeDependencies(treatmentPlanRepository: TreatmentPlanManagerMock) -> AppDependenciesMock {
         .init(appStateManager: .init(),
               appStartRepository: .new,
               injectionRepository: .none,
