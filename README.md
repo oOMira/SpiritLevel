@@ -37,3 +37,7 @@ I was playing around with different hormone planners for feminizing HRT with inj
 
 - Open log lab result (shortcut and intent)
 - Open log injection (shortcut and intent)
+
+### License
+
+This project is licensed under the [MIT License](LICENSE).
