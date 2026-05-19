@@ -1,0 +1,145 @@
+import SwiftUI
+import SpiritLevelShared
+
+typealias AchievementsCellDependencies =
+    HasInjectionRepository &
+    HasTreatmentPlanRepository &
+    HasLabResultsRepository &
+    HasAppStartRepository &
+    HasAppStateManager
+
+@Observable
+final class AchievementsCellViewModel<Dependencies: AchievementsCellDependencies>: AchievementsManageable {
+    var dependencies: Dependencies
+    let achievements = Achievement.allCases
+
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+}
+
+struct AchievementsCellView<Dependencies: AchievementsCellDependencies>: View {
+    @State var size: CGSize = .zero
+    @ScaledMetric(relativeTo: .body) private var imageEdgeSize: CGFloat = .baseImageEdgeSize
+    @Environment(AppData.self) var appData: AppData
+    @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
+    let viewModel: AchievementsCellViewModel<Dependencies>
+
+    init(viewModel: AchievementsCellViewModel<Dependencies>) {
+        self.viewModel = viewModel
+    }
+
+    private let roundedRectangle = RoundedRectangle(
+        cornerRadius: .cornerRadius,
+        style: .continuous
+    )
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: .contentSpacing) {
+                ForEach(viewModel.achievements) { achievement in
+                    achievementCell(achievement)
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .onGeometryChange(for: CGSize.self) { proxy in
+            proxy.size
+        } action: { newSize in
+            size = newSize
+        }
+        .contentMargins(.horizontal,
+                        contentMargin(for: size.width),
+                        for: .scrollContent)
+        .scrollTargetBehavior(.viewAligned)
+        .padding(.vertical)
+        .scrollClipDisabled(true)
+    }
+
+    private func achievementCell(_ achievement: Achievement) -> some View {
+        let isDone = viewModel.isAchievementDone(achievement, date: appData.appStartDate)
+
+        return (achievement.image ?? SystemImage.photo.image)
+            .resizable()
+            .scaledToFit()
+            .containerRelativeFrame(.horizontal) { containerSize, _ in
+                min(imageEdgeSize, containerSize)
+            }
+            .aspectRatio(1, contentMode: .fit)
+            .clipShape(roundedRectangle)
+            .shadow(
+                color: .shadowColor,
+                radius: .shadowRadius,
+                x: .xShadowOffset,
+                y: .yShadowOffset
+            )
+            .accessibilityIgnoresInvertColors()
+            .accessibilityRemoveTraits([.isImage, .isButton])
+            .accessibilityLabel(achievement.name)
+            .accessibilityValue(isDone ? "Completed" : "Not completed")
+            .accessibilityAction(named: "Describe Image") {
+                accessibilityDescriptionAction(achievement: achievement, isDone: isDone)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if accessibilityDifferentiateWithoutColor {
+                    accessibilityOverlay(isDone: isDone)
+                }
+            }
+            .scrollTransition(.interactive, axis: .horizontal) { effect, phase in
+                let scale = 1.0 - (abs(phase.value) * 0.15)
+                return effect.scaleEffect(CGFloat(max(0.85, scale)))
+            }
+            .grayscale(isDone ? 0.0 : 1.0)
+            .contentShape(.accessibility, roundedRectangle)
+            .animation(.easeInOut(duration: 0.5), value: isDone)
+    }
+
+    private func accessibilityDescriptionAction(achievement: Achievement, isDone: Bool) {
+        let imageDescription = isDone
+            ? achievement.imageDescription
+            : "\(achievement.imageDescription) - grayed out"
+        UIAccessibility.post(
+            notification: .announcement,
+            argument: imageDescription
+        )
+    }
+
+    private func accessibilityOverlay(isDone: Bool) -> some View {
+        GeometryReader { proxy in
+            Image(systemName: isDone ? SystemImage.checkmarkCircle.name : SystemImage.xCircle.name)
+                .resizable()
+                .scaledToFit()
+                .frame(width: proxy.size.width / 4.0,
+                       height: proxy.size.height / 4.0)
+                .padding(8)
+                .shadow(
+                    color: Color(uiColor: .systemBackground),
+                    radius: 5,
+                    x: 0,
+                    y: 0
+                )
+                .frame(maxWidth: .infinity,
+                       maxHeight: .infinity,
+                       alignment: .bottomTrailing)
+                .accessibilityHidden(true)
+        }
+    }
+
+    private func contentMargin(for scrollViewWidth: CGFloat) -> CGFloat {
+        let diff = scrollViewWidth - imageEdgeSize
+        return diff > imageEdgeSize ? 0 : max(0, diff / 2)
+    }
+}
+
+private extension CGFloat {
+    static let contentSpacing: Self = 16.0
+    static let cornerRadius: Self = 20.0
+    static let shadowRadius: Self = 6.0
+    static let xShadowOffset: Self  = 0.0
+    static let yShadowOffset: Self  = 3.0
+    static let baseImageEdgeSize: Self = 200.0
+}
+
+private extension Color {
+    static let shadowColor: Self = .black.opacity(0.2)
+}
