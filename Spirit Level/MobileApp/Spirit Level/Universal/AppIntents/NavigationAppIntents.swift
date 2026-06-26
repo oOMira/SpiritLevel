@@ -7,7 +7,7 @@ struct LogInjectionIntentQuickAction: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        NavigationCoordinator.shared.showQuickAction(.logInjection, appStateRepository: AppStateRepository.shared)
+        NavigationCoordinator.shared.activeQuickAction = .logInjection
         return .result()
     }
 }
@@ -19,7 +19,7 @@ struct LogLabResultIntentQuickAction: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        NavigationCoordinator.shared.showQuickAction(.logLab, appStateRepository: AppStateRepository.shared)
+        NavigationCoordinator.shared.activeQuickAction = .logLab
         return .result()
     }
 }

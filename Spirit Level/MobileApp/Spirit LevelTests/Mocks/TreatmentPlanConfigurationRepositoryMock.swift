@@ -1,5 +1,6 @@
 import Foundation
 import HealthDataLogging
+import SpiritLevelShared
 
 class TreatmentPlanConfigurationRepositoryMock: TreatmentPlanConfigurationManageable {
     func refresh() -> [HealthDataLogging.TreatmentPlanConfiguration] { allItems }

@@ -1,5 +1,6 @@
 import SwiftUI
 import HealthDataLogging
+import SpiritLevelShared
 
 // MARK: - View
 

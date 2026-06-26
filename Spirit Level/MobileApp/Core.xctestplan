@@ -27,7 +27,6 @@
         "mode" : "or",
         "tags" : [
           ".resources",
-          ".userDefaults",
           ".swiftData"
         ]
       },

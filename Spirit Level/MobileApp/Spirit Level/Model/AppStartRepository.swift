@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+import SwiftData
+import SpiritLevelShared
 
 // MARK: - AppStartManageable
 
@@ -12,20 +15,50 @@ protocol HasAppStartRepository: AnyObject, Observable {
     var appStartRepository: AppStartRepo { get set }
 }
 
-// MARK: - AppStartManager
+// MARK: - AppStartRepository
 
 @Observable
 final class AppStartRepository: AppStartManageable {
-    static let shared = AppStartRepository()
+    private let modelContext: ModelContext
+    private let appStart: AppStart
 
-    private let userDefaults: UserDefaults
-
-    var firstAppStart: Date? {
-        didSet { userDefaults.set(firstAppStart, forKey: "firstAppStart") }
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        self.appStart = Self.getInModelContext(modelContext)
     }
 
-    init(userDefaults: UserDefaults = .standard) {
-        self.userDefaults = userDefaults
-        self.firstAppStart = userDefaults.object(forKey: "firstAppStart") as? Date
+    var firstAppStart: Date? {
+        get { appStart.firstAppStart }
+        set {
+            appStart.firstAppStart = newValue
+            save()
+        }
+    }
+
+    private func save() {
+        guard modelContext.hasChanges else { return }
+        do {
+            try modelContext.save()
+        } catch {
+            Logger.data.error("Failed to save app start: \(error)")
+        }
+    }
+
+    private static func getInModelContext(_ modelContext: ModelContext) -> AppStart {
+        do {
+            if let existing = try modelContext.fetch(FetchDescriptor<AppStart>()).first {
+                return existing
+            }
+        } catch {
+            Logger.data.error("Failed to fetch app state: \(error)")
+        }
+        let new = AppStart()
+        modelContext.insert(new)
+        do {
+            try modelContext.save()
+        } catch {
+            Logger.data.error("Failed to save new app state: \(error)")
+        }
+        return new
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SpiritLevelShared
 
 public protocol InjectionManageable: Repository where ItemType == Injection {
     var last: ItemType? { get }

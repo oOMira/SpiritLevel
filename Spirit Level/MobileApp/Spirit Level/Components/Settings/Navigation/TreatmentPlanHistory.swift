@@ -1,5 +1,6 @@
 import SwiftUI
 import HealthDataLogging
+import SpiritLevelShared
 
 struct TreatmentPlanHistory<TreatmentPlanRepo: TreatmentPlanManageable>: View {
     @Environment(\.dismiss) private var dismiss

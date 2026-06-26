@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SpiritLevelShared
 
 public protocol TreatmentPlanManageable: Repository where ItemType == TreatmentPlan {
     func getLatest(until date: Date) -> ItemType?

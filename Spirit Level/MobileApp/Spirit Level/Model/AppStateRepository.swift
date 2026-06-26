@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+import SwiftData
+import SpiritLevelShared
 
 // MARK: - AppStateManageable
 
@@ -15,35 +18,74 @@ protocol HasAppStateManager: AnyObject, Observable {
     var appStateManager: AppStateMgr { get set }
 }
 
-// MARK: - AppStateManager
+// MARK: - AppStateRepository
 
 @Observable
 final class AppStateRepository: AppStateManageable {
-    static let shared = AppStateRepository()
+    private let modelContext: ModelContext
+    private let appState: AppState
 
-    private let userDefaults: UserDefaults
-
-    init(userDefaults: UserDefaults = .standard) {
-        self.userDefaults = userDefaults
-        selectedAchievement = userDefaults.string(forKey: "selectedAchievement")
-        selectedTab = userDefaults.integer(forKey: "selectedTab")
-        isMoodExpanded = userDefaults.object(forKey: "moodExpanded") as? Bool ?? true
-        searchHistoryData = userDefaults.string(forKey: "searchHistory") ?? "[]"
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        self.appState = Self.getInModelContext(modelContext)
     }
 
     var selectedAchievement: String? {
-        didSet { userDefaults.set(selectedAchievement, forKey: "selectedAchievement") }
+        get { appState.selectedAchievement }
+        set {
+            appState.selectedAchievement = newValue
+            save()
+        }
     }
 
     var selectedTab: Int {
-        didSet { userDefaults.set(selectedTab, forKey: "selectedTab") }
+        get { appState.selectedTab }
+        set {
+            appState.selectedTab = newValue
+            save()
+        }
     }
 
     var isMoodExpanded: Bool {
-        didSet { userDefaults.set(isMoodExpanded, forKey: "moodExpanded") }
+        get { appState.isMoodExpanded }
+        set {
+            appState.isMoodExpanded = newValue
+            save()
+        }
     }
 
     var searchHistoryData: String {
-        didSet { userDefaults.set(searchHistoryData, forKey: "searchHistory") }
+        get { appState.searchHistoryData }
+        set {
+            appState.searchHistoryData = newValue
+            save()
+        }
+    }
+
+    private func save() {
+        guard modelContext.hasChanges else { return }
+        do {
+            try modelContext.save()
+        } catch {
+            Logger.data.error("Failed to save app state: \(error)")
+        }
+    }
+
+    private static func getInModelContext(_ modelContext: ModelContext) -> AppState {
+        do {
+            if let existing = try modelContext.fetch(FetchDescriptor<AppState>()).first {
+                return existing
+            }
+        } catch {
+            Logger.data.error("Failed to fetch app state: \(error)")
+        }
+        let new = AppState()
+        modelContext.insert(new)
+        do {
+            try modelContext.save()
+        } catch {
+            Logger.data.error("Failed to save new app state: \(error)")
+        }
+        return new
     }
 }

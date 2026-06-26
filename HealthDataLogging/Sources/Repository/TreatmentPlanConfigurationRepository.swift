@@ -30,17 +30,6 @@ public final class TreatmentPlanConfigurationRepository: @MainActor TreatmentPla
 
     @MainActor deinit { observationTask?.cancel() }
 
-    @discardableResult
-    public func refresh() -> [TreatmentPlanConfiguration] {
-        do {
-            allItems = try fetchAll()
-            return allItems
-        } catch {
-            Logger.data.error("Failed to refresh treatment plan configurations: \(error)")
-            return []
-        }
-    }
-
     private func removeDuplicates() {
         Dictionary(grouping: allItems, by: \.id)
             .filter { $0.value.count > 1 }

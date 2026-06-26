@@ -1,5 +1,6 @@
 import Foundation
 import HealthDataLogging
+import SpiritLevelShared
 
 class InjectionRepositoryMock: InjectionManageable {
     func refresh() -> [HealthDataLogging.Injection] { allItems }

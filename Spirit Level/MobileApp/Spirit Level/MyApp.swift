@@ -26,12 +26,11 @@ struct MyApp: App {
     }
 
     private static func makeStartupResult() -> AppStartupResult {
-        let appStartRepository = AppStartRepository.shared
-        let appStateRepository = AppStateRepository.shared
-
         do {
             let modelContainer = try SharedModelContainer.create()
 
+            let appStartRepository = AppStartRepository(modelContext: modelContainer.mainContext)
+            let appStateRepository = AppStateRepository(modelContext: modelContainer.mainContext)
             let injectionRepository = InjectionRepository(modelContext: modelContainer.mainContext)
             let labResultsRepository = LabResultsRepository(modelContext: modelContainer.mainContext)
             let treatmentPlanRepository = TreatmentPlanRepository(modelContext: modelContainer.mainContext)
@@ -58,11 +57,9 @@ struct MyApp: App {
             Logger.app.info("App startup completed successfully")
 
             return .success(
-                AppStartupContext(
-                    appDependencies: appDependencies,
-                    searchResultsManager: searchResultsManager,
-                    modelContainer: modelContainer
-                )
+                AppStartupContext(appDependencies: appDependencies,
+                                  searchResultsManager: searchResultsManager,
+                                  modelContainer: modelContainer)
             )
         } catch {
             Logger.app.error("App startup failed: \(error)")

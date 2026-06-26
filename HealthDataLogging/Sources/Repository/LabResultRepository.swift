@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SpiritLevelShared
 
 public protocol LabResultsManageable: Repository where ItemType == LabResult { }
 

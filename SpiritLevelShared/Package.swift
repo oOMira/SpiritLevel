@@ -20,12 +20,14 @@ let package = Package(
     targets: [
         .target(
             name: "SpiritLevelShared",
+            path: "Sources",
             swiftSettings: [
                 .swiftLanguageMode(.v6)
             ]
         ),
         .target(
             name: "SpiritLevelSharedTesting",
+            path: "SpiritLevelSharedTesting",
             swiftSettings: [
                 .swiftLanguageMode(.v6)
             ]

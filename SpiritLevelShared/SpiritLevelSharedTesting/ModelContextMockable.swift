@@ -1,12 +1,12 @@
 import SwiftData
 import Foundation
 
-protocol ModelContextMockable {
+public protocol ModelContextMockable {
     static func getMockModelContext(for types: any PersistentModel.Type...) -> ModelContext
 }
 
 extension ModelContextMockable {
-    static func getMockModelContext(for types: any PersistentModel.Type...) -> ModelContext {
+    public static func getMockModelContext(for types: any PersistentModel.Type...) -> ModelContext {
         let schema = Schema(types)
         let container = try! ModelContainer(for: schema, configurations: ModelConfiguration.getInMemory())
         return ModelContext(container)

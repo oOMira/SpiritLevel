@@ -3,7 +3,6 @@ import Foundation
 // Used for notification name
 import CoreData
 import OSLog
-import SpiritLevelShared
 
 public protocol Repository {
     associatedtype ItemType: PersistentModel
