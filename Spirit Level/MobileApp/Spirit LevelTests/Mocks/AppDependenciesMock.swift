@@ -10,6 +10,7 @@ extension AppDependenciesMock {
             injectionRepository: .one,
             labResultsRepository: .one,
             treatmentPlanRepository: .one,
+            treatmentPlanConfigurationRepository: .one,
             hormoneLevelManager: HormoneLevelManager()
         )
     }
@@ -21,6 +22,7 @@ extension AppDependenciesMock {
             injectionRepository: .many,
             labResultsRepository: .many,
             treatmentPlanRepository: .many,
+            treatmentPlanConfigurationRepository: .many,
             hormoneLevelManager: HormoneLevelManager()
         )
     }
@@ -32,6 +34,7 @@ extension AppDependenciesMock {
             injectionRepository: .none,
             labResultsRepository: .none,
             treatmentPlanRepository: .none,
+            treatmentPlanConfigurationRepository: .none,
             hormoneLevelManager: HormoneLevelManager()
         )
     }
@@ -45,6 +48,7 @@ class AppDependenciesMock: AppDependenciesProtocol {
     var injectionRepository: InjectionRepositoryMock
     var labResultsRepository: LabResultsMock
     var treatmentPlanRepository: TreatmentPlanManagerMock
+    var treatmentPlanConfigurationRepository: TreatmentPlanConfigurationRepositoryMock
     var hormoneLevelManager: HormoneLevelManager
 
     init(
@@ -53,6 +57,7 @@ class AppDependenciesMock: AppDependenciesProtocol {
         injectionRepository: InjectionRepositoryMock,
         labResultsRepository: LabResultsMock,
         treatmentPlanRepository: TreatmentPlanManagerMock,
+        treatmentPlanConfigurationRepository: TreatmentPlanConfigurationRepositoryMock,
         hormoneLevelManager: HormoneLevelManager
     ) {
         self.appStateManager = appStateManager
@@ -60,6 +65,7 @@ class AppDependenciesMock: AppDependenciesProtocol {
         self.injectionRepository = injectionRepository
         self.labResultsRepository = labResultsRepository
         self.treatmentPlanRepository = treatmentPlanRepository
+        self.treatmentPlanConfigurationRepository = treatmentPlanConfigurationRepository
         self.hormoneLevelManager = hormoneLevelManager
     }
 }

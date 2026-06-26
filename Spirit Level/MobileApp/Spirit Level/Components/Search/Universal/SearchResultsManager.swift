@@ -43,6 +43,7 @@ extension SearchResultsManager {
         HasInjectionRepository &
         HasLabResultsRepository &
         HasTreatmentPlanRepository &
+        HasTreatmentPlanConfigurationRepository &
         HasHormoneLevelManager
 
     @MainActor

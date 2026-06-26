@@ -119,7 +119,7 @@ struct AppStateRepositoryTests {
 
 extension AppStateRepositoryTests {
     private func validateUserDefaultsMatchRepo() {
-        let userDefaultsMood = userDefaults.bool(forKey: "moodExpanded")
+        let userDefaultsMood = userDefaults.object(forKey: "moodExpanded") as? Bool ?? true
         let selectedAchievement = userDefaults.string(forKey: "selectedAchievement")
         let selectedTab = userDefaults.integer(forKey: "selectedTab")
         let searchHistoryData = userDefaults.string(forKey: "searchHistory") ?? "[]"

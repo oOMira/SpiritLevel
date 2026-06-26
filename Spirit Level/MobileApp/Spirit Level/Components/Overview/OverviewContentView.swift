@@ -71,9 +71,10 @@ struct OverviewContentView<Dependencies: OverviewDependencies>: View {
         // MARK: Navigation
         .sheet(item: $viewModel.visibleReminder, content: { reminder in
             NavigationStack {
+                let configRepo = viewModel.dependencies.treatmentPlanConfigurationRepository
                 SelectTreatmentPlan(activePlan: nil,
                                     treatmentRepository: viewModel.dependencies.treatmentPlanRepository,
-                                    treatmentPlanStore: .init(wrappedValue: .shared))
+                                    configurationRepository: configRepo)
                 .toolbar {
                     ToolbarItem(placement: .destructiveAction) {
                         Button {

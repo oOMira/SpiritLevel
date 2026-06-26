@@ -7,6 +7,7 @@ typealias AppDependenciesProtocol =
     HasInjectionRepository &
     HasLabResultsRepository &
     HasTreatmentPlanRepository &
+    HasTreatmentPlanConfigurationRepository &
     HasHormoneLevelManager
 
 // MARK: - Implementation
@@ -17,6 +18,7 @@ final class AppDependencies<AppStateMgr: AppStateManageable,
                             InjectionRepo: InjectionManageable,
                             LabResultsRepo: LabResultsManageable,
                             TreatmentPlanRepo: TreatmentPlanManageable,
+                            ConfigurationRepo: TreatmentPlanConfigurationManageable,
                             HormoneLevelMgr: HormoneLevelManageable>: AppDependenciesProtocol {
 
     var appStateManager: AppStateMgr
@@ -24,6 +26,7 @@ final class AppDependencies<AppStateMgr: AppStateManageable,
     var injectionRepository: InjectionRepo
     var labResultsRepository: LabResultsRepo
     var treatmentPlanRepository: TreatmentPlanRepo
+    var treatmentPlanConfigurationRepository: ConfigurationRepo
     var hormoneLevelManager: HormoneLevelMgr
 
     init(appStateManager: AppStateMgr,
@@ -31,12 +34,14 @@ final class AppDependencies<AppStateMgr: AppStateManageable,
          injectionRepository: InjectionRepo,
          labResultsRepository: LabResultsRepo,
          treatmentPlanRepository: TreatmentPlanRepo,
+         treatmentPlanConfigurationRepository: ConfigurationRepo,
          hormoneLevelManager: HormoneLevelMgr) {
         self.appStateManager = appStateManager
         self.appStartRepository = appStartRepository
         self.injectionRepository = injectionRepository
         self.labResultsRepository = labResultsRepository
         self.treatmentPlanRepository = treatmentPlanRepository
+        self.treatmentPlanConfigurationRepository = treatmentPlanConfigurationRepository
         self.hormoneLevelManager = hormoneLevelManager
     }
 }

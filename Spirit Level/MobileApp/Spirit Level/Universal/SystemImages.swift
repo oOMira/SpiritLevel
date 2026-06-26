@@ -6,6 +6,7 @@ enum SystemImage: String, CaseIterable {
     case checkmarkCircle = "checkmark.circle"
     case xCircle = "x.circle"
     case photo = "photo"
+    case plus = "plus"
 }
 
 extension SystemImage {

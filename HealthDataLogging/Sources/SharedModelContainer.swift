@@ -8,6 +8,7 @@ public enum SharedModelContainer {
             for: Injection.self,
             LabResult.self,
             TreatmentPlan.self,
+            TreatmentPlanConfiguration.self,
             configurations: ModelConfiguration(
                 cloudKitDatabase: .private(cloudKitContainerIdentifier)
             )

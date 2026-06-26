@@ -208,6 +208,7 @@ private extension MoodCellViewModelTests {
             injectionRepository: InjectionRepositoryMock(allItems: injections),
             labResultsRepository: .none,
             treatmentPlanRepository: TreatmentPlanManagerMock(allItems: treatmentPlans),
+            treatmentPlanConfigurationRepository: .none,
             hormoneLevelManager: .init()
         )
     }

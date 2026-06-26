@@ -1,24 +1,12 @@
 import SwiftUI
 import HealthDataLogging
+import SpiritLevelShared
+import OSLog
 
-typealias TreatmentPlanDependencies = HasTreatmentPlanRepository & HasHormoneLevelManager
-
-@Observable
-class TreatmentPlanStore {
-    static let shared = TreatmentPlanStore()
-    var planConfigurations: [TreatmentPlanConfiguration] = {
-        Ester.allCases.map {
-            let plan = $0.predefinedStablePlan()
-            return .init(plan: plan, visible: true, editable: false)
-        }
-    }()
-}
-
-struct TreatmentPlanConfiguration: Hashable {
-    let plan: TreatmentPlan
-    var visible: Bool
-    var editable: Bool
-}
+typealias TreatmentPlanDependencies =
+    HasTreatmentPlanRepository &
+    HasTreatmentPlanConfigurationRepository &
+    HasHormoneLevelManager
 
 struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     private let historyAnimation = "historyAnimation"
@@ -26,15 +14,20 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
     @Namespace var animationNamespace
     @State private var simulationStyle: SimulationStyle = .stable
     @State private var showsTreatmentPlanHistory: Bool = false
+    @State private var showsCustomTreatmentPlan: Bool = false
+    @State private var showsAddErrorAlert: Bool = false
 
     let dependencies: Dependencies
 
-    @Bindable private var store: TreatmentPlanStore
     var activeTreatmentPlan: TreatmentPlan? { dependencies.treatmentPlanRepository.getLatest() }
-
-    init(dependencies: Dependencies, store: TreatmentPlanStore = .shared) {
-        self.dependencies = dependencies
-        self.store = store
+    var allTreatmentConfigurations: [TreatmentPlanConfiguration] {
+        dependencies.treatmentPlanConfigurationRepository.allItems
+            .sorted { lhs, rhs in
+                if lhs.editable != rhs.editable {
+                    return !lhs.editable
+                }
+                return lhs.name < rhs.name
+            }
     }
 
     var body: some View {
@@ -43,7 +36,7 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
                 NavigationLink(destination: {
                     SelectTreatmentPlan(activePlan: activeTreatmentPlan,
                                         treatmentRepository: dependencies.treatmentPlanRepository,
-                                        treatmentPlanStore: $store)
+                                        configurationRepository: dependencies.treatmentPlanConfigurationRepository)
                 }, label: {
                     if let activeTreatmentPlan {
                         Text(activeTreatmentPlan.name)
@@ -63,19 +56,14 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
                 }
                 .pickerStyle(.segmented)
                 TreatmentPlanCellSimulationView(hormoneManager: dependencies.hormoneLevelManager,
-                                                store: store,
+                                                treatmentConfigurations: allTreatmentConfigurations,
                                                 simulationStyle: simulationStyle)
-                ForEach(store.planConfigurations.enumerated(), id: \.element) { index, element in
-                    HStack {
-                        if element.editable {
-                            Button(action: {
-                                store.planConfigurations.removeAll { element == $0 }
-                            }, label: {
-                                SystemImage.xCircle.image
-                            })
-                        }
-                        Toggle(element.plan.name, isOn: $store.planConfigurations[index].visible)
-                    }
+                ForEach(allTreatmentConfigurations) { configuration in
+                    let deleteAction = configuration.editable
+                        ? { delete(configuration: configuration) }
+                        : nil
+                    ConfigurationCellView(configuration: configuration,
+                                          deleteAction: deleteAction)
                 }
             }, header: {
                 Text("Estimated E2 in pg/mL")
@@ -83,16 +71,16 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
                 Text(.medicalDisclaimer)
             })
 
-            Section(.addSimulationSectionTitle) {
-                NavigationLink(destination: {
-                    CustomTreatmentPlanView(addButtonTitle: "Add", action: { plan in
-                        store.planConfigurations.append(.init(plan: plan, visible: true, editable: true))
-                    })
-                    .navigationTitle(.addNewSimulationNavigationBar)
-                }, label: {
-                    Text(.addSimulationLabel)
-                })
-            }
+            Button(action: {
+                showsCustomTreatmentPlan.toggle()
+            }, label: {
+                Text(.addSimulationLabel)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            })
+        }
+        .refreshable {
+            dependencies.treatmentPlanRepository.refresh()
+            dependencies.treatmentPlanConfigurationRepository.refresh()
         }
         .navigationTitle(.navigationTitle)
         .toolbar {
@@ -110,6 +98,46 @@ struct TreatmentPlanView<Dependencies: TreatmentPlanDependencies>: View {
             TreatmentPlanHistory(treatmentPlanRepository: dependencies.treatmentPlanRepository)
                 .navigationTransition(.zoom(sourceID: historyAnimation, in: animationNamespace))
         })
+        .sheet(isPresented: $showsCustomTreatmentPlan, content: {
+            NavigationStack {
+                CustomTreatmentPlanView(addButtonTitle: "Add", action: { plan in
+                    let configuration = TreatmentPlanConfiguration(name: plan.name,
+                                                                   ester: plan.ester,
+                                                                   frequency: plan.frequency,
+                                                                   dosage: plan.dosage,
+                                                                   visible: true,
+                                                                   editable: true)
+                    do {
+                        Logger.app.info("Adding new treatment plan configuration: \(configuration.name)")
+                        try dependencies.treatmentPlanConfigurationRepository.add(item: configuration)
+                    } catch {
+                        Logger.data.error("Failed to add treatment plan configuration: \(error)")
+                        showsAddErrorAlert = true
+                    }
+                })
+                .navigationTitle(.addNewSimulationNavigationBar)
+            }
+        })
+        .alert(Text(.addErrorTitle), isPresented: $showsAddErrorAlert) {
+            Button("OK", role: .cancel) { showsAddErrorAlert = false }
+        } message: {
+            Text(.addErrorMessage)
+        }
+    }
+}
+
+// MARK: - Helper
+
+extension TreatmentPlanView {
+    private func delete(configuration: TreatmentPlanConfiguration) {
+        Logger.data.info("Deleting treatment plan configuration: \(configuration.name)")
+        withAnimation {
+            do {
+                try dependencies.treatmentPlanConfigurationRepository.delete(item: configuration)
+            } catch {
+                Logger.data.error("Failed to delete treatment plan configuration: \(error)")
+            }
+        }
     }
 }
 
@@ -127,8 +155,31 @@ enum SimulationStyle: String, Identifiable, Hashable, CaseIterable {
     }
 }
 
-private extension Array where Element == TreatmentPlanConfiguration {
-    var plans: [TreatmentPlan] { self.map(\.plan) }
+private extension TreatmentPlanView {
+    struct ConfigurationCellView: View {
+        @Bindable var configuration: TreatmentPlanConfiguration
+        let deleteAction: (() -> Void)?
+
+        init(configuration: TreatmentPlanConfiguration, deleteAction: (() -> Void)? = nil) {
+            self.configuration = configuration
+            self.deleteAction = deleteAction
+        }
+
+        var body: some View {
+            HStack {
+                if let deleteAction {
+                    Button(action: {
+                        deleteAction()
+                    }, label: {
+                        SystemImage.xCircle.image
+                    })
+                    .buttonStyle(.borderless)
+                }
+                Toggle(configuration.name, isOn: $configuration.visible)
+            }
+        }
+    }
+
 }
 
 // MARK: - Constants
@@ -146,4 +197,6 @@ private extension LocalizedStringResource {
     static let addSimulationSectionTitle: Self = "Add Simulation"
     static let addSimulationLabel: Self = "Add New Simulation"
     static let medicalDisclaimer: Self = "This is not medical advice, but a rough estimate."
+    static let addErrorTitle: Self = "Couldn't Add Simulation"
+    static let addErrorMessage: Self = "Something went wrong while adding the simulation. Please try again later."
 }

@@ -44,6 +44,9 @@ struct TreatmentPlanHistory<TreatmentPlanRepo: TreatmentPlanManageable>: View {
                     }
                 }
             }
+            .refreshable {
+                treatmentPlanRepository.refresh()
+            }
             .navigationTitle(.navigationBarTitle)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -72,6 +75,7 @@ struct TreatmentPlanHistory<TreatmentPlanRepo: TreatmentPlanManageable>: View {
                 editMode = .inactive
             }
         }
+        .interactiveDismissDisabled()
     }
 }
 

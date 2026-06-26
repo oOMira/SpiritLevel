@@ -6,14 +6,13 @@ struct TreatmentPlanCellSimulationView<HormoneLevelManager: HormoneLevelManageab
     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
     @ScaledMetric(relativeTo: .body) private var chartHeight: CGFloat = 250
     let hormoneManager: HormoneLevelManager
-    @Bindable var store: TreatmentPlanStore
+    var treatmentConfigurations: [TreatmentPlanConfiguration]
     @Environment(AppData.self) var appData: AppData
     var simulationStyle: SimulationStyle
     @State private var scrollPosition: Date = .now.addingTimeInterval(TimeInterval.interval)
 
     var body: some View {
-        let visibleItems = store.planConfigurations.filter(\.visible)
-                                .map(\.plan)
+        let visibleItems = treatmentConfigurations.filter(\.visible)
         let startDate: Date
         switch simulationStyle {
         case .firstInjection:

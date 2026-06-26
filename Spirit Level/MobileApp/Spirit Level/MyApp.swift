@@ -35,6 +35,9 @@ struct MyApp: App {
             let injectionRepository = InjectionRepository(modelContext: modelContainer.mainContext)
             let labResultsRepository = LabResultsRepository(modelContext: modelContainer.mainContext)
             let treatmentPlanRepository = TreatmentPlanRepository(modelContext: modelContainer.mainContext)
+            let treatmentPlanConfigurationRepository: TreatmentPlanConfigurationRepository = {
+                .init(modelContext: modelContainer.mainContext)
+            }()
             let hormoneLevelManager: HormoneLevelManager = .init()
 
             logFirstAppStart(in: appStartRepository)
@@ -45,6 +48,7 @@ struct MyApp: App {
                 injectionRepository: injectionRepository,
                 labResultsRepository: labResultsRepository,
                 treatmentPlanRepository: treatmentPlanRepository,
+                treatmentPlanConfigurationRepository: treatmentPlanConfigurationRepository,
                 hormoneLevelManager: hormoneLevelManager
             )
 
@@ -108,6 +112,7 @@ private struct AppStartupContext {
         InjectionRepository,
         LabResultsRepository,
         TreatmentPlanRepository,
+        TreatmentPlanConfigurationRepository,
         HormoneLevelManager
     >
     let searchResultsManager: SearchResultsManager

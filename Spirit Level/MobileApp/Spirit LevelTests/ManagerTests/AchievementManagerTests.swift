@@ -18,6 +18,7 @@ import Foundation
                                                injectionRepository: .none,
                                                labResultsRepository: .none,
                                                treatmentPlanRepository: .none,
+                                               treatmentPlanConfigurationRepository: .none,
                                                hormoneLevelManager: .init())
         let manager = MockAchievementManager(dependencies: dependencies)
         let isDoneArray = Achievement.allCases.map {
@@ -84,6 +85,7 @@ import Foundation
                                                injectionRepository: .init(allItems: injections),
                                                labResultsRepository: .none,
                                                treatmentPlanRepository: .init(allItems: [treatmentPlan]),
+                                               treatmentPlanConfigurationRepository: .none,
                                                hormoneLevelManager: .init())
 
         let manager = MockAchievementManager(dependencies: dependencies)
@@ -101,6 +103,7 @@ import Foundation
                                                injectionRepository: .init(allItems: injections),
                                                labResultsRepository: .none,
                                                treatmentPlanRepository: .none,
+                                               treatmentPlanConfigurationRepository: .none,
                                                hormoneLevelManager: .init())
         let manager = MockAchievementManager(dependencies: dependencies)
 
@@ -233,6 +236,7 @@ extension AchievementManagerTests {
             injectionRepository: .init(allItems: injections),
             labResultsRepository: .none,
             treatmentPlanRepository: .init(allItems: [plan]),
+            treatmentPlanConfigurationRepository: .none,
             hormoneLevelManager: .init()
         )
     }
@@ -244,6 +248,7 @@ extension AchievementManagerTests {
             injectionRepository: .none,
             labResultsRepository: .none,
             treatmentPlanRepository: .none,
+            treatmentPlanConfigurationRepository: .none,
             hormoneLevelManager: .init()
         )
     }
@@ -258,6 +263,7 @@ extension AchievementManagerTests {
             injectionRepository: .init(allItems: injections),
             labResultsRepository: .none,
             treatmentPlanRepository: .none,
+            treatmentPlanConfigurationRepository: .none,
             hormoneLevelManager: .init()
         )
     }
@@ -272,6 +278,7 @@ extension AchievementManagerTests {
             injectionRepository: .none,
             labResultsRepository: .init(allItems: results),
             treatmentPlanRepository: .none,
+            treatmentPlanConfigurationRepository: .none,
             hormoneLevelManager: .init()
         )
     }

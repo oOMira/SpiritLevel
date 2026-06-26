@@ -27,7 +27,7 @@ final class AppStateRepository: AppStateManageable {
         self.userDefaults = userDefaults
         selectedAchievement = userDefaults.string(forKey: "selectedAchievement")
         selectedTab = userDefaults.integer(forKey: "selectedTab")
-        isMoodExpanded = userDefaults.bool(forKey: "moodExpanded")
+        isMoodExpanded = userDefaults.object(forKey: "moodExpanded") as? Bool ?? true
         searchHistoryData = userDefaults.string(forKey: "searchHistory") ?? "[]"
     }
 

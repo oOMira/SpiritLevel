@@ -66,6 +66,12 @@ struct CustomTreatmentPlanView: View {
         } message: {
             Text("The alias field cannot be empty.")
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Dismiss", systemImage: "xmark") { dismiss() }
+                    .tint(.primary)
+            }
+        }
     }
 }
 

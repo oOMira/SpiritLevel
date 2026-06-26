@@ -10,6 +10,7 @@ extension AppArea {
         HasInjectionRepository &
         HasLabResultsRepository &
         HasTreatmentPlanRepository &
+        HasTreatmentPlanConfigurationRepository &
         HasHormoneLevelManager
 
     static func getSearchItems<Dependencies: GetSearchItemsDependencies>(

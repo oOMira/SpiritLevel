@@ -7,6 +7,7 @@ typealias OverviewDependencies =
     HasInjectionRepository &
     HasLabResultsRepository &
     HasTreatmentPlanRepository &
+    HasTreatmentPlanConfigurationRepository &
     HasHormoneLevelManager
 
 @Observable

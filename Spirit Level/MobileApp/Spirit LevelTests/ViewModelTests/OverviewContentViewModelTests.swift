@@ -76,6 +76,7 @@ private extension OverviewContentViewModelTests.TreatmentPlanRemindersTests {
               injectionRepository: .none,
               labResultsRepository: .none,
               treatmentPlanRepository: treatmentPlanRepository,
+              treatmentPlanConfigurationRepository: .none,
               hormoneLevelManager: .init())
     }
 }

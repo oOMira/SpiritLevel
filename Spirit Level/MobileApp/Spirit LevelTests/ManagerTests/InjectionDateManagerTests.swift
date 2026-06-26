@@ -378,6 +378,7 @@ extension InjectionDateManagerTests {
                 injectionRepository: .init(allItems: injections),
                 labResultsRepository: .none,
                 treatmentPlanRepository: .init(allItems: plans),
+                treatmentPlanConfigurationRepository: .none,
                 hormoneLevelManager: .init()
             )
         )
